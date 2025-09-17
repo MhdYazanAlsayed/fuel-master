@@ -1,0 +1,19 @@
+.permissions .card .card-header p {
+  font-size: 0.9rem;
+}
+.permissions small {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.permissions table thead td {
+  width: 100px;
+  text-align: center;
+}
+.permissions .reports-card table thead td {
+  width: 200px;
+  text-align: center;
+}
+.permissions table tbody tr,
+.permissions table tbody td {
+  border: none !important;
+}

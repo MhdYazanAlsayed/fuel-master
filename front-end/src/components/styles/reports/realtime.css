@@ -1,0 +1,26 @@
+.realtime-report .card-header select {
+  width: 150px;
+}
+
+/* Nozzle Header */
+.realtime-report .nozzle-status {
+  font-size: 14px;
+}
+.realtime-report .nozzle-status .nozzle-header {
+  padding-block: 3px !important;
+}
+.realtime-report .nozzle-status .nozzle-header .nozzle-number {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+}
+
+/* Nozzle Body */
+.realtime-report .nozzle-status .nozzle-body p {
+  min-width: 68px;
+  font-size: 14px;
+}
+.realtime-report .nozzle-status .nozzle-body input {
+  font-size: 12px;
+}

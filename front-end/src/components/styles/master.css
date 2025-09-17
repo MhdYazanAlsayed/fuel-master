@@ -1,0 +1,70 @@
+html[dir='rtl'] body *:not(i) {
+  font-family: 'Cairo', sans-serif !important;
+}
+html .dropdown-toggle {
+  display: block;
+}
+html[dir='ltr'] .dropdown-toggle {
+  margin-left: auto;
+}
+html[dir='rtl'] .dropdown-toggle {
+  margin-right: auto;
+}
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+}
+.loading[data-status='start'] {
+  animation: loading-start 0.3s ease-in-out 1 forwards;
+}
+.loading[data-status='stop'] {
+  animation: loading-stop 0.3s ease-in-out 1 forwards;
+}
+.loading .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.loading .loading-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+@keyframes loading-start {
+  from {
+    display: none;
+    opacity: 0;
+  }
+  to {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes loading-stop {
+  from {
+    display: block;
+    opacity: 1;
+  }
+  to {
+    display: none;
+    opacity: 0;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

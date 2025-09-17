@@ -1,0 +1,13 @@
+**/obj/
+**/bin/
+**/.vs/
+*.docx
+*.mdj
+*.txt
+back-end/FuelMaster.HeadOffice/FuelMaster.HeadOffice/appsettings.json
+back-end/FuelMaster.HeadOffice/FuelMaster.HeadOffice/appsettings.Development.json
+
+/front-end/build/
+/front-end/dist/
+/front-end/build.rar
+/front-end/node_modules
