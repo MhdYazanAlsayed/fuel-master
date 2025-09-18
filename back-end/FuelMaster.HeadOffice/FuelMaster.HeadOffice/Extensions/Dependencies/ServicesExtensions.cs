@@ -1,4 +1,7 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Markers;
+﻿using FuelMaster.HeadOffice.ApplicationService.Database;
+using FuelMaster.HeadOffice.ApplicationService.Services;
+using FuelMaster.HeadOffice.Core.Contracts.Markers;
+using FuelMaster.HeadOffice.Core.Contracts.Services;
 using FuelMaster.HeadOffice.Core.Mapper;
 using Scrutor;
 using System.Reflection;
@@ -33,6 +36,9 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
              .WithTransientLifetime());
 
             services.AddAutoMapper(typeof(FuelMasterMapper));
+
+            // Register SeederDiscoveryService
+            services.AddScoped<SeederDiscoveryService>();
 
             return services;
         }

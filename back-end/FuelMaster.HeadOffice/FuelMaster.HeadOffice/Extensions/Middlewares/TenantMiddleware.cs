@@ -105,5 +105,4 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
             await context.Response.WriteAsJsonAsync(errorResponse);
         }
     }
-
 }

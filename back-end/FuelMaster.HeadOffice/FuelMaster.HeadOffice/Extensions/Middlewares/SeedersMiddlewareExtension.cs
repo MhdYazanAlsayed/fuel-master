@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Database;
+﻿using FuelMaster.HeadOffice.ApplicationService.Database;
 
 namespace FuelMaster.HeadOffice.Extensions.Middlewares
 {
@@ -6,12 +6,13 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
     {
         public static async Task<WebApplication> UseSeedersAsync (this WebApplication app)
         {
-            var scop = app.Services.CreateScope();
-            var seederService = scop.ServiceProvider.GetService<ISeeder>();
-            if (seederService is null)
-                throw new NullReferenceException();
+            var scope = app.Services.CreateScope();
+            var seederDiscoveryService = scope.ServiceProvider.GetService<SeederDiscoveryService>();
+            
+            if (seederDiscoveryService is null)
+                throw new NullReferenceException("SeederDiscoveryService was not registered");
 
-            await seederService.SeedAsync();
+            await seederDiscoveryService.ExecuteAllSeedersAsync();
 
             return app;
         }

@@ -1,6 +1,7 @@
 ﻿using FuelMaster.HeadOffice.Core.Contracts.Authentication;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
 using FuelMaster.HeadOffice.Core.Contracts.Entities;
+using FuelMaster.HeadOffice.Core.Contracts.Services;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
@@ -8,6 +9,7 @@ using FuelMaster.HeadOffice.Core.Models.Requests.Deliveries;
 using FuelMaster.HeadOffice.Core.Resources;
 using FuelMaster.HeadOffice.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FuelMaster.HeadOffice.ApplicationService.Entities
 {
@@ -15,45 +17,77 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
     {
         private readonly FuelMasterDbContext _context;
         private readonly IAuthorization _authorization;
+        private readonly ILogger<DeliveryService> _logger;
+        private readonly ICacheService _cacheService;
 
-        public DeliveryService(IContextFactory<FuelMasterDbContext> contextFactory, IAuthorization authorization)
+        public DeliveryService(IContextFactory<FuelMasterDbContext> contextFactory, 
+            IAuthorization authorization, 
+            ILogger<DeliveryService> logger, 
+            ICacheService cacheService)
         {
             _context = contextFactory.CurrentContext;
             _authorization = authorization;
+            _logger = logger;
+            _cacheService = cacheService;
         }
 
         public async Task<ResultDto<Delivery>> CreateAsync(DeliveryDto dto)
         {
-            var tank = await _context.Tanks
-                .SingleOrDefaultAsync(x => x.Id == dto.TankId);
-            if (tank is null)
+            _logger.LogInformation("Creating new delivery for tank ID: {TankId}, received volume: {ReceivedVolume}", 
+                dto.TankId, dto.ReceivedVolume);
+
+            try
+            {
+                var tank = await _context.Tanks
+                    .SingleOrDefaultAsync(x => x.Id == dto.TankId);
+                if (tank is null)
+                {
+                    _logger.LogWarning("Tank with ID {TankId} not found", dto.TankId);
+                    return new(false, null, Resource.CannotFindTank);
+                }
+
+                if (tank.CurrentVolume + dto.ReceivedVolume > tank.MaxLimit)
+                {
+                    _logger.LogWarning("Tank {TankId} has no space. Current: {CurrentVolume}, Max: {MaxLimit}, Requested: {ReceivedVolume}", 
+                        dto.TankId, tank.CurrentVolume, tank.MaxLimit, dto.ReceivedVolume);
+                    return new(false, null, Resource.TankHasNoSpace);
+                }
+
+                var delivery = Delivery.Create(
+                    dto.Transport,
+                    dto.InvoiceNumber,
+                    dto.PaidVolume,
+                    dto.ReceivedVolume,
+                    dto.TankId,
+                    tank.CurrentLevel,
+                    tank.CurrentVolume
+                );
+                await _context.Deliveries.AddAsync(delivery);
+
+                // Update tank level and volume
+                tank.CurrentVolume += dto.ReceivedVolume;
+                _context.Tanks.Update(tank);
+
+                await _context.SaveChangesAsync();
+
+                // Invalidate cache after creating delivery
+                await InvalidateDeliveriesCacheAsync();
+                
+                _logger.LogInformation("Successfully created delivery with ID: {Id} for tank: {TankId}", 
+                    delivery.Id, dto.TankId);
+
+                return new(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating delivery for tank ID: {TankId}", dto.TankId);
                 return new(false, null, Resource.CannotFindTank);
-
-            if (tank.CurrentVolume + dto.ReceivedVolume > tank.MaxLimit)
-                return new(false, null, Resource.TankHasNoSpace);
-
-            var delivery = Delivery.Create(
-                dto.Transport,
-                dto.InvoiceNumber,
-                dto.PaidVolume,
-                dto.ReceivedVolume,
-                dto.TankId,
-                tank.CurrentLevel,
-                tank.CurrentVolume
-            );
-            await _context.Deliveries.AddAsync(delivery);
-
-            // Update tank level and volume
-            tank.CurrentVolume += dto.ReceivedVolume;
-            _context.Tanks.Update(tank);
-
-            await _context.SaveChangesAsync();
-
-            return new(true);
+            }
         }
 
         public void EditAsync(int id, DeliveryDto dto)
         {
+            _logger.LogInformation("EditAsync called for delivery ID: {Id} - method not implemented", id);
             throw new NotImplementedException();
             //var delivery = await _context.Deliveries.FindAsync(id);
 
@@ -77,32 +111,80 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
 
         public async Task<Delivery?> DetailsAsync(int id)
         {
-            return await _context.Deliveries
+            _logger.LogInformation("Getting details for delivery with ID: {Id}", id);
+
+            var cacheKey = $"Delivery_Details_{id}";
+            var cachedDelivery = await _cacheService.GetAsync<Delivery>(cacheKey);
+            
+            if (cachedDelivery != null)
+            {
+                _logger.LogInformation("Retrieved delivery details from cache for ID: {Id}", id);
+                return cachedDelivery;
+            }
+
+            _logger.LogInformation("Delivery details not in cache, fetching from database for ID: {Id}", id);
+
+            var delivery = await _context.Deliveries
                 .Include(x => x.Tank)
                 .Include(x => x.Tank!.Station)
                 .SingleOrDefaultAsync(x => x.Id == id);
+            
+            if (delivery != null)
+            {
+                await _cacheService.SetAsync(cacheKey, delivery);
+                _logger.LogInformation("Cached delivery details for ID: {Id}", id);
+            }
+
+            return delivery;
         }
 
         public async Task<ResultDto> DeleteAsync(int id)
         {
-            var delivery = await _context.Deliveries
-                .SingleOrDefaultAsync(x => x.Id == id);
-            if (delivery is null) return Results.Failure();
+            _logger.LogInformation("Deleting delivery with ID: {Id}", id);
 
-            var tank = await _context.Tanks
-                .SingleOrDefaultAsync(x => x.Id == delivery.TankId);
-            if (tank is null) return Results.Failure();
+            try
+            {
+                var delivery = await _context.Deliveries
+                    .SingleOrDefaultAsync(x => x.Id == id);
+                if (delivery is null)
+                {
+                    _logger.LogWarning("Delivery with ID {Id} not found for deletion", id);
+                    return Results.Failure();
+                }
 
-            tank.CurrentVolume -= delivery.RecivedVolume;
-            _context.Deliveries.Remove(delivery);
+                var tank = await _context.Tanks
+                    .SingleOrDefaultAsync(x => x.Id == delivery.TankId);
+                if (tank is null)
+                {
+                    _logger.LogWarning("Tank with ID {TankId} not found for delivery {DeliveryId}", 
+                        delivery.TankId, id);
+                    return Results.Failure();
+                }
 
-            await _context.SaveChangesAsync();
+                tank.CurrentVolume -= delivery.RecivedVolume;
+                _context.Deliveries.Remove(delivery);
 
-            return Results.Success();
+                await _context.SaveChangesAsync();
+
+                // Invalidate cache after deleting delivery
+                await InvalidateDeliveriesCacheAsync();
+                
+                _logger.LogInformation("Successfully deleted delivery with ID: {Id}", id);
+
+                return Results.Success();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting delivery with ID: {Id}", id);
+                return Results.Failure();
+            }
         }
 
         public async Task<PaginationDto<Delivery>> GetPaginationAsync(GetDeliveriesPaginationDto dto)
         {
+            _logger.LogInformation("Getting paginated deliveries for page {Page}, station: {StationId}, from: {From}, to: {To}", 
+                dto.Page, dto.StationId, dto.From, dto.To);
+
             if (dto.From is null) 
             {
                 dto.From = DateTime.Now.AddDays(-10);
@@ -115,7 +197,19 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
 
             dto.StationId = (await _authorization.TryToGetStationIdAsync()) ?? dto.StationId;
 
-            return await _context.Deliveries
+            // Create cache key based on parameters
+            var cacheKey = $"Deliveries_Page_{dto.Page}_Station_{dto.StationId}_From_{dto.From:yyyyMMdd}_To_{dto.To:yyyyMMdd}";
+            var cachedPagination = await _cacheService.GetAsync<PaginationDto<Delivery>>(cacheKey);
+            
+            if (cachedPagination != null)
+            {
+                _logger.LogInformation("Retrieved paginated deliveries from cache for page {Page}", dto.Page);
+                return cachedPagination;
+            }
+
+            _logger.LogInformation("Paginated deliveries not in cache, fetching from database for page {Page}", dto.Page);
+
+            var pagination = await _context.Deliveries
                 .Include(x => x.Tank)
                 .Include(x => x.Tank!.Station)
                 .Where(x => !dto.StationId.HasValue ||
@@ -124,6 +218,18 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 .Where(x => !dto.To.HasValue || x.CreatedAt <= dto.To)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToPaginationAsync(dto.Page);
+            
+            await _cacheService.SetAsync(cacheKey, pagination);
+            
+            _logger.LogInformation("Cached paginated deliveries for page {Page}", dto.Page);
+
+            return pagination;
+        }
+
+        private async Task InvalidateDeliveriesCacheAsync()
+        {
+            await _cacheService.RemoveByPatternAsync("Deliveries");
+            _logger.LogInformation("Invalidated all deliveries cache entries");
         }
     }
 }

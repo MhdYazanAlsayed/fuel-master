@@ -39,14 +39,5 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
             return Results.Success();
         }
 
-        public async Task Reset ()
-        {
-            // var user = await _userService.UserManager.FindByNameAsync("admin");
-
-            // user.PasswordHash = _userService.UserManager.PasswordHasher.HashPassword(user, "MyP@ssw0rd");
-
-            // await _userService.UpdateAsync(user);
-
-        }
     }
 }

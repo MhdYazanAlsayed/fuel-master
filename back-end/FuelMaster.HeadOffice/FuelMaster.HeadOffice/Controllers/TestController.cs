@@ -1,6 +1,7 @@
 ﻿using FuelMaster.HeadOffice.Core.Contracts.Database;
 using FuelMaster.HeadOffice.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace FuelMaster.HeadOffice.Controllers
 {
@@ -18,12 +19,23 @@ namespace FuelMaster.HeadOffice.Controllers
         [HttpGet]
         public async Task<IActionResult> Index ()
         {
-            var station = await _unitOfWork.Stations
-                .Include(nameof(Station.City))
-                .Include(nameof(Station.Zone))
-                .ListAsync();
+            Log.Information("Test endpoint accessed");
+            
+            try
+            {
+                var station = await _unitOfWork.Stations
+                    .Include(nameof(Station.City))
+                    .Include(nameof(Station.Zone))
+                    .ListAsync();
 
-            return Ok(station);
+                Log.Information("Successfully retrieved {Count} stations", station.Count);
+                return Ok(station);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error occurred while retrieving stations");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

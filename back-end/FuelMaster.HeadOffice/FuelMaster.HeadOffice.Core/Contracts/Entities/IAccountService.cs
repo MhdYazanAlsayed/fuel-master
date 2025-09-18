@@ -8,6 +8,5 @@ namespace FuelMaster.HeadOffice.Core.Contracts.Entities
     {
         Task<ResultDto> EditPasswordAsync(string userId, EditPasswordDto dto);
         Task<ResultDto> EditCurrentPassword(EditCurrentPasswordDto dto);
-        Task Reset();
     }
 }

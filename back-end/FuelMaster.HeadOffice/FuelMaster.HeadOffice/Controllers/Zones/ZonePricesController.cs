@@ -1,7 +1,6 @@
 ﻿using FuelMaster.HeadOffice.Core.Contracts.Entities.Zones;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Requests.Zones;
-using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FuelMaster.HeadOffice.Controllers.Zones
@@ -24,7 +23,6 @@ namespace FuelMaster.HeadOffice.Controllers.Zones
             if (!result.Succeeded) return BadRequest(result.Message);
 
             return Ok();
-        
         }
     }
 }
