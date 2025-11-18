@@ -12,16 +12,16 @@ namespace FuelMaster.HeadOffice.Infrastructure.Seeders
             _logger = logger;
         }
 
-        public async Task SeedAsync()
+        public async Task SeedAsync(string tenantId)
         {
             _logger.LogInformation("TestSeeder: Starting test seeding process");
-            _logger.LogInformation("TestSeeder: Executing test seeder");
+            _logger.LogInformation("TestSeeder: Executing test seeder for tenant {TenantId}", tenantId);
             
             // Simulate some work
             await Task.Delay(100);
             
             _logger.LogInformation("TestSeeder: Test seeding completed successfully");
-            _logger.LogInformation("TestSeeder: Test seeder execution completed");
+            _logger.LogInformation("TestSeeder: Test seeder execution completed for tenant {TenantId}", tenantId);
         }
     }
 }

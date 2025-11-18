@@ -1,13 +1,13 @@
-import ModalTop from 'components/shared/ModalTop';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
+import ModalCenter from 'components/shared/ModalCenter';
 
-const CreateModal = ({ open, setOpen }) => {
-  const _languageService = DependenciesInjector.services.languageService;
-  const _cityService = DependenciesInjector.services.cityService;
+const _languageService = DependenciesInjector.services.languageService;
+const _cityService = DependenciesInjector.services.cityService;
 
+const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
   // States
   const [formData, setFormData] = useState({
     arabicName: '',
@@ -15,20 +15,31 @@ const CreateModal = ({ open, setOpen }) => {
   });
   const { handleOnChange } = useEvents(setFormData);
 
+  useEffect(() => {
+    if (!open) return;
+
+    setFormData({
+      arabicName: '',
+      englishName: ''
+    });
+  }, [open]);
+
   const handleOnSubmitAsync = async e => {
     e.preventDefault();
 
     const response = await _cityService.createAsync(formData);
     if (!response.succeeded) return;
 
-    // Refresh
+    handleRefreshPage();
+    setOpen(false);
   };
 
   return (
-    <ModalTop
+    <ModalCenter
       open={open}
       setOpen={setOpen}
       title={_languageService.resources.createCity}
+      size={'md'}
     >
       <Modal.Body>
         <form onSubmit={handleOnSubmitAsync}>
@@ -46,7 +57,7 @@ const CreateModal = ({ open, setOpen }) => {
             />
           </Form.Group>
 
-          <Form.Group className="mb-2">
+          <Form.Group className="mb-4">
             <Form.Label>
               <span>{_languageService.resources.englishName}</span>
               <span className="text-danger fw-bold">*</span>
@@ -72,7 +83,7 @@ const CreateModal = ({ open, setOpen }) => {
           </Button>
         </form>
       </Modal.Body>
-    </ModalTop>
+    </ModalCenter>
   );
 };
 

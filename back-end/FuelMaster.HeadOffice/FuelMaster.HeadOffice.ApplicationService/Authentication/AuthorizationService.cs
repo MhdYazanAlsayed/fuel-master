@@ -9,18 +9,15 @@ using System.Security.Claims;
 
 namespace FuelMaster.HeadOffice.ApplicationService.Authentication
 {
-    public class AuthorizationService : IAuthorization
+    public class SigninService : ISigninService
     {
-        private readonly UserManager<FuelMasterUser> _userManager;
         private readonly FuelMasterDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthorizationService(
-        UserManager<FuelMasterUser> userManager , 
+        public SigninService(
         IContextFactory<FuelMasterDbContext> contextFactory,
         IHttpContextAccessor httpContextAccessor)
         {
-            _userManager = userManager;
             _context = contextFactory.CurrentContext;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -41,12 +38,12 @@ namespace FuelMaster.HeadOffice.ApplicationService.Authentication
             return await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
         }
 
-        public async Task<string?> GetLoggedUserIdAsync()
+        public string? GetLoggedUserId()
         {
             var claims = _httpContextAccessor.HttpContext?.User;
             if (claims is null) return null;
 
-            return (await _userManager.GetUserAsync(claims))?.Id;
+            return claims.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 
         public async Task<int?> TryToGetStationIdAsync()

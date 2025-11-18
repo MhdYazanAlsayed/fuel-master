@@ -1,4 +1,5 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Authentication;
+﻿using FuelMaster.HeadOffice.Core.Constants;
+using FuelMaster.HeadOffice.Core.Contracts.Authentication;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Core.Models.Requests.Authentication;
@@ -86,10 +87,10 @@ namespace FuelMaster.HeadOffice.ApplicationService.Authentication
                 new Claim(ClaimTypes.NameIdentifier , user.Id),
             });
 
-            var tenantId = _httpContextAccessor.HttpContext?.Items["TenantId"]?.ToString();
+            var tenantId = _httpContextAccessor.HttpContext?.Items[ConfigKeys.TanentId]?.ToString();
             if (tenantId is null) throw new NullReferenceException();
 
-            claims.Add(new("TenantId", tenantId));
+            claims.Add(new(ConfigKeys.TanentId, tenantId));
 
             var accessToken = _tokenService.GenerateAccessToken(claims);
             //var refreshToken = _tokenService.GenerateRefreshToken();

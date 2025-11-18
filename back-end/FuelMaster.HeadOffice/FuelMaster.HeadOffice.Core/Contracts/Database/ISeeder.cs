@@ -4,6 +4,6 @@ namespace FuelMaster.HeadOffice.Core.Contracts.Database
 {
     public interface ISeeder : ITransientDependency
     {
-        Task SeedAsync();
+        Task SeedAsync(string tenantId);
     }
 }

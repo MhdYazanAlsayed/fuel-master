@@ -1,13 +1,13 @@
 import { Modal } from 'react-bootstrap';
 import React from 'react';
 
-function ModalCenter({ open, setOpen, title, children }) {
+function ModalCenter({ open, setOpen, title, size = 'lg', children }) {
   return (
     <>
       <Modal
         show={open}
         onHide={() => setOpen(false)}
-        size="lg"
+        size={size}
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >

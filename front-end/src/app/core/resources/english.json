@@ -20,6 +20,7 @@
   "showAll": "Show All",
   "createNew": "Create new",
   "zones": "Zones",
+  "fuelTypeTitle": "Fuel Types",
   "pricesHistory": "Prices history",
   "stations": "Stations",
   "tanks": "Tanks",
@@ -43,6 +44,8 @@
   "editCity": "Edit the city",
   "createZone": "Create a zone",
   "editZone": "Edit the zone",
+  "createFuelType": "Create a fuel type",
+  "editFuelType": "Edit the fuel type",
   "delete": "Delete",
   "deleteMsg": "Are you sure of delete this item ?",
   "cancle": "Cancle",
@@ -257,5 +260,7 @@
   },
   "noSaleDataAvailable": "No sales data available",
   "noDataAvailable": "No data available",
-  "noMonthlyDataAvailable": "No monthly data available"
+  "noMonthlyDataAvailable": "No monthly data available",
+  "fuelTypesText": "Fuel Types",
+  "priceAfterChange": "Price After Change"
 }

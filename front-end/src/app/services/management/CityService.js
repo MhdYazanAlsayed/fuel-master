@@ -40,7 +40,8 @@ export default class CityService {
       return { succeeded: false };
     }
 
-    return { succeeded: true };
+    const city = await response.json();
+    return { succeeded: true, data: city };
   }
 
   async editAsync(id, data) {
@@ -53,8 +54,8 @@ export default class CityService {
       return { succeeded: false };
     }
 
-    const entity = await response.json();
-    return { succeeded: true, entity };
+    const city = await response.json();
+    return { succeeded: true, data: city };
   }
 
   async deleteAsync(id) {

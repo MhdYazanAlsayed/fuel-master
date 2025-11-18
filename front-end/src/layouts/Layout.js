@@ -201,12 +201,9 @@ import Reports from 'components/theme/app/support-desk/reports/Reports';
 import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import Login from 'components/auth/Login';
 import Cities from 'components/management/cities/Index';
-import CreateCity from 'components/management/cities/Create';
-import EditCity from 'components/management/cities/Edit';
+import FuelTypes from 'components/management/fuel-types/Index';
 import AuthorizedLayout from './AuthorizedLayout';
 import Zones from 'components/management/zones/Index';
-import CreateZone from 'components/management/zones/Create';
-import EditZone from 'components/management/zones/Edit';
 import ChangePrices from 'components/management/zones/prices/ChangePrices';
 import PricesHistory from 'components/management/zones/prices/Prices';
 import Prices from 'components/management/zones/prices/Prices';
@@ -238,9 +235,9 @@ import Permissions from 'components/user-management/groups/permissions/Index';
 import ProfileSettings from 'components/settings/Index';
 import Time from 'components/reports/time/Index';
 
+const _languageService = DependenciesInjector.services.languageService;
 const Layout = () => {
   const HTMLClassList = document.getElementsByTagName('html')[0].classList;
-  const _languageService = DependenciesInjector.services.languageService;
   // const _identityService = DependenciesInjector.services.identityService;
 
   const {
@@ -279,12 +276,9 @@ const Layout = () => {
           <Route element={<AuthorizedLayout />}>
             <Route path="/" element={<MainDashboard />} />
             <Route path="/cities" element={<Cities />} />
-            <Route path="/cities/create" element={<CreateCity />} />
-            <Route path="/cities/:id/edit" element={<EditCity />} />
+            <Route path="/fuel-types" element={<FuelTypes />} />
 
             <Route path="/zones" element={<Zones />} />
-            <Route path="/zones/create" element={<CreateZone />} />
-            <Route path="/zones/:id/edit" element={<EditZone />} />
             <Route path="/zones/:zoneId/prices" element={<Prices />} />
             <Route
               path="/zones/prices/:zonePriceId/histories"

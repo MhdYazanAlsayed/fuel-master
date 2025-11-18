@@ -16,10 +16,17 @@ namespace FuelMaster.HeadOffice.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var result = await _userService.LoginAsync(request);
-            if (!result.Succeeded) return BadRequest(result.Entity);
+            try 
+            {
+                var result = await _userService.LoginAsync(request);
+                if (!result.Succeeded) return BadRequest(result.Entity);
 
-            return Ok(result.Entity);
+                return Ok(result.Entity);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("update-password") , Authorize]
@@ -27,18 +34,18 @@ namespace FuelMaster.HeadOffice.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var result = await _accountService.EditCurrentPassword(dto);
-            if (!result.Succeeded) return BadRequest(result.Message);
+            try 
+            {
+                
+                var result = await _accountService.EditCurrentPassword(dto);
+                if (!result.Succeeded) return BadRequest(result.Message);
 
-            return Ok();
-        }
-
-        [HttpGet("reset")]
-        public async Task<IActionResult> ResetAsync ()
-        {
-            await _accountService.Reset();
-
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
 import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Dropdown } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import DeleteModal from './DeleteModal';
+import CreateModal from './CreateModal';
+import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
 
@@ -19,7 +21,10 @@ const Index = () => {
   // States
   const [zones, setZones] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [current, setCurrent] = useState(null);
+  const [currentZone, setCurrentZone] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -42,7 +47,11 @@ const Index = () => {
         <CardDropdown>
           <div className="py-2">
             {_roleManager.check(Permissions.ZonesEdit) && (
-              <Dropdown.Item as={Link} to={`/zones/${data.id}/edit`}>
+              <Dropdown.Item
+                as="div"
+                className="cursor-pointer"
+                onClick={() => handleOpenEditModal(data)}
+              >
                 {_languageService.resources.edit}
               </Dropdown.Item>
             )}
@@ -104,6 +113,11 @@ const Index = () => {
     setDeleteModal(true);
   };
 
+  const handleOpenEditModal = zone => {
+    setCurrentZone(zone);
+    setEditModal(true);
+  };
+
   const handleRefershDelete = () => {
     setZones(prev => {
       const index = prev.findIndex(x => x.id === current);
@@ -115,6 +129,17 @@ const Index = () => {
     });
   };
 
+  const handleRefreshData = () => {
+    handleGetPaginationAsync();
+  };
+
+  const handleUpdateZone = updatedZone => {
+    setZones(prev =>
+      prev.map(zone => (zone.id === updatedZone.id ? updatedZone : zone))
+    );
+    setCurrentZone(updatedZone);
+  };
+
   return (
     <Loader loading={loading}>
       <FuelMasterTable
@@ -123,6 +148,29 @@ const Index = () => {
         columns={columns}
         pagination={pagination}
         setPagination={setPagination}
+        buttons={
+          <Fragment>
+            <button
+              className="btn btn-primary"
+              onClick={() => setCreateModal(true)}
+            >
+              <i className="fa-solid fa-plus"></i>
+            </button>
+          </Fragment>
+        }
+      />
+
+      <CreateModal
+        open={createModal}
+        setOpen={setCreateModal}
+        handleRefreshData={handleRefreshData}
+      />
+
+      <EditModal
+        open={editModal}
+        setOpen={setEditModal}
+        zone={currentZone}
+        handleUpdateZone={handleUpdateZone}
       />
 
       <DeleteModal

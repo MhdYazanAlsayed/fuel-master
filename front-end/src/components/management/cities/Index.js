@@ -1,12 +1,14 @@
 import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Dropdown } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import DeleteModal from './DeleteModal';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
+import CreateModal from './CreateModal';
+import EditModal from './EditModal';
 
 const _languageService = DependenciesInjector.services.languageService;
 const _cityService = DependenciesInjector.services.cityService;
@@ -19,8 +21,11 @@ const Index = () => {
   // States
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [createModal, setCreateModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [current, setCurrent] = useState(null);
+  const [currentCity, setCurrentCity] = useState(null);
 
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -43,7 +48,11 @@ const Index = () => {
         <CardDropdown>
           <div className="py-2">
             {_roleManager.check(Permissions.CitiesEdit) && (
-              <Dropdown.Item as={Link} to={`/cities/${data.id}/edit`}>
+              <Dropdown.Item
+                as={'div'}
+                className="cursor-pointer"
+                onClick={() => handleOpenEditModal(data)}
+              >
                 {_languageService.resources.edit}
               </Dropdown.Item>
             )}
@@ -93,44 +102,60 @@ const Index = () => {
     setDeleteModal(true);
   };
 
-  const handleRefershDelete = () => {
-    setCities(prev => {
-      const index = prev.findIndex(x => x.id === current);
-      if (index === -1) throw Error();
+  const handleOpenEditModal = city => {
+    setCurrentCity(city);
+    setEditModal(true);
+  };
 
-      prev.splice(index, 1);
+  const handleUpdateCity = updatedCity => {
+    setCities(prev =>
+      prev.map(city => (city.id === updatedCity.id ? updatedCity : city))
+    );
+    setCurrentCity(updatedCity);
+  };
 
-      return [...prev];
-    });
+  const handleRefreshPage = () => {
+    handleGetPaginationAsync();
   };
 
   return (
     <Loader loading={loading}>
       <FuelMasterTable
         title={_languageService.resources.cities}
-        data={cities}
+        data={cities.sort((a, b) => a.arabicName.localeCompare(b.arabicName))}
         columns={columns}
         pagination={pagination}
         setPagination={setPagination}
-        // buttons={
-        //   <Fragment>
-        //     <button
-        //       className="btn btn-primary"
-        //       onClick={() => setCreateModal(true)}
-        //     >
-        //       <i className="fa-solid fa-plus"></i>
-        //     </button>
-        //   </Fragment>
-        // }
+        buttons={
+          <Fragment>
+            <button
+              className="btn btn-primary"
+              onClick={() => setCreateModal(true)}
+            >
+              <i className="fa-solid fa-plus"></i>
+            </button>
+          </Fragment>
+        }
       />
 
-      {/* <CreateModal open={createModal} setOpen={setCreateModal} /> */}
+      <CreateModal
+        open={createModal}
+        setOpen={setCreateModal}
+        handleRefreshPage={handleRefreshPage}
+      />
+
+      <EditModal
+        open={editModal}
+        setOpen={setEditModal}
+        city={currentCity}
+        handleUpdateCity={handleUpdateCity}
+      />
 
       <DeleteModal
         open={deleteModal}
         setOpen={setDeleteModal}
         id={current}
-        refresh={handleRefershDelete}
+        handleRefreshPage={handleRefreshPage}
       />
     </Loader>
   );

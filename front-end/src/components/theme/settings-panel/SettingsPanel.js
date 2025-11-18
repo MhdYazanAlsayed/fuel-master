@@ -52,7 +52,7 @@ const SettingsPanel = () => {
 
   return (
     <Offcanvas
-      show={showSettingPanel}
+      show={false}
       onHide={() => setConfig('showSettingPanel', false)}
       placement="end"
       style={{ maxWidth: '22rem' }}

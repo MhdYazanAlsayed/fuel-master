@@ -10,6 +10,7 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
             services.AddDbContext<FuelMasterDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("Default"));
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             return services;

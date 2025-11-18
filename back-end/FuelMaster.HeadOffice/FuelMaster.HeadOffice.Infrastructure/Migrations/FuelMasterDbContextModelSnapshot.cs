@@ -41,9 +41,39 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes.FuelType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FuelTypes");
                 });
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Delivery", b =>
@@ -88,6 +118,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<string>("Transport")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -136,6 +169,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<int?>("StationId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StationId");
@@ -153,14 +189,19 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ArabicName");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("EnglishName");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -261,6 +302,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("FuelTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
@@ -282,10 +326,15 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<decimal>("Totalizer")
                         .HasColumnType("decimal(8,2)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("Volume")
                         .HasColumnType("decimal(8,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FuelTypeId");
 
                     b.HasIndex("PumpId");
 
@@ -316,6 +365,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
                     b.Property<int>("TankId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("Volume")
                         .HasColumnType("decimal(8,2)");
@@ -349,6 +401,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("Value")
                         .HasColumnType("bit");
 
@@ -371,14 +426,19 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Manufacturer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Manufacturer");
 
                     b.Property<int>("Number")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
 
                     b.Property<int>("StationId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("StationId");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -397,20 +457,27 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ArabicName");
 
                     b.Property<int>("CityId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CityId");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("EnglishName");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ZoneId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ZoneId");
 
                     b.HasKey("Id");
 
@@ -441,8 +508,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<decimal>("CurrentVolume")
                         .HasColumnType("decimal(8,2)");
 
-                    b.Property<int>("FuelType")
-                        .HasColumnType("int");
+                    b.Property<int>("FuelTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("FuelTypeId");
 
                     b.Property<bool>("HasSensor")
                         .HasColumnType("bit");
@@ -454,46 +522,23 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasColumnType("decimal(8,2)");
 
                     b.Property<int>("Number")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
 
                     b.Property<int>("StationId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("StationId");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FuelTypeId");
+
                     b.HasIndex("StationId");
 
                     b.ToTable("Tanks");
-                });
-
-            modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.TankTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("CurrentLevel")
-                        .HasColumnType("decimal(8,2)");
-
-                    b.Property<decimal>("CurrentVolume")
-                        .HasColumnType("decimal(8,2)");
-
-                    b.Property<int>("TankId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TankId");
-
-                    b.ToTable("TankTransactions");
                 });
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Transaction", b =>
@@ -538,6 +583,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("Volume")
                         .HasColumnType("decimal(8,2)");
 
@@ -562,14 +610,19 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ArabicName");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("EnglishName");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -587,16 +640,23 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FuelType")
-                        .HasColumnType("int");
+                    b.Property<int>("FuelTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("FuelTypeId");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(8,2)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ZoneId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ZoneId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FuelTypeId");
 
                     b.HasIndex("ZoneId");
 
@@ -614,8 +674,14 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("PriceAfterChange")
+                        .HasColumnType("decimal(8,2)");
+
                     b.Property<decimal>("PriceBeforeChange")
                         .HasColumnType("decimal(8,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -804,6 +870,12 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Nozzle", b =>
                 {
+                    b.HasOne("FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes.FuelType", "FuelType")
+                        .WithMany()
+                        .HasForeignKey("FuelTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("FuelMaster.HeadOffice.Core.Entities.Pump", "Pump")
                         .WithMany("Nozzles")
                         .HasForeignKey("PumpId")
@@ -815,6 +887,8 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasForeignKey("TankId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("FuelType");
 
                     b.Navigation("Pump");
 
@@ -891,24 +965,21 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Tank", b =>
                 {
+                    b.HasOne("FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes.FuelType", "FuelType")
+                        .WithMany()
+                        .HasForeignKey("FuelTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("FuelMaster.HeadOffice.Core.Entities.Station", "Station")
                         .WithMany("Tanks")
                         .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("FuelType");
+
                     b.Navigation("Station");
-                });
-
-            modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.TankTransaction", b =>
-                {
-                    b.HasOne("FuelMaster.HeadOffice.Core.Entities.Tank", "Tank")
-                        .WithMany()
-                        .HasForeignKey("TankId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Tank");
                 });
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Transaction", b =>
@@ -940,11 +1011,19 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.ZonePrice", b =>
                 {
+                    b.HasOne("FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes.FuelType", "FuelType")
+                        .WithMany()
+                        .HasForeignKey("FuelTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("FuelMaster.HeadOffice.Core.Entities.Zone", "Zone")
                         .WithMany("Prices")
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("FuelType");
 
                     b.Navigation("Zone");
                 });

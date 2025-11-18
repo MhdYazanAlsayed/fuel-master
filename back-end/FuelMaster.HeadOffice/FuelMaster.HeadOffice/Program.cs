@@ -1,4 +1,3 @@
-using FuelMaster.HeadOffice.Core.Contracts.Authentication;
 using FuelMaster.HeadOffice.Extensions.Dependencies;
 using FuelMaster.HeadOffice.Extensions.Middlewares;
 using Serilog;

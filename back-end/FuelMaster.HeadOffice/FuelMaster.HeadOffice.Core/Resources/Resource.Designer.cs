@@ -61,6 +61,24 @@ namespace FuelMaster.HeadOffice.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arabic name must be at most 100 characters..
+        /// </summary>
+        public static string ArabicNameMaxLength {
+            get {
+                return ResourceManager.GetString("ArabicNameMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arabic Name is required..
+        /// </summary>
+        public static string ArabicNameRequired {
+            get {
+                return ResourceManager.GetString("ArabicNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot assign station to zone has no prices..
         /// </summary>
         public static string AssignStationToInitialZoneException {
@@ -111,6 +129,24 @@ namespace FuelMaster.HeadOffice.Core.Resources {
         public static string EmployeeNotInStation {
             get {
                 return ResourceManager.GetString("EmployeeNotInStation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arabic name must be at most 100 characters..
+        /// </summary>
+        public static string EnglishNameMaxLength {
+            get {
+                return ResourceManager.GetString("EnglishNameMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to English Name is required..
+        /// </summary>
+        public static string EnglishNameRequired {
+            get {
+                return ResourceManager.GetString("EnglishNameRequired", resourceCulture);
             }
         }
         
@@ -183,6 +219,15 @@ namespace FuelMaster.HeadOffice.Core.Resources {
         public static string TankHasNoSpace {
             get {
                 return ResourceManager.GetString("TankHasNoSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to login at first !.
+        /// </summary>
+        public static string Unauthorized {
+            get {
+                return ResourceManager.GetString("Unauthorized", resourceCulture);
             }
         }
         

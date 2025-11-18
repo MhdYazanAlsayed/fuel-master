@@ -12,8 +12,8 @@ const _zonePriceHistoryService =
 const _roleManager = DependenciesInjector.services.roleManager;
 
 const Histories = () => {
-  if (!_roleManager.check(Permissions.ShowPricesHistories))
-    return <Navigate to="/errors/404" />;
+  // if (!_roleManager.check(Permissions.ShowPricesHistories))
+  //   return <Navigate to="/errors/404" />;
   // States
   const [histories, setHistories] = useState([]);
   const [pagination, setPagination] = useState({
@@ -29,7 +29,11 @@ const Histories = () => {
   const columns = [
     {
       header: _languageService.resources.fuelType,
-      Cell: data => <>{_languageService.resources.fuelTypes[data.fuelType]}</>
+      Cell: data => (
+        <>
+          {data.fuelType.englishName} — {data.fuelType.arabicName}
+        </>
+      )
     },
     {
       header: _languageService.resources.dateTime,
@@ -44,6 +48,14 @@ const Histories = () => {
       Cell: data => (
         <Badge bg="warning">
           {data?.priceBeforeChange} {_languageService.resources.rial}
+        </Badge>
+      )
+    },
+    {
+      header: _languageService.resources.priceAfterChange,
+      Cell: data => (
+        <Badge bg="warning">
+          {data?.priceAfterChange} {_languageService.resources.rial}
         </Badge>
       )
     }

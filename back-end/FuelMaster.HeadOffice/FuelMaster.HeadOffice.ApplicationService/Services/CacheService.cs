@@ -39,6 +39,20 @@ namespace FuelMaster.HeadOffice.ApplicationService.Services
             return Task.FromResult<T?>(null);
         }
 
+        public async Task<T?> GetAndStoreAsync<T>(string key, Func<Task<T>> createValue, TimeSpan? duration = null) where T : class
+        {
+            var tenantAwareKey = GetTenantAwareKey(key);
+
+            if (_cache.TryGetValue(tenantAwareKey, out T? cachedValue))
+            {
+                return cachedValue;
+            }
+
+            var value = await createValue();
+            await SetAsync(tenantAwareKey, value, duration ?? TimeSpan.FromMinutes(_cacheConfig.DefaultDurationMinutes));
+            return value;
+        }
+
         public Task SetAsync<T>(string key, T value, TimeSpan? duration = null) where T : class
         {
             var tenantAwareKey = GetTenantAwareKey(key);

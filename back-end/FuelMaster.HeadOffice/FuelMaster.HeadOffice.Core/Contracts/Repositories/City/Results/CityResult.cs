@@ -1,0 +1,9 @@
+namespace FuelMaster.HeadOffice.Core.Contracts.Repositories.City.Results;
+
+public class CityResult
+{
+    public int Id { get; set; }
+    public string ArabicName { get; set; } = null!;
+    public string EnglishName { get; set; } = null!;
+}
+

@@ -1,15 +1,15 @@
 ﻿using FuelMaster.HeadOffice.Core.Contracts.Entities;
+using FuelMaster.HeadOffice.Core.Contracts.Repositories.Delivery.Dtos;
 using FuelMaster.HeadOffice.Core.Helpers;
-using FuelMaster.HeadOffice.Core.Models.Requests.Deliveries;
 using Microsoft.AspNetCore.Mvc;
 namespace FuelMaster.HeadOffice.Controllers;
 
 [Route("api/deliveries")]
 public class DeliveryController : FuelMasterController
 {
-    private readonly IDeliveryService _deliveryService;
+    private readonly IDeliveryRepository _deliveryService;
 
-    public DeliveryController(IDeliveryService deliveryService)
+    public DeliveryController(IDeliveryRepository deliveryService)
     {
         _deliveryService = deliveryService;
     }
@@ -19,55 +19,67 @@ public class DeliveryController : FuelMasterController
     {
         if (!ModelState.IsValid) return BadRequest();
 
-        var result = await _deliveryService.CreateAsync(dto);
-        if (!result.Succeeded) return BadRequest(result.Message);
+        try 
+        {
+            var result = await _deliveryService.CreateAsync(dto);
+            if (!result.Succeeded) return BadRequest(result.Message);
 
-        return Ok(result.Entity);
-      
+            return Ok(result.Entity);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> Edit(int id, [FromBody] DeliveryDto dto)
-    //{
-    //    try
-    //    {
-    //        await _deliveryService.EditAsync(id, dto);
-    //        return Ok();
-    //    }
-    //    catch (NullReferenceException)
-    //    {
-    //        return NotFound("Delivery not found.");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return BadRequest(ex.Message);
-    //    }
-    //}
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Details(int id)
     {
-        var delivery = await _deliveryService.DetailsAsync(id);
-        if (delivery == null)
+        try 
         {
-            return NotFound("Delivery not found.");
+            var delivery = await _deliveryService.DetailsAsync(id);
+            if (delivery is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(delivery);
         }
-        return Ok(delivery);
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+       
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _deliveryService.DeleteAsync(id);
-        if (!result.Succeeded) return BadRequest(result.Message);
+        try 
+        {
+            var result = await _deliveryService.DeleteAsync(id);
+            if (!result.Succeeded) return BadRequest(result.Message);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("pagination")]
     public async Task<IActionResult> GetPagination([FromQuery] GetDeliveriesPaginationDto dto)
     {
-        var result = await _deliveryService.GetPaginationAsync(dto);
-        return Ok(result);
+        try 
+        {
+            var result = await _deliveryService.GetPaginationAsync(dto);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

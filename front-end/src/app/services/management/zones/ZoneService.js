@@ -40,7 +40,9 @@ export default class ZoneService {
       return { succeeded: false };
     }
 
-    return { succeeded: true };
+    const entity = await response.json();
+
+    return { succeeded: true, data: entity };
   }
 
   async editAsync(id, data) {
@@ -54,7 +56,7 @@ export default class ZoneService {
     }
 
     const entity = await response.json();
-    return { succeeded: true, entity };
+    return { succeeded: true, data: entity };
   }
 
   async deleteAsync(id) {

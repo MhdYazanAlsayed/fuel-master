@@ -2,6 +2,7 @@
 {
     public interface IInformationTable
     {
-        public DateTime CreatedAt { get; set; }
+        DateTime CreatedAt { get; }
+        DateTime? UpdatedAt { get; }
     }
 }

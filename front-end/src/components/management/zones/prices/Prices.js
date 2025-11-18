@@ -10,11 +10,11 @@ import { Permissions } from 'app/core/enums/Permissions';
 
 const _languageService = DependenciesInjector.services.languageService;
 const _zonePriceService = DependenciesInjector.services.zonePriceService;
-const _roleManager = DependenciesInjector.services.roleManager;
+// const _roleManager = DependenciesInjector.services.roleManager;
 
 const Prices = () => {
-  if (!_roleManager.check(Permissions.ShowPrices))
-    return <Navigate to="/errors/404" />;
+  // if (!_roleManager.check(Permissions.ShowPrices))
+  //   return <Navigate to="/errors/404" />;
 
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,8 +25,13 @@ const Prices = () => {
   const columns = [
     {
       header: _languageService.resources.fuelType,
-      Cell: data => <>{_languageService.resources.fuelTypes[data?.fuelType]}</>
+      Cell: data => (
+        <>
+          {data.fuelType.englishName} — {data.fuelType.arabicName}
+        </>
+      )
     },
+
     {
       header: _languageService.resources.price,
       Cell: data => (
@@ -38,19 +43,15 @@ const Prices = () => {
     {
       header: '',
       headerProps: { className: 'text-start' },
-      Cell: data =>
-        _roleManager.check(Permissions.ShowPrices) ? (
-          <CardDropdown>
-            <div className="py-2">
-              <Dropdown.Item
-                as={Link}
-                to={`/zones/prices/${data.id}/histories`}
-              >
-                {_languageService.resources.histories}
-              </Dropdown.Item>
-            </div>
-          </CardDropdown>
-        ) : null
+      Cell: data => (
+        <CardDropdown>
+          <div className="py-2">
+            <Dropdown.Item as={Link} to={`/zones/prices/${data.id}/histories`}>
+              {_languageService.resources.histories}
+            </Dropdown.Item>
+          </div>
+        </CardDropdown>
+      )
     }
   ];
 

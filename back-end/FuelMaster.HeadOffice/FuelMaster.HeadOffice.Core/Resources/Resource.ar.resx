@@ -168,4 +168,19 @@
   <data name="CannotFindTank" xml:space="preserve">
     <value>لم يتم العثور على هذا الخزان ! .</value>
   </data>
+  <data name="ArabicNameRequired" xml:space="preserve">
+    <value>الاسم العربي مطلوب</value>
+  </data>
+  <data name="EnglishNameRequired" xml:space="preserve">
+    <value>الاسم الانكليزي مطلوب.</value>
+  </data>
+  <data name="ArabicNameMaxLength" xml:space="preserve">
+    <value>الاسم العربي يجب ان يكون 100 حرف على الأكثر.</value>
+  </data>
+  <data name="EnglishNameMaxLength" xml:space="preserve">
+    <value>الاسم الانكليزي يجب ان يكون 100 حرف على الاكثر.</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>يجب عليك تسجيل الدخول اولاً!</value>
+  </data>
 </root>

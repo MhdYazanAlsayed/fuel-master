@@ -168,4 +168,19 @@
   <data name="CannotFindTank" xml:space="preserve">
     <value>Cannot find this tank ! .</value>
   </data>
+  <data name="ArabicNameRequired" xml:space="preserve">
+    <value>Arabic Name is required.</value>
+  </data>
+  <data name="EnglishNameRequired" xml:space="preserve">
+    <value>English Name is required.</value>
+  </data>
+  <data name="ArabicNameMaxLength" xml:space="preserve">
+    <value>Arabic name must be at most 100 characters.</value>
+  </data>
+  <data name="EnglishNameMaxLength" xml:space="preserve">
+    <value>Arabic name must be at most 100 characters.</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>You have to login at first !</value>
+  </data>
 </root>

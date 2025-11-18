@@ -43,6 +43,8 @@
   "editCity": "تعديل معلومات المدينة",
   "createZone": "انشاء منطقة",
   "editZone": "تعديل المنطقة",
+  "createFuelType": "إضافة نوع وقود",
+  "editFuelType": "تعديل نوع الوقود",
   "delete": "حذف",
   "deleteMsg": "هل انت متاكد من عملية الحذف ؟",
   "cancle": "الغاء",
@@ -65,6 +67,7 @@
     "1": "بنزين 95",
     "2": "ديزل"
   },
+  "fuelTypeTitle": "انواع الوقود",
   "liter": "لتر",
   "cubicMeter": "متر مكعب",
   "centimeter": "سم",
@@ -259,5 +262,7 @@
   },
   "noSaleDataAvailable": "لا توجد بيانات مبيعات متاحة",
   "noDataAvailable": "لا توجد بيانات متاحة",
-  "noMonthlyDataAvailable": "لا توجد بيانات مبيعات شهرية متاحة"
+  "noMonthlyDataAvailable": "لا توجد بيانات مبيعات شهرية متاحة",
+  "fuelTypesText": "نوع الوقود",
+  "priceAfterChange": ""
 }

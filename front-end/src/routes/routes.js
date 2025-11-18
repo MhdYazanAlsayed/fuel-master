@@ -75,142 +75,60 @@ export const managementRoutes = {
   ],
   children: [
     {
-      permissions: ['CitiesCreate', 'CitiesShow'],
+      permissions: ['CitiesShow'],
       name: 'Cities',
       keyword: 'cities',
       active: true,
       icon: 'tree-city',
-      children: [
-        {
-          permissions: 'CitiesShow',
-          name: 'Show all',
-          keyword: 'showAll',
-          to: '/cities',
-          active: true
-        },
-        {
-          permissions: 'CitiesCreate',
-          name: 'Create new',
-          keyword: 'createNew',
-          to: '/cities/create',
-          active: true
-        }
-      ]
+      to: '/cities'
     },
     {
-      permissions: ['ZonesShow', 'ZonesCreate'],
+      permissions: ['FuelTypesShow'],
+      name: 'Fuel Types',
+      keyword: 'fuelTypesText',
+      active: true,
+      icon: 'gas-pump',
+      to: '/fuel-types'
+    },
+    {
+      permissions: ['ZonesShow'],
       name: 'Zones',
       keyword: 'zones',
       active: true,
       icon: 'map-location',
-      children: [
-        {
-          permissions: 'ZonesShow',
-          name: 'Show all',
-          keyword: 'showAll',
-          to: '/zones',
-          active: true
-        },
-        {
-          permissions: 'ZonesCreate',
-          name: 'Create new',
-          keyword: 'createNew',
-          to: '/zones/create',
-          active: true
-        }
-      ]
+      to: '/zones'
     },
     {
-      permissions: ['StationsShow', 'StationsCreate'],
+      permissions: ['StationsShow'],
       name: 'Stations',
       active: true,
       keyword: 'stations',
       icon: 'gas-pump',
-      children: [
-        {
-          permissions: 'StationsShow',
-          name: 'Show all',
-          to: '/stations',
-          keyword: 'showAll',
-          active: true
-        },
-        {
-          permissions: 'StationsCreate',
-          name: 'Create new',
-          to: '/stations/create',
-          keyword: 'createNew',
-          active: true
-        }
-      ]
+      to: '/stations'
     },
     {
-      permissions: ['TanksShow', 'TanksCreate'],
+      permissions: ['TanksShow'],
       name: 'Tanks',
       active: true,
       keyword: 'tanks',
       icon: 'box-archive',
-      children: [
-        {
-          permissions: 'TanksShow',
-          name: 'Show all',
-          to: '/tanks',
-          keyword: 'showAll',
-          active: true
-        },
-        {
-          permissions: 'TanksCreate',
-          name: 'Create new',
-          to: '/tanks/create',
-          keyword: 'createNew',
-          active: true
-        }
-      ]
+      to: '/tanks'
     },
     {
-      permissions: ['PumpsShow', 'PumpsCreate'],
+      permissions: ['PumpsShow'],
       name: 'Pumps & Dispensers',
       active: true,
       keyword: 'pumps',
       icon: 'arrow-up-from-water-pump',
-      children: [
-        {
-          permissions: 'PumpsShow',
-          name: 'Show all',
-          to: '/pumps',
-          keyword: 'showAll',
-          active: true
-        },
-        {
-          permissions: 'PumpsCreate',
-          name: 'Create new',
-          to: '/pumps/create',
-          keyword: 'createNew',
-          active: true
-        }
-      ]
+      to: '/pumps'
     },
     {
-      permissions: ['NozzlesShow', 'NozzlesCreate'],
+      permissions: ['NozzlesShow'],
       name: 'Nozzles',
       active: true,
       icon: 'gas-pump',
       keyword: 'nozzles',
-      children: [
-        {
-          permissions: 'NozzlesShow',
-          name: 'Show all',
-          to: '/nozzles',
-          keyword: 'showAll',
-          active: true
-        },
-        {
-          permissions: 'NozzlesCreate',
-          name: 'Create new',
-          to: '/nozzles/create',
-          keyword: 'createNew',
-          active: true
-        }
-      ]
+      to: '/nozzles'
     },
     {
       permissions: 'DeliveriesCreate',
@@ -1605,10 +1523,10 @@ export const documentationRoutes = {
 export default [
   reportRoutes,
   managementRoutes,
-  usersAndGroupsRoutes
-  // dashboardRoutes,
-  // appRoutes,
-  // pagesRoutes,
-  // modulesRoutes,
-  // documentationRoutes
+  usersAndGroupsRoutes,
+  dashboardRoutes,
+  appRoutes,
+  pagesRoutes,
+  modulesRoutes,
+  documentationRoutes
 ];

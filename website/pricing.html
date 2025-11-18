@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing — FuelFleet Pro</title>
+    <meta
+      name="description"
+      content="Simple, transparent pricing for FuelFleet Pro. Choose the plan that fits your network of stations."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="index.html" aria-label="FuelFleet Pro home">
+          <span class="brand-badge">FP</span>
+          <span>FuelFleet Pro</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a class="nav-link" href="features.html">Features</a>
+          <a class="nav-link" href="pricing.html" aria-current="page"
+            >Pricing</a
+          >
+          <a class="nav-link" href="dashboard-demo.html">Dashboard Demo</a>
+          <a class="nav-cta" href="pricing.html">Start Free Trial</a>
+        </nav>
+        <button class="mobile-toggle" aria-label="Open Menu" data-mobile-toggle>
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 6h18M3 12h18M3 18h18"
+              stroke="#0f172a"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="mobile-menu" data-mobile-menu>
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="dashboard-demo.html">Dashboard Demo</a>
+        <a href="pricing.html">Start Free Trial</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" style="padding-bottom: 20px">
+        <div class="container">
+          <h1>Simple, Transparent Pricing</h1>
+          <p class="sub">
+            Pick the plan that matches your station network. Upgrade anytime.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="pricing-grid">
+            <div class="card">
+              <h3>Starter</h3>
+              <p class="muted">For growing operators just getting started</p>
+              <div class="price">
+                $199<span class="muted" style="font-size: 14px">/mo</span>
+              </div>
+              <p class="muted">
+                Includes 1 station • $79/mo per additional station
+              </p>
+              <div class="hr"></div>
+              <ul class="feature-list">
+                <li>Up to 5 users</li>
+                <li>Live inventory tracking</li>
+                <li>Basic reports (last 90 days)</li>
+                <li>Email support</li>
+              </ul>
+              <a class="btn btn-primary" href="#">Get Started</a>
+            </div>
+
+            <div
+              class="card"
+              style="border-width: 2px; border-color: var(--brand-primary)"
+            >
+              <h3>Professional</h3>
+              <p class="muted">For multi-station owners scaling operations</p>
+              <div class="price">
+                $499<span class="muted" style="font-size: 14px">/mo</span>
+              </div>
+              <p class="muted">
+                Includes 3 stations • $69/mo per additional station
+              </p>
+              <div class="hr"></div>
+              <ul class="feature-list">
+                <li>Up to 25 users</li>
+                <li>Dynamic zone pricing</li>
+                <li>Advanced reports (2 years)</li>
+                <li>Daily automatic backups</li>
+                <li>Priority support</li>
+              </ul>
+              <a class="btn btn-accent" href="#">Get Started</a>
+            </div>
+
+            <div class="card">
+              <h3>Enterprise</h3>
+              <p class="muted">
+                For large networks needing control & compliance
+              </p>
+              <div class="price">Custom</div>
+              <p class="muted">
+                Includes 10+ stations • Volume pricing available
+              </p>
+              <div class="hr"></div>
+              <ul class="feature-list">
+                <li>Unlimited users</li>
+                <li>Full audit trail & SSO</li>
+                <li>Historical data (7+ years)</li>
+                <li>Hourly automatic backups</li>
+                <li>Dedicated success manager</li>
+              </ul>
+              <a class="btn btn-primary" href="#">Contact Sales</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <div class="brand">
+          <span class="brand-badge">FP</span>
+          <span>FuelFleet Pro</span>
+        </div>
+        <div class="muted">
+          © <span id="y"></span> FuelFleet Pro. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    <script src="assets/script.js"></script>
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

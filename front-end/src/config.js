@@ -9,7 +9,7 @@ export const settings = {
   showBurgerMenu: false, // controls showing vertical nav on mobile
   currency: '$',
   isNavbarVerticalCollapsed: false, // toggle vertical navbar collapse
-  navbarStyle: 'transparent'
+  navbarStyle: 'card'
 };
 
 export default { version, navbarBreakPoint, topNavbarBreakpoint, settings };

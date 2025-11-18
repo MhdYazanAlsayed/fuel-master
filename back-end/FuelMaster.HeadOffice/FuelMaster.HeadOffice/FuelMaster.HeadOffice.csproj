@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
@@ -27,6 +28,11 @@
     <ProjectReference Include="..\FuelMaster.HeadOffice.ApplicationService\FuelMaster.HeadOffice.ApplicationService.csproj" />
     <ProjectReference Include="..\FuelMaster.HeadOffice.Core\FuelMaster.HeadOffice.Core.csproj" />
     <ProjectReference Include="..\FuelMaster.HeadOffice.Infrastructure\FuelMaster.HeadOffice.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\Cities\Validators\" />
+    <Folder Include="Controllers\FuelTypes\Validators\" />
   </ItemGroup>
 
 </Project>

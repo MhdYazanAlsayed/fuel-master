@@ -3,6 +3,7 @@ using FuelMaster.HeadOffice.ApplicationService.Services;
 using FuelMaster.HeadOffice.Core.Contracts.Markers;
 using FuelMaster.HeadOffice.Core.Contracts.Services;
 using FuelMaster.HeadOffice.Core.Mapper;
+using MediatR;
 using Scrutor;
 using System.Reflection;
 
@@ -13,6 +14,9 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
         public static IServiceCollection AddFuelMasterServices (this IServiceCollection services)
         {
             var assemblies = LoadAssemblies();
+
+            // Register MediatR
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
 
             services.Scan(scan => scan
             .FromAssemblies(assemblies)
@@ -31,7 +35,7 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
             services.Scan(scan => scan
              .FromAssemblies(assemblies)
              .AddClasses(classes => classes.AssignableTo<ITransientDependency>())
-             .UsingRegistrationStrategy(RegistrationStrategy.Skip)
+             .UsingRegistrationStrategy(RegistrationStrategy.Append)
              .AsImplementedInterfaces()
              .WithTransientLifetime());
 

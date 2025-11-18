@@ -9,6 +9,7 @@ namespace FuelMaster.HeadOffice.Core.Contracts.Services
         Task RemoveAsync(string key);
         Task RemoveByPatternAsync(string pattern);
         Task<bool> ExistsAsync(string key);
+        Task<T?> GetAndStoreAsync<T>(string key, Func<Task<T>> createValue, TimeSpan? duration = null) where T : class;
         
         // Helper methods for specific cache operations
         Task SetFuelMasterGroupsAsync<T>(T value) where T : class;

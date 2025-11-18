@@ -22,6 +22,7 @@ import FuelMasterGroupService from 'app/services/user-management/FuelMasterGroup
 import ReportService from 'app/services/reports/ReportService';
 import PermissionService from 'app/services/user-management/PermissionService';
 import RoleManager from 'app/services/RoleManager';
+import FuelTypeService from 'app/services/management/FuelTypeService';
 
 export class ServiceProvider {
   hostEnvironment = new HostEnviroment();
@@ -52,6 +53,7 @@ export class ServiceProvider {
   roleManager = new RoleManager(this.identityService);
   // Managements
   cityService = new CityService(this.httpService, this.languageService);
+  fuelTypeService = new FuelTypeService(this.httpService, this.languageService);
   zoneService = new ZoneService(this.httpService, this.languageService);
   zonePriceService = new ZonePriceService(
     this.httpService,

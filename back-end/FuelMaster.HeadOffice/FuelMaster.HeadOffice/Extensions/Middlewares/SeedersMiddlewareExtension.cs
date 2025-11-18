@@ -7,6 +7,7 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
         public static async Task<WebApplication> UseSeedersAsync (this WebApplication app)
         {
             var scope = app.Services.CreateScope();
+
             var seederDiscoveryService = scope.ServiceProvider.GetService<SeederDiscoveryService>();
             
             if (seederDiscoveryService is null)

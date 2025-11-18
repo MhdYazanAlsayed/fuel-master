@@ -7,6 +7,7 @@ import NavbarVertical from 'components/theme/navbar/vertical/NavbarVertical';
 import Footer from 'components/theme/footer/Footer';
 import ProductProvider from 'components/theme/app/e-commerce/ProductProvider';
 import CourseProvider from 'components/theme/app/e-learning/CourseProvider';
+import PathBreadcrumb from 'components/shared/PathBreadcrumb';
 
 const MainLayout = () => {
   const { hash, pathname } = useLocation();
@@ -42,6 +43,7 @@ const MainLayout = () => {
         <CourseProvider>
           <div className={classNames('content', { 'pb-0': isKanban })}>
             <NavbarTop />
+            <PathBreadcrumb />
             {/*------ Main Routes ------*/}
             <Outlet />
             {!isKanban && <Footer />}

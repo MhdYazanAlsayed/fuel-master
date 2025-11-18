@@ -1,4 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Configurations;
+using FuelMaster.HeadOffice.Core.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ namespace FuelMaster.HeadOffice.Infrastructure.Contexts
         public FuelMasterDbContext CreateDbContext(IHttpContextAccessor _httpContextAccessor)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext!.Items.TryGetValue("TenantId", out var tenantId))
+            if (httpContext!.Items.TryGetValue(ConfigKeys.TanentId, out var tenantId))
             {
                 if (tenantId is null || string.IsNullOrEmpty(tenantId.ToString()))
                     throw new NullReferenceException("tenantId was not found .");

@@ -1,3 +1,4 @@
+using FuelMaster.HeadOffice.Core.Configurations;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,11 +9,16 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SeederDiscoveryService> _logger;
+        private readonly TenantConfiguration _configuration;
 
-        public SeederDiscoveryService(IServiceProvider serviceProvider, ILogger<SeederDiscoveryService> logger)
+        public SeederDiscoveryService(
+            IServiceProvider serviceProvider, 
+            TenantConfiguration configuration,
+            ILogger<SeederDiscoveryService> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task ExecuteAllSeedersAsync()
@@ -30,23 +36,28 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
 
                 _logger.LogInformation("Found {Count} seeders to execute", seeders.Count());
 
-                foreach (var seeder in seeders)
+
+                foreach (var tenant in _configuration.Tenants)
                 {
-                    try
+                    foreach (var seeder in seeders)
                     {
-                        var seederType = seeder.GetType().Name;
-                        _logger.LogInformation("Executing seeder: {SeederType}", seederType);
-                        
-                        await seeder.SeedAsync();
-                        
-                        _logger.LogInformation("Successfully executed seeder: {SeederType}", seederType);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error executing seeder: {SeederType}", seeder.GetType().Name);
-                        throw; // Re-throw to stop execution if a seeder fails
+                        try
+                        {
+                            var seederType = seeder.GetType().Name;
+                            _logger.LogInformation("Executing seeder: {SeederType}", seederType);
+                            
+                            await seeder.SeedAsync(tenant.TenantId);
+                            
+                            _logger.LogInformation("Successfully executed seeder: {SeederType}", seederType);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error executing seeder: {SeederType}", seeder.GetType().Name);
+                            throw; // Re-throw to stop execution if a seeder fails
+                        }
                     }
                 }
+                
 
                 _logger.LogInformation("All seeders executed successfully");
             }

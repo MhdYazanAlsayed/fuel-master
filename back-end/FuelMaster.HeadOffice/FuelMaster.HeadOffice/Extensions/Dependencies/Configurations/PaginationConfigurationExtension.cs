@@ -1,4 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Configurations;
+using FuelMaster.HeadOffice.Core.Configurations.Statics;
 using Microsoft.Extensions.Configuration;
 
 namespace FuelMaster.HeadOffice.Extensions.Dependencies.Configurations
@@ -15,6 +16,8 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies.Configurations
                 throw new Exception();
 
             services.AddSingleton(paginationSettings);
+
+            Pagination.Length = paginationSettings.Length;
 
             return services;
         }

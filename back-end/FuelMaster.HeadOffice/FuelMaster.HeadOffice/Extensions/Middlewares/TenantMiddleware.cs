@@ -1,4 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Configurations;
+using FuelMaster.HeadOffice.Core.Constants;
 using System.Security.Claims;
 
 namespace FuelMaster.HeadOffice.Extensions.Middlewares
@@ -7,11 +8,6 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly TenantConfiguration _configuration;
-        private const string TenantIdHeader = "X-Tenant-ID";
-        private const string TenantIdQueryParam = "tenantId";
-        private const string TenantIdClaimType = "TenantId";
-        private const string TenantIdItemKey = "TenantId";
-
         public TenantMiddleware(RequestDelegate next, TenantConfiguration configuration)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
@@ -45,7 +41,7 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
                 SetTenantContext(context, tenantId);
                 await _next(context);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await ReturnErrorResponse(context, StatusCodes.Status500InternalServerError, "An error occurred while processing tenant information");
             }
@@ -54,12 +50,12 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
         private string? ExtractTenantId(HttpContext context)
         {
             // Try to get tenant ID from header first
-            var tenantId = context.Request.Headers[TenantIdHeader].FirstOrDefault();
+            var tenantId = context.Request.Headers[ConfigKeys.TanentId].FirstOrDefault();
             
             // If not found in header, try query parameter
             if (string.IsNullOrWhiteSpace(tenantId))
             {
-                tenantId = context.Request.Query[TenantIdQueryParam].FirstOrDefault();
+                tenantId = context.Request.Query[ConfigKeys.TanentId].FirstOrDefault();
             }
 
             return tenantId;
@@ -74,7 +70,7 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
         private bool ValidateTenantClaim(HttpContext context, string tenantId)
         {
             var tenantClaim = context.User.Claims.FirstOrDefault(x => 
-                string.Equals(x.Type, TenantIdClaimType, StringComparison.OrdinalIgnoreCase));
+                string.Equals(x.Type, ConfigKeys.TanentId, StringComparison.OrdinalIgnoreCase));
 
             // If no claim exists, allow the request (for unauthenticated endpoints)
             if (tenantClaim is null)
@@ -86,7 +82,7 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
 
         private void SetTenantContext(HttpContext context, string tenantId)
         {
-            context.Items[TenantIdItemKey] = tenantId;
+            context.Items[ConfigKeys.TanentId] = tenantId;
         }
 
         private async Task ReturnErrorResponse(HttpContext context, int statusCode, string message)

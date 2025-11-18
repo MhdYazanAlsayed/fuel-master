@@ -1,4 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Configurations;
+using FuelMaster.HeadOffice.Core.Constants;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
 using FuelMaster.HeadOffice.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Http;
@@ -10,13 +11,16 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
     {
         private readonly TenantConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDomainEventPublisher? _domainEventPublisher;
         private FuelMasterDbContext? _context;
 
         public ContextFactoryService(TenantConfiguration configuration , 
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IDomainEventPublisher? domainEventPublisher = null)
         {
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _domainEventPublisher = domainEventPublisher;
         }
 
         public FuelMasterDbContext CurrentContext => 
@@ -26,7 +30,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
         public FuelMasterDbContext CreateDbContext()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext!.Items.TryGetValue("TenantId", out var tenantId))
+            if (httpContext!.Items.TryGetValue(ConfigKeys.TanentId, out var tenantId))
             {
                 if (tenantId is null || string.IsNullOrEmpty(tenantId.ToString()))
                     throw new NullReferenceException("tenantId was not found .");
@@ -37,7 +41,9 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
 
                 var optionsBuilder = new DbContextOptionsBuilder<FuelMasterDbContext>();
                 optionsBuilder.UseSqlServer(connectionString);
-                var context = new FuelMasterDbContext(optionsBuilder.Options);
+                optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+                var context = new FuelMasterDbContext(optionsBuilder.Options, _domainEventPublisher);
                 _context = context;
                 return context;
             }
@@ -54,8 +60,9 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
 
             var optionsBuilder = new DbContextOptionsBuilder<FuelMasterDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
-            return new FuelMasterDbContext(optionsBuilder.Options);
+            return new FuelMasterDbContext(optionsBuilder.Options, _domainEventPublisher);
         }
 
         public FuelMasterDbContext CreateDbContextForTanent (string tenantId)
@@ -66,7 +73,9 @@ namespace FuelMaster.HeadOffice.ApplicationService.Database
 
             var optionsBuilder = new DbContextOptionsBuilder<FuelMasterDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
-            return new FuelMasterDbContext(optionsBuilder.Options);
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+            return new FuelMasterDbContext(optionsBuilder.Options, _domainEventPublisher);
         }
 
         private string? GetConnectionStringForTenant(string tenantId)
