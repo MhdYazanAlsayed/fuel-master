@@ -1,9 +1,10 @@
+using System;
+
 namespace FuelMaster.HeadOffice.Core.Contracts.Repositories.Station.Dtos;
 
-public class StationDto
+public class EditStationDto
 {
     public string EnglishName { get; set; } = null!;
     public string ArabicName { get; set; } = null!;
-    public int CityId { get; set; }
     public int ZoneId { get; set; }
 }

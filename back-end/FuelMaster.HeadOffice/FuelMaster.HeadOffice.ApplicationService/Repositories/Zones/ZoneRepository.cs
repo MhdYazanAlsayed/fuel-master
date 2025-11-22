@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using FuelMaster.HeadOffice.Core.Contracts.Caching;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
+using FuelMaster.HeadOffice.Core.Contracts.Entities;
 using FuelMaster.HeadOffice.Core.Contracts.Entities.Zones;
 using FuelMaster.HeadOffice.Core.Contracts.Repositories.FuelTypes;
 using FuelMaster.HeadOffice.Core.Contracts.Repositories.Zones.Dtos;
@@ -25,64 +27,59 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
        private readonly IPricingService _pricingService;
        private readonly ILogger<ZoneRepository> _logger;
        private readonly ICacheService _cacheService;
-
+       private readonly IEntityCache<Zone> _zoneCache;
+       private readonly IStationRepository _stationRepository;
        private readonly IFuelTypeRepository _fuelTypeRepository;
+       
        public ZoneRepository(
            IContextFactory<FuelMasterDbContext> contextFactory, 
            IPricingService pricingService,
            IFuelTypeRepository fuelTypeRepository,
+           IStationRepository stationRepository,
            IMapper mapper,
            ILogger<ZoneRepository> logger,
-           ICacheService cacheService)
+           ICacheService cacheService,
+           IEntityCache<Zone> zoneCache)
        {
            _context = contextFactory.CurrentContext;
            _mapper = mapper;
            _pricingService = pricingService;
            _logger = logger;
-           _cacheService = cacheService;
+           _cacheService = cacheService; // Keep for details caching
+           _zoneCache = zoneCache;
            _fuelTypeRepository = fuelTypeRepository;
+           _stationRepository = stationRepository;
        }
 
-       public async Task<IEnumerable<Zone>> GetAllAsync()
+       public async Task<IEnumerable<ZoneResult>> GetAllAsync()
        {
            _logger.LogInformation("Getting all zones");
 
-           var cachedZones = await _cacheService.GetAsync<IEnumerable<Zone>>("Zones_All");
-           if (cachedZones != null)
-           {
-               _logger.LogInformation("Retrieved {Count} zones from cache", cachedZones.Count());
-               return cachedZones;
-           }
-
-           _logger.LogInformation("Zones not in cache, fetching from database");
-
-           var zones = await _context.Zones
-           .Include(x => x.Prices)
-           .ThenInclude(x => x.FuelType)
-           .ToListAsync();
+           var zones = await GetCachedZonesAsync();
            
-           await _cacheService.SetAsync("Zones_All", zones);
-           
-           _logger.LogInformation("Cached {Count} zones", zones.Count);
-
-           return zones;
+           return _mapper.Map<IEnumerable<ZoneResult>>(zones);
        }
 
-       public async Task<PaginationDto<Zone>> GetPaginationAsync(int currentPage)
+       public async Task<PaginationDto<ZoneResult>> GetPaginationAsync(int currentPage)
        {
            _logger.LogInformation("Getting paginated zones for page {Page}", currentPage);
 
            // Use GetAllAsync to leverage existing caching, then paginate in-memory
            var allZones = await GetAllAsync();
-
+           var stations = await _stationRepository.GetAllAsync();
+           allZones = allZones.Select(x => 
+           {
+                x.CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id);
+                return x;
+           });
            var pagination = allZones.ToPagination(currentPage);
 
            _logger.LogInformation("Retrieved paginated zones for page {Page}", currentPage);
 
-           return pagination;
+           return new PaginationDto<ZoneResult>(_mapper.Map<List<ZoneResult>>(pagination.Data), pagination.Pages);
        }
 
-       public async Task<ResultDto<Zone>> CreateAsync(ZoneDto dto)
+       public async Task<ResultDto<ZoneResult>> CreateAsync(ZoneDto dto)
        {
            _logger.LogInformation("Creating new zone with Arabic name: {ArabicName}, English name: {EnglishName}", 
                dto.ArabicName, dto.EnglishName);
@@ -93,22 +90,22 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
                await _context.Zones.AddAsync(zone);
                await _context.SaveChangesAsync();
 
-               // Update caches incrementally
-               await UpdateZonesCacheAfterCreateAsync(zone);
+               // Update caches incrementally - cache entity, not DTO
+               await _zoneCache.UpdateCacheAfterCreateAsync(zone);
 
                _logger.LogInformation("Successfully created zone with ID: {Id}", zone.Id);
 
-               return Results.Success(zone);
+               return Results.Success(_mapper.Map<ZoneResult>(zone));
            }
            catch (Exception ex)
            {
                _logger.LogError(ex, "Error creating zone with Arabic name: {ArabicName}, English name: {EnglishName}", 
                    dto.ArabicName, dto.EnglishName);
-               return Results.Failure<Zone>(Resource.EntityNotFound);
+               return Results.Failure<ZoneResult>(Resource.EntityNotFound);
            }
        }
 
-       public async Task<ResultDto<Zone>> EditAsync(int id, ZoneDto dto)
+       public async Task<ResultDto<ZoneResult>> EditAsync(int id, ZoneDto dto)
        {
            _logger.LogInformation("Editing zone with ID: {Id}, Arabic name: {ArabicName}, English name: {EnglishName}", 
                id, dto.ArabicName, dto.EnglishName);
@@ -119,7 +116,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
                if (zone == null)
                {
                    _logger.LogWarning("Zone with ID {Id} not found", id);
-                   return Results.Failure<Zone>(Resource.EntityNotFound);
+                   return Results.Failure<ZoneResult>(Resource.EntityNotFound);
                }
 
                zone.Update(dto.ArabicName, dto.EnglishName);
@@ -127,22 +124,22 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
                _context.Zones.Update(zone);
                await _context.SaveChangesAsync();
 
-               // Update caches incrementally
-               await UpdateZonesCacheAfterEditAsync(zone);
+               // Update caches incrementally - cache entity, not DTO
+               await _zoneCache.UpdateCacheAfterEditAsync(zone);
                await _cacheService.SetAsync($"Zone_Details_{zone.Id}", zone);
 
                _logger.LogInformation("Successfully updated zone with ID: {Id}", id);
 
-               return Results.Success(zone);
-           }
+               return Results.Success(_mapper.Map<ZoneResult>(zone));
+           }    
            catch (Exception ex)
            {
                _logger.LogError(ex, "Error editing zone with ID: {Id}", id);
-               return Results.Failure<Zone>(Resource.EntityNotFound);
+               return Results.Failure<ZoneResult>(Resource.EntityNotFound);
            }
        }
 
-       public async Task<Zone?> DetailsAsync(int id)
+       public async Task<ZoneResult?> DetailsAsync(int id)
        {
            _logger.LogInformation("Getting details for zone with ID: {Id}", id);
 
@@ -152,7 +149,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
            if (cachedZone != null)
            {
                _logger.LogInformation("Retrieved zone details from cache for ID: {Id}", id);
-               return cachedZone;
+               return _mapper.Map<ZoneResult>(cachedZone);
            }
 
            _logger.LogInformation("Zone details not in cache, fetching from database for ID: {Id}", id);
@@ -163,7 +160,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
            {
                await _cacheService.SetAsync(cacheKey, zone);
                _logger.LogInformation("Cached zone details for ID: {Id}", id);
-               return zone;
+               return _mapper.Map<ZoneResult>(zone);
            }
 
            return null;
@@ -184,7 +181,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
            await _context.SaveChangesAsync();
 
            // Update caches incrementally
-           await UpdateZonesCacheAfterDeleteAsync(id);
+           await _zoneCache.UpdateCacheAfterDeleteAsync(id);
            await _cacheService.RemoveAsync($"Zone_Details_{id}");
            
            _logger.LogInformation("Successfully deleted zone with ID: {Id}", id);
@@ -222,7 +219,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
                     if (zonePrice.Zone is null)
                         throw new ZoneNotFoundException($"Zone with id {zoneId} not found");
 
-                    await UpdateZonesCacheAfterEditAsync(zonePrice.Zone);
+                    await _zoneCache.UpdateCacheAfterEditAsync(zonePrice.Zone);
                 }
 
                 return Results.Success();
@@ -246,7 +243,8 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
        {
             var fuelTypes = await _fuelTypeRepository.GetAllAsync();
 
-            var zone = (await GetAllAsync()).SingleOrDefault(x => x.Id == zoneId);
+            var zones = await GetCachedZonesAsync();
+            var zone = zones.SingleOrDefault(x => x.Id == zoneId);
 
             if (zone is null)
                 throw new ZoneNotFoundException($"Zone with id {zoneId} not found");
@@ -262,7 +260,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
                 _context.Update(zone);
                 await _context.SaveChangesAsync();
 
-                await UpdateZonesCacheAfterEditAsync(zone);
+                await _zoneCache.UpdateCacheAfterEditAsync(zone);
 
                 await _context.Entry(zone)
                     .Collection(z => z.Prices)
@@ -273,38 +271,28 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
 
             return zone.Prices;
        }
-
-       private async Task UpdateZonesCacheAfterCreateAsync(Zone newZone)
+   
+       public async Task<IEnumerable<Zone>> GetCachedZonesAsync () 
        {
-           var cached = await _cacheService.GetAsync<IEnumerable<Zone>>("Zones_All");
-           if (cached is null) return;
+            var cachedZones = await _zoneCache.GetAllEntitiesAsync();
+            if (cachedZones != null)
+            {
+               _logger.LogInformation("Retrieved {Count} zones from cache", cachedZones.Count());
+               return cachedZones;
+            }
 
-           var updatedList = cached.ToList();
-           updatedList.Add(newZone);
-           await _cacheService.SetAsync("Zones_All", updatedList);
-       }
+            _logger.LogInformation("Zones not in cache, fetching from database");
 
-       private async Task UpdateZonesCacheAfterEditAsync(Zone updatedZone)
-       {
-           var cached = await _cacheService.GetAsync<IEnumerable<Zone>>("Zones_All");
-           if (cached is null) return;
-
-           var updatedList = cached.ToList();
-           var index = updatedList.FindIndex(z => z.Id == updatedZone.Id);
-           if (index >= 0)
-           {
-               updatedList[index] = updatedZone;
-               await _cacheService.SetAsync("Zones_All", updatedList);
-           }
-       }
-
-       private async Task UpdateZonesCacheAfterDeleteAsync(int id)
-       {
-           var cached = await _cacheService.GetAsync<IEnumerable<Zone>>("Zones_All");
-           if (cached is null) return;
-
-           var updatedList = cached.Where(z => z.Id != id).ToList();
-           await _cacheService.SetAsync("Zones_All", updatedList);
+            var zones = await _context.Zones
+               .Include(x => x.Prices)
+               .ThenInclude(x => x.FuelType)
+               .AsNoTracking()
+               .ToListAsync();
+           
+            // Cache entities
+            await _zoneCache.SetAllAsync(zones);
+            
+            return zones;
        }
    }
 }

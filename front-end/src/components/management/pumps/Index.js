@@ -3,8 +3,10 @@ import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Dropdown } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import DeleteModal from './DeleteModal';
+import CreateModal from './CreateModal';
+import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
 
@@ -22,6 +24,9 @@ const Index = () => {
   const [stations, setStations] = useState([]);
   const [pumps, setPumps] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [currentPump, setCurrentPump] = useState(null);
   const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(null);
   const [pagination, setPagination] = useState({
@@ -51,7 +56,7 @@ const Index = () => {
     },
     {
       header: _languageService.resources.nozzlesCount,
-      Cell: data => <>{data.nozzles?.length}</>
+      Cell: data => <>{data.nozzleCount}</>
     },
     {
       header: '',
@@ -60,12 +65,16 @@ const Index = () => {
         <CardDropdown>
           <div className="py-2">
             {_roleManager.check(Permissions.PumpsEdit) && (
-              <Dropdown.Item as={Link} to={`/pumps/${data.id}/edit`}>
+              <Dropdown.Item
+                as="div"
+                className="cursor-pointer"
+                onClick={() => handleOpenEditModal(data)}
+              >
                 {_languageService.resources.edit}
               </Dropdown.Item>
             )}
 
-            {_roleManager.check(Permissions.PumpsDelete) && (
+            {data.canDelete && _roleManager.check(Permissions.PumpsDelete) && (
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer text-danger"
@@ -138,6 +147,22 @@ const Index = () => {
     });
   };
 
+  const handleRefreshPage = () => {
+    handleGetPaginationAsync();
+  };
+
+  const handleOpenEditModal = pump => {
+    setCurrentPump(pump);
+    setEditModal(true);
+  };
+
+  const handleUpdatePump = updatedPump => {
+    setPumps(prev =>
+      prev.map(pump => (pump.id === updatedPump.id ? updatedPump : pump))
+    );
+    setCurrentPump(updatedPump);
+  };
+
   const handleOnStationChange = async e => {
     const stationId = e.target.value;
     if (stationId === '-1') {
@@ -180,6 +205,14 @@ const Index = () => {
                   </option>
                 ))}
               </select>
+              {_roleManager.check(Permissions.PumpsCreate) && (
+                <button
+                  className="btn btn-primary ms-2"
+                  onClick={() => setCreateModal(true)}
+                >
+                  <i className="fa-solid fa-plus"></i>
+                </button>
+              )}
             </Fragment>
           )
         }
@@ -190,6 +223,19 @@ const Index = () => {
         setOpen={setDeleteModal}
         id={current}
         refresh={handleRefershDelete}
+      />
+
+      <CreateModal
+        open={createModal}
+        setOpen={setCreateModal}
+        handleRefreshPage={handleRefreshPage}
+      />
+
+      <EditModal
+        open={editModal}
+        setOpen={setEditModal}
+        pump={currentPump}
+        handleUpdatePump={handleUpdatePump}
       />
     </Loader>
   );

@@ -257,7 +257,12 @@ export default class HttpService {
   logByStatus(response, url, verb) {
     if (response.status === 200)
       this._logger.logInformation(`${verb} ${response.status} [${url}]`);
-    else this._logger.logError(`${verb} ${response.status} [${url}]`);
+    else {
+      this._logger.logError(`${verb} ${response.status} [${url}]`);
+      response.text().then(text => {
+        this._logger.logError(text);
+      });
+    }
   }
 
   runLoading(loading) {

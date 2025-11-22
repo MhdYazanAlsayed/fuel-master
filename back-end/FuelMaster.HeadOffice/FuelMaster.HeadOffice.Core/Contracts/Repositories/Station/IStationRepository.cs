@@ -9,8 +9,8 @@ namespace FuelMaster.HeadOffice.Core.Contracts.Entities
     {
         Task<IEnumerable<StationResult>> GetAllAsync();
         Task<PaginationDto<StationResult>> GetPaginationAsync(int currentPage);
-        Task<ResultDto<StationResult>> CreateAsync(StationDto dto);
-        Task<ResultDto<StationResult>> EditAsync(int id, StationDto dto);
+        Task<ResultDto<StationResult>> CreateAsync(CreateStationDto dto);
+        Task<ResultDto<StationResult>> EditAsync(int id, EditStationDto dto);
         Task<StationResult?> DetailsAsync(int id);
         Task<ResultDto> DeleteAsync(int id);
     }

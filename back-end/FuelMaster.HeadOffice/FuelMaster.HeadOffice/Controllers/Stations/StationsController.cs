@@ -54,7 +54,7 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] StationDto dto)
+        public async Task<ActionResult> Create([FromBody] CreateStationDto dto)
         {
             var validator = new StationDtoValidator();
             var validationResult = validator.Validate(dto);
@@ -81,9 +81,9 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Edit(int id, StationDto dto)
+        public async Task<ActionResult> Edit(int id, [FromBody]EditStationDto dto)
         {
-            var validator = new StationDtoValidator();
+            var validator = new EditStationDtoValidator();
             var validationResult = validator.Validate(dto);
             if (!validationResult.IsValid)
             {

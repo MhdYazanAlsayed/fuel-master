@@ -7,4 +7,5 @@ public class StationResult
     public string EnglishName { get; set; } = null!;
     public StationCityResult? City { get; set; }
     public StationZoneResult? Zone { get; set; }
+    public bool CanDelete { get; set; }
 }

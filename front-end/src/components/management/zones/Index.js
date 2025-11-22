@@ -68,7 +68,7 @@ const Index = () => {
               </Dropdown.Item>
             )}
 
-            {_roleManager.check(Permissions.ZonesDelete) && (
+            {data.canDelete && _roleManager.check(Permissions.ZonesDelete) && (
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer text-danger"

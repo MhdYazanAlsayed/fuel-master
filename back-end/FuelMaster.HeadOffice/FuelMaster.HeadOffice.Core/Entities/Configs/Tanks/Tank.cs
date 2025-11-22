@@ -80,8 +80,8 @@ namespace FuelMaster.HeadOffice.Core.Entities
             if (currentLevel <= 0) return Results.Failure("Current level must be greater than 0");
             if (currentVolume <= 0) return Results.Failure("Current volume must be greater than 0");
             if (number <= 0) return Results.Failure("Number must be greater than 0");
-            if (stationId <= 0) return Results.Failure("Station id must be greater than 0");
-            if (fuelTypeId <= 0) return Results.Failure("Fuel type id must be greater than 0");
+            if (stationId < 0) return Results.Failure("Station id must be greater than 0");
+            if (fuelTypeId < 0) return Results.Failure("Fuel type id must be greater than 0");
             if (maxLimit >= capacity) return Results.Failure("Max limit must be less than capacity");
             if (minLimit >= maxLimit) return Results.Failure("Min limit must be less than max limit");
             if (currentVolume > maxLimit) return Results.Failure("Current volume must be less than max limit");

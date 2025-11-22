@@ -88,7 +88,7 @@ public class FuelTypeRepository : IFuelTypeRepository
         {
             _logger.LogError(ex, "Error creating fuel type with Arabic name: {ArabicName}, English name: {EnglishName}", 
                 dto.ArabicName, dto.EnglishName);
-            return Results.Failure<FuelType>(Resource.EntityNotFound);
+            return Results.Failure<FuelType>(ex.Message);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FuelMaster.HeadOffice.Core.Contracts.Authentication;
+using FuelMaster.HeadOffice.Core.Contracts.Caching;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
 using FuelMaster.HeadOffice.Core.Contracts.Entities;
 using FuelMaster.HeadOffice.Core.Contracts.Repositories.Station.Dtos;
@@ -7,6 +8,8 @@ using FuelMaster.HeadOffice.Core.Contracts.Repositories.Station.Results;
 using FuelMaster.HeadOffice.Core.Contracts.Services;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Configs.Stations.Exceptions;
+using FuelMaster.HeadOffice.Core.Entities.Zones.Exceptions;
+using FuelMaster.HeadOffice.Core.Extenssions;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Core.Resources;
@@ -23,56 +26,101 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
         private readonly ISigninService _authorization;
         private readonly ILogger<StationRepository> _logger;
         private readonly ICacheService _cacheService;
+        private readonly IEntityCache<Station> _stationCache;
+        private readonly ITankRepository _tankRepository;
 
         public StationRepository(IContextFactory<FuelMasterDbContext> contextFactory, 
             IMapper mapper, 
             ISigninService authorization,
             ILogger<StationRepository> logger,
-            ICacheService cacheService)
+            ICacheService cacheService,
+            ITankRepository tankRepository,
+            IEntityCache<Station> stationCache)
         {
             _context = contextFactory.CurrentContext;
             _mapper = mapper;
             _authorization = authorization;
             _logger = logger;
             _cacheService = cacheService;
+            _stationCache = stationCache;
+            _tankRepository = tankRepository;
         }
 
         public async Task<IEnumerable<StationResult>> GetAllAsync()
         {
             _logger.LogInformation("Getting all stations");
 
-            var stationId = (await _authorization.TryToGetStationIdAsync()) ?? null;
-            
-            var result = await _context.Stations
-            .Where(x => !stationId.HasValue || x.Id == stationId)
-            .ToListAsync();
-            
-            var mappedResult = _mapper.Map<List<StationResult>>(result);
-            
-            _logger.LogInformation("Cached {Count} stations", mappedResult.Count);
+            var cachedStationEntities = await _stationCache.GetAllEntitiesAsync();
+            if (cachedStationEntities != null)
+            {
+                _logger.LogInformation("Retrieved {Count} stations from cache", cachedStationEntities.Count());
+                
+                // Map entities to DTOs
+                var mappedStations = _mapper.Map<List<StationResult>>(cachedStationEntities);
+                
+                // Apply authorization filtering after getting from cache
+                var stationId = (await _authorization.TryToGetStationIdAsync()) ?? null;
+                if (stationId.HasValue)
+                {
+                    var filtered = mappedStations.Where(x => x.Id == stationId).ToList();
+                    _logger.LogInformation("Filtered to {Count} stations based on authorization", filtered.Count);
+                    return filtered;
+                }
+                
+                return mappedStations;
+            }
 
-            return mappedResult;
+            _logger.LogInformation("Stations not in cache, fetching from database");
+
+            var stations = await _context.Stations
+                .Include(x => x.City)
+                .Include(x => x.Zone)
+                .AsNoTracking()
+                .ToListAsync();
+            
+            // Cache entities
+            await _stationCache.SetAllAsync(stations);
+            
+            _logger.LogInformation("Cached {Count} stations", stations.Count);
+
+            // Map entities to DTOs
+            var mappedStationsFromDb = _mapper.Map<List<StationResult>>(stations);
+
+            // Apply authorization filtering
+            var authStationId = (await _authorization.TryToGetStationIdAsync()) ?? null;
+            if (authStationId.HasValue)
+            {
+                var filtered = mappedStationsFromDb.Where(x => x.Id == authStationId).ToList();
+                _logger.LogInformation("Filtered to {Count} stations based on authorization", filtered.Count);
+                return filtered;
+            }
+
+            return mappedStationsFromDb;
         }
 
         public async Task<PaginationDto<StationResult>> GetPaginationAsync(int currentPage)
         {
             _logger.LogInformation("Getting paginated stations for page {Page}", currentPage);
 
-            int? stationId = (await _authorization.TryToGetStationIdAsync()) ?? null;
-            
-            var data = await _context.Stations
-                .Include(x => x.City)
-                .Include(x => x.Zone)
-                .Where(x => !stationId.HasValue || x.Id == stationId)
-                .ToPaginationAsync(currentPage);
+            // Use GetAllAsync to leverage existing caching, then paginate in-memory
+            var allStations = await GetAllAsync();
+            var tanks = await _tankRepository.GetCachedTanksAsync();
 
-            var mappedData = _mapper.Map<List<StationResult>>(data.Data);
-            var result = new PaginationDto<StationResult>(mappedData, data.Pages);
-            
-            return result;
+            allStations = allStations.Select(x => 
+            {
+                x.CanDelete = tanks == null || !tanks.Any(t => t.StationId == x.Id);
+
+                return x;
+            });
+
+            var pagination = allStations.ToPagination(currentPage);
+
+            _logger.LogInformation("Retrieved paginated stations for page {Page}", currentPage);
+
+            return pagination;
         }
 
-        public async Task<ResultDto<StationResult>> CreateAsync(StationDto dto)
+        public async Task<ResultDto<StationResult>> CreateAsync(CreateStationDto dto)
         {
             _logger.LogInformation("Creating new station with English name: {EnglishName}, Arabic name: {ArabicName}, city: {CityId}, zone: {ZoneId}", 
                 dto.EnglishName, dto.ArabicName, dto.CityId, dto.ZoneId);
@@ -83,9 +131,21 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 await _context.Stations.AddAsync(station);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Successfully created station with ID: {Id}", station.Id);
+                // Load related entities for mapping and caching
+                await _context.Entry(station)
+                    .Reference(x => x.City)
+                    .LoadAsync();
+                await _context.Entry(station)
+                    .Reference(x => x.Zone)
+                    .LoadAsync();
 
                 var stationResponse = _mapper.Map<StationResult>(station);
+
+                // Update caches incrementally - cache entity, not DTO
+                await _stationCache.UpdateCacheAfterCreateAsync(station);
+
+                _logger.LogInformation("Successfully created station with ID: {Id}", station.Id);
+
                 return Results.Success(stationResponse);
             }
             catch (Exception ex)
@@ -96,12 +156,17 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
             }
         }
 
-        public async Task<ResultDto<StationResult>> EditAsync(int id, StationDto dto)
+        public async Task<ResultDto<StationResult>> EditAsync(int id, EditStationDto dto)
         {
-            _logger.LogInformation("Editing station with ID: {Id}, English name: {EnglishName}, Arabic name: {ArabicName}, city: {CityId}, zone: {ZoneId}", 
-                id, dto.EnglishName, dto.ArabicName, dto.CityId, dto.ZoneId);
+            _logger.LogInformation("Editing station with ID: {Id}, English name: {EnglishName}, Arabic name: {ArabicName}, zone: {ZoneId}", 
+                id, dto.EnglishName, dto.ArabicName, dto.ZoneId);
+            var station =
+                await _context.Stations
+                .Include(x => x.Tanks)
+                .ThenInclude(x => x.Nozzles)
+                .SingleOrDefaultAsync(x => x.Id == id);
 
-            var station = await _context.Stations.FindAsync(id);
+
             if (station == null)
             {
                 _logger.LogWarning("Station with ID {Id} not found", id);
@@ -113,18 +178,18 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
             try
             {
                 _logger.LogInformation("Updating nozzle prices for station {Id} with zone {ZoneId}", id, dto.ZoneId);
-                
 
-                var zone = await _context.Zones
-                .Where(x => x.Id == dto.ZoneId)
-                .Select(x => new 
+                var isZoneChanged = dto.ZoneId != station.ZoneId;
+                if (isZoneChanged)
                 {
-                    Prices = x.Prices.Count()
-                })
-                .SingleOrDefaultAsync();
-                if (zone is null || zone.Prices == 0)
-                {
-                    throw new InvalidAssignStationException(Resource.AssignStationToInitialZoneException);
+                    var zonePrices = await GetZonePricesAsync(dto.ZoneId);
+                    if (zonePrices is null || zonePrices.Count == 0)
+                    {
+                        return Results.Failure<StationResult>(Resource.AssignStationToInitialZoneException);
+                    }
+
+                    // Update a nozzles prices in the station
+                    UpdateNozzlesPrices(station, zonePrices);
                 }
 
                 station.Update(dto.EnglishName, dto.ArabicName, dto.ZoneId);
@@ -133,9 +198,17 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                _logger.LogInformation("Successfully updated station with ID: {Id}", id);
+                // Load related entities for mapping and caching
+                await UpdateStationIncludesAsync(station);
 
                 var stationResponse = _mapper.Map<StationResult>(station);
+
+                // Update caches incrementally - cache entity, not DTO
+                await _stationCache.UpdateCacheAfterEditAsync(station);
+                await _cacheService.SetAsync($"Station_Details_{station.Id}", stationResponse);
+
+                _logger.LogInformation("Successfully updated station with ID: {Id}", id);
+
                 return Results.Success(stationResponse);
             }
             catch(InvalidAssignStationException ex)
@@ -199,6 +272,10 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 _context.Stations.Remove(station);
                 await _context.SaveChangesAsync();
 
+                // Update caches incrementally
+                await _stationCache.UpdateCacheAfterDeleteAsync(id);
+                await _cacheService.RemoveAsync($"Station_Details_{id}");
+
                 _logger.LogInformation("Successfully deleted station with ID: {Id}", id);
 
                 return Results.Success();
@@ -208,6 +285,51 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 _logger.LogError(ex, "Error deleting station with ID: {Id}", id);
                 return Results.Failure(Resource.EntityNotFound);
             }
+        }
+
+    
+        private async Task<IReadOnlyList<ZonePrice>?> GetZonePricesAsync(int zoneId)
+        {
+            var zone = await _context.Zones
+            .Where(x => x.Id == zoneId)
+            .Include(x => x.Prices)
+            .SingleOrDefaultAsync();
+
+            if (zone is null || zone.Prices.Count == 0)
+            {
+                return null;
+            }
+
+            return zone.Prices;
+        }
+    
+        private void UpdateNozzlesPrices(Station station, IReadOnlyList<ZonePrice> zonePrices)
+        {
+            foreach (var tank in station.Tanks)
+            {
+                foreach (var nozzle in tank.Nozzles)
+                {
+                    var zonePrice = zonePrices.SingleOrDefault(x => x.FuelTypeId == nozzle.FuelTypeId);
+                    if (zonePrice is null)
+                    {
+                        throw new ZonePriceNotFoundException($"Zone price for fuel type {nozzle.FuelTypeId} not found");
+                    }
+
+                    nozzle.ChangePrice(zonePrice.Price);
+                    _context.Update(nozzle);
+                }
+            }
+        }
+    
+        private async Task UpdateStationIncludesAsync (Station station)
+        {
+            await _context.Entry(station)
+                        .Reference(x => x.Zone)
+                        .LoadAsync();
+
+            await _context.Entry(station)
+                    .Reference(x => x.City)
+                    .LoadAsync();
         }
     }
 }

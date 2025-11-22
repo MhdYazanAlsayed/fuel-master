@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FuelMaster.HeadOffice.Core.Configurations;
+using FuelMaster.HeadOffice.Core.Contracts.Caching;
 using FuelMaster.HeadOffice.Core.Contracts.Database;
 using FuelMaster.HeadOffice.Core.Contracts.Entities;
 using FuelMaster.HeadOffice.Core.Contracts.Repositories.City.Dtos;
@@ -19,23 +20,25 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
     {
         private readonly FuelMasterDbContext _context;
         private readonly ILogger<CityRepository> _logger;
-        private readonly ICacheService _cacheService;
         private readonly PaginationConfiguration _paginationConfig;
-
+        private readonly IEntityCache<City> _cityCache;
+        private readonly IStationRepository _stationRepository;
         private readonly IMapper _mapper;
 
         public CityRepository(
             IContextFactory<FuelMasterDbContext> contextFactory, 
             ILogger<CityRepository> logger, 
-            ICacheService cacheService, 
+            IEntityCache<City> cityCache,
+            IStationRepository stationRepository,
             IMapper mapper,
             PaginationConfiguration paginationConfig)
         {
             _context = contextFactory.CurrentContext;
             _logger = logger;
-            _cacheService = cacheService;
             _paginationConfig = paginationConfig;
             _mapper = mapper;
+            _cityCache = cityCache;
+            _stationRepository = stationRepository;
         }
 
         public async Task<PaginationDto<CityResult>> GetPaginationAsync(int currentPage)
@@ -44,7 +47,8 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
 
             // Use GetAllAsync to leverage existing caching and mapping, then paginate in-memory
             var allCities = await GetAllAsync();
-
+            var stations = await _stationRepository.GetAllAsync();
+            
             var totalCount = allCities.Count();
             var pages = (int)Math.Ceiling(Convert.ToDecimal(totalCount) / Convert.ToDecimal(_paginationConfig.Length));
 
@@ -52,6 +56,12 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
                 .Skip(_paginationConfig.Length * (currentPage - 1))
                 .Take(_paginationConfig.Length)
                 .ToList();
+
+            pageData = pageData.Select(c => 
+            {
+                c.CanDelete = stations == null || !stations.Any(s => s.City?.Id == c.Id);
+                return c;
+            }).ToList();
 
             var mappedPagination = new PaginationDto<CityResult>(pageData, pages);
 
@@ -64,23 +74,31 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
         {
             _logger.LogInformation("Getting all cities");
 
-            var cachedCities = await _cacheService.GetAsync<IEnumerable<CityResult>>("Cities_All");
-            if (cachedCities != null)
+            var cachedCityEntities = await _cityCache.GetAllEntitiesAsync();
+            if (cachedCityEntities != null)
             {
-                _logger.LogInformation("Retrieved {Count} cities from cache", cachedCities.Count());
-                return cachedCities;
+                _logger.LogInformation("Retrieved {Count} cities from cache", cachedCityEntities.Count());
+                
+                // Map entities to DTOs
+                var mappedCities = cachedCityEntities.Select(_mapper.Map<CityResult>).ToList();
+                return mappedCities;
             }
 
             _logger.LogInformation("Cities not in cache, fetching from database");
 
-            var cities = await _context.Cities.ToListAsync();
-            var mappedCities = cities.Select(_mapper.Map<CityResult>).ToList();
+            var cities = await _context.Cities
+                .AsNoTracking()
+                .ToListAsync();
             
-            await _cacheService.SetAsync("Cities_All", mappedCities);
+            // Cache entities
+            await _cityCache.SetAllAsync(cities);
             
-            _logger.LogInformation("Cached {Count} cities", mappedCities.Count);
+            _logger.LogInformation("Cached {Count} cities", cities.Count);
 
-            return mappedCities;
+            // Map entities to DTOs
+            var mappedCitiesFromDb = cities.Select(_mapper.Map<CityResult>).ToList();
+
+            return mappedCitiesFromDb;
         }
 
         public async Task<ResultDto<CityResult>> CreateAsync(CityDto dto)
@@ -96,8 +114,8 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
 
                 var cityResult = _mapper.Map<CityResult>(city);
 
-                // Update caches incrementally
-                await UpdateCitiesCacheAfterCreateAsync(cityResult);
+                // Update caches incrementally - cache entity, not DTO
+                await _cityCache.UpdateCacheAfterCreateAsync(city);
 
                 _logger.LogInformation("Successfully created city with ID: {Id}", city.Id);
 
@@ -133,9 +151,8 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
 
                 var updated = _mapper.Map<CityResult>(city);
 
-                // Update caches incrementally
-                await UpdateCitiesCacheAfterEditAsync(updated);
-                await _cacheService.SetAsync($"City_Details_{city.Id}", updated);
+                // Update caches incrementally - cache entity, not DTO
+                await _cityCache.UpdateCacheAfterEditAsync(city);
 
                 _logger.LogInformation("Successfully updated city with ID: {Id}", id);
 
@@ -164,8 +181,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
             await _context.SaveChangesAsync();
 
             // Update caches incrementally
-            await UpdateCitiesCacheAfterDeleteAsync(id);
-            await _cacheService.RemoveAsync($"City_Details_{id}");
+            await _cityCache.UpdateCacheAfterDeleteAsync(id);
             
             _logger.LogInformation("Successfully deleted city with ID: {Id}", id);
 
@@ -176,61 +192,14 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities
         {
             _logger.LogInformation("Getting details for city with ID: {Id}", id);
 
-            var cacheKey = $"City_Details_{id}";
-            var cachedCity = await _cacheService.GetAsync<CityResult>(cacheKey);
-            
+            var cachedCity = await _cityCache.GetAllEntitiesAsync();
             if (cachedCity != null)
             {
                 _logger.LogInformation("Retrieved city details from cache for ID: {Id}", id);
-                return cachedCity;
-            }
-
-            _logger.LogInformation("City details not in cache, fetching from database for ID: {Id}", id);
-
-            var city = await _context.Cities.SingleOrDefaultAsync(x => x.Id == id);
-            
-            if (city != null)
-            {
-                var cityResult = _mapper.Map<CityResult>(city);
-                await _cacheService.SetAsync(cacheKey, cityResult);
-                _logger.LogInformation("Cached city details for ID: {Id}", id);
-                return cityResult;
+                return _mapper.Map<CityResult?>(cachedCity.FirstOrDefault(c => c.Id == id));
             }
 
             return null;
-        }
-
-        private async Task UpdateCitiesCacheAfterCreateAsync(CityResult newCity)
-        {
-            var cached = await _cacheService.GetAsync<IEnumerable<CityResult>>("Cities_All");
-            if (cached is null) return;
-
-            var updatedList = cached.ToList();
-            updatedList.Add(newCity);
-            await _cacheService.SetAsync("Cities_All", updatedList);
-        }
-
-        private async Task UpdateCitiesCacheAfterEditAsync(CityResult updatedCity)
-        {
-            var cached = await _cacheService.GetAsync<IEnumerable<CityResult>>("Cities_All");
-            if (cached is null) return;
-
-            var updatedList = cached.ToList();
-            var index = updatedList.FindIndex(c => c.Id == updatedCity.Id);
-            if (index >= 0)
-            {
-                updatedList[index] = updatedCity;
-                await _cacheService.SetAsync("Cities_All", updatedList);
-            }
-        }
-
-        private async Task UpdateCitiesCacheAfterDeleteAsync(int id)
-        {
-            var cached = await _cacheService.GetAsync<IEnumerable<CityResult>>("Cities_All");
-            if (cached is null) return;
-
-            var updatedList = cached.Where(c => c.Id != id).ToList();
-            await _cacheService.SetAsync("Cities_All", updatedList);
         }
     }
 }

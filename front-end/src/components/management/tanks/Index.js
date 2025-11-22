@@ -3,9 +3,11 @@ import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Dropdown } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import DeleteModal from './DeleteModal';
 import DetailsModal from './DetailsModal';
+import CreateModal from './CreateModal';
+import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
 
@@ -24,6 +26,9 @@ const Index = () => {
   const [tanks, setTanks] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
   const [detailsModal, setDetailsModal] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [currentTank, setCurrentTank] = useState(null);
   const [current, setCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -39,7 +44,13 @@ const Index = () => {
     },
     {
       header: _languageService.resources.fuelType,
-      Cell: data => <>{_languageService.resources.fuelTypes[data?.fuelType]}</>
+      Cell: data => (
+        <>
+          {_languageService.isRTL
+            ? data?.fuelType?.arabicName
+            : data?.fuelType?.englishName}
+        </>
+      )
     },
     {
       header: _languageService.resources.station,
@@ -74,12 +85,16 @@ const Index = () => {
             </Dropdown.Item>
 
             {_roleManager.check(Permissions.TanksEdit) && (
-              <Dropdown.Item as={Link} to={`/tanks/${data.id}/edit`}>
+              <Dropdown.Item
+                as="div"
+                className="cursor-pointer"
+                onClick={() => handleOpenEditModal(data)}
+              >
                 {_languageService.resources.edit}
               </Dropdown.Item>
             )}
 
-            {_roleManager.check(Permissions.TanksDelete) && (
+            {data.canDelete && _roleManager.check(Permissions.TanksDelete) && (
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer text-danger"
@@ -158,6 +173,22 @@ const Index = () => {
     });
   };
 
+  const handleRefreshPage = () => {
+    handleGetPaginationAsync();
+  };
+
+  const handleOpenEditModal = tank => {
+    setCurrentTank(tank);
+    setEditModal(true);
+  };
+
+  const handleUpdateTank = updatedTank => {
+    setTanks(prev =>
+      prev.map(tank => (tank.id === updatedTank.id ? updatedTank : tank))
+    );
+    setCurrentTank(updatedTank);
+  };
+
   const handleOnStationChange = async e => {
     const stationId = e.target.value;
     if (stationId === '-1') {
@@ -200,6 +231,14 @@ const Index = () => {
                   </option>
                 ))}
               </select>
+              {_roleManager.check(Permissions.TanksCreate) && (
+                <button
+                  className="btn btn-primary ms-2"
+                  onClick={() => setCreateModal(true)}
+                >
+                  <i className="fa-solid fa-plus"></i>
+                </button>
+              )}
             </Fragment>
           )
         }
@@ -216,6 +255,19 @@ const Index = () => {
         open={detailsModal}
         setOpen={setDetailsModal}
         tank={current}
+      />
+
+      <CreateModal
+        open={createModal}
+        setOpen={setCreateModal}
+        handleRefreshPage={handleRefreshPage}
+      />
+
+      <EditModal
+        open={editModal}
+        setOpen={setEditModal}
+        tank={currentTank}
+        handleUpdateTank={handleUpdateTank}
       />
     </Loader>
   );

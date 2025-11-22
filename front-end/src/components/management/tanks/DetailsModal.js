@@ -25,7 +25,11 @@ const DetailsModal = ({ open, setOpen, tank }) => {
               <Form.Label>{_languageService.resources.fuelType}</Form.Label>
               <Form.Control
                 type="text"
-                value={_languageService.resources.fuelTypes[tank.fuelType]}
+                value={
+                  _languageService.isRTL
+                    ? tank.fuelType?.arabicName
+                    : tank.fuelType?.englishName
+                }
                 readOnly
               />
             </Form.Group>

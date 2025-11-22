@@ -4,7 +4,7 @@ using FuelMaster.HeadOffice.Core.Resources;
 
 namespace FuelMaster.HeadOffice.Controllers.Stations.Validators
 {
-    public class StationDtoValidator : AbstractValidator<StationDto>
+    public class StationDtoValidator : AbstractValidator<CreateStationDto>
     {
         public StationDtoValidator()
         {
