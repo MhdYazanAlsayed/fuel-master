@@ -1,7 +1,7 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Markers;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Markers;
 using System.Security.Claims;
 
-namespace FuelMaster.HeadOffice.Core.Contracts.Authentication
+namespace FuelMaster.HeadOffice.Core.Interfaces.Authentication
 {
     public interface ITokenService : IScopedDependency
     {

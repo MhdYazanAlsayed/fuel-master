@@ -1,5 +1,5 @@
 using FluentValidation;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Zones.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Zones.Dtos;
 using FuelMaster.HeadOffice.Core.Resources;
 
 namespace FuelMaster.HeadOffice.Controllers.Zones.Validators

@@ -1,8 +1,8 @@
 using FuelMaster.HeadOffice.Core.Configurations;
-using FuelMaster.HeadOffice.Core.Contracts.Database;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.FuelTypes;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.FuelTypes.Dtos;
-using FuelMaster.HeadOffice.Core.Contracts.Services;
+using FuelMaster.HeadOffice.Core.Interfaces.Database;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Services;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Extenssions;
 using FuelMaster.HeadOffice.Core.Helpers;

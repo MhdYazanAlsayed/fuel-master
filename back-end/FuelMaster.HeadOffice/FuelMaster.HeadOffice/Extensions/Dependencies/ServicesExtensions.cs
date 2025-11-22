@@ -1,7 +1,7 @@
 ﻿using FuelMaster.HeadOffice.ApplicationService.Database;
 using FuelMaster.HeadOffice.ApplicationService.Services;
-using FuelMaster.HeadOffice.Core.Contracts.Markers;
-using FuelMaster.HeadOffice.Core.Contracts.Services;
+using FuelMaster.HeadOffice.Core.Interfaces.Markers;
+using FuelMaster.HeadOffice.Core.Interfaces.Services;
 using FuelMaster.HeadOffice.Core.Mapper;
 using MediatR;
 using Scrutor;

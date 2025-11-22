@@ -1,5 +1,5 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Entities;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Delivery.Dtos;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Delivery.Dtos;
 using FuelMaster.HeadOffice.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 namespace FuelMaster.HeadOffice.Controllers;

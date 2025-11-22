@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelMaster.HeadOffice.Infra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelMaster.HeadOffice.ApplicationService", "FuelMaster.HeadOffice.ApplicationService\FuelMaster.HeadOffice.ApplicationService.csproj", "{8DE80399-7715-4183-8065-EC6474C38135}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelMaster.HeadOffice.Application", "FuelMaster.HeadOffice.Application\FuelMaster.HeadOffice.Application.csproj", "{B0900CE7-6401-45A6-BFA4-92D11FB97383}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8DE80399-7715-4183-8065-EC6474C38135}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DE80399-7715-4183-8065-EC6474C38135}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DE80399-7715-4183-8065-EC6474C38135}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0900CE7-6401-45A6-BFA4-92D11FB97383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0900CE7-6401-45A6-BFA4-92D11FB97383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0900CE7-6401-45A6-BFA4-92D11FB97383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0900CE7-6401-45A6-BFA4-92D11FB97383}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

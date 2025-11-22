@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Database;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Database;
 
 namespace FuelMaster.HeadOffice.Extensions.Middlewares
 {

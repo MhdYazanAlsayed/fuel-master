@@ -1,7 +1,7 @@
 ﻿using FuelMaster.HeadOffice.Controllers.Pumps.Validators;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Pumps;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Pumps.Dtos;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Pumps.Results;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Pumps;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Pumps.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Pumps.Results;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.AspNetCore.Mvc;

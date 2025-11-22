@@ -1,5 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Configurations;
-using FuelMaster.HeadOffice.Core.Contracts.Authentication;
+using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -1,6 +1,6 @@
 using System;
 
-namespace FuelMaster.HeadOffice.Core.Contracts.Services.PricingService;
+namespace FuelMaster.HeadOffice.Core.Interfaces.Services.PricingService;
 
 public class ChangePricesDto
 {

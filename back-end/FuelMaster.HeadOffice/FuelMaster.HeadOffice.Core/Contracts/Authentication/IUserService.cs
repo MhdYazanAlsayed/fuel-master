@@ -1,11 +1,11 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Markers;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Markers;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Core.Models.Requests.Authentication;
 using FuelMaster.HeadOffice.Core.Models.Responses.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace FuelMaster.HeadOffice.Core.Contracts.Authentication
+namespace FuelMaster.HeadOffice.Core.Interfaces.Authentication
 {
     public interface IUserService : IScopedDependency
     {

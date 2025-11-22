@@ -1,7 +1,7 @@
 ﻿using FuelMaster.HeadOffice.Controllers.Nozzles.Validators;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles.Dtos;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles.Results;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles.Results;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.AspNetCore.Mvc;

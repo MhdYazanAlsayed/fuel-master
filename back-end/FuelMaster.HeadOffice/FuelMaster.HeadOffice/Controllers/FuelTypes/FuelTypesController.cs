@@ -1,5 +1,5 @@
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.FuelTypes;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.FuelTypes.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes.Dtos;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Dtos;

@@ -1,5 +1,5 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Authentication;
-using FuelMaster.HeadOffice.Core.Contracts.Entities;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
+using FuelMaster.HeadOffice.Core.Interfaces.Entities;
 using FuelMaster.HeadOffice.Core.Models.Requests.Accounts;
 using FuelMaster.HeadOffice.Core.Models.Requests.Authentication;
 using Microsoft.AspNetCore.Authorization;

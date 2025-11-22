@@ -1,5 +1,5 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Entities.Zones;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Zones.Dtos;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities.Zones;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Zones.Dtos;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Dtos;

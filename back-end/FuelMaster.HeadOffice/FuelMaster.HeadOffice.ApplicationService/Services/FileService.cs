@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Services;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 

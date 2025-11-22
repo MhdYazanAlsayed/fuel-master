@@ -1,6 +1,6 @@
 using FuelMaster.HeadOffice.Core.Entities;
 
-namespace FuelMaster.HeadOffice.Core.Contracts.Database
+namespace FuelMaster.HeadOffice.Core.Interfaces.Database
 {
     public interface IDomainEventPublisher
     {

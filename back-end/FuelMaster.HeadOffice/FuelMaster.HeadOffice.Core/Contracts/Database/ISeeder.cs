@@ -1,6 +1,6 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Markers;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Markers;
 
-namespace FuelMaster.HeadOffice.Core.Contracts.Database
+namespace FuelMaster.HeadOffice.Core.Interfaces.Database
 {
     public interface ISeeder : ITransientDependency
     {

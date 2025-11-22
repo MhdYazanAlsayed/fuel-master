@@ -1,5 +1,5 @@
-using FuelMaster.HeadOffice.Core.Contracts.Database;
-using FuelMaster.HeadOffice.Core.Contracts.Markers;
+using FuelMaster.HeadOffice.Core.Interfaces.Database;
+using FuelMaster.HeadOffice.Core.Interfaces.Markers;
 using FuelMaster.HeadOffice.Core.Entities;
 using MediatR;
 

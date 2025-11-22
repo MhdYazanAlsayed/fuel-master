@@ -1,5 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Constants;
-using FuelMaster.HeadOffice.Core.Contracts.Authentication;
+using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Core.Models.Requests.Authentication;

@@ -1,5 +1,5 @@
-using FuelMaster.HeadOffice.Core.Contracts.Caching;
-using FuelMaster.HeadOffice.Core.Contracts.Services;
+using FuelMaster.HeadOffice.Core.Interfaces.Caching;
+using FuelMaster.HeadOffice.Core.Interfaces.Services;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 

@@ -1,5 +1,5 @@
 using FluentValidation;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles.Dtos;
 using FuelMaster.HeadOffice.Core.Enums;
 
 namespace FuelMaster.HeadOffice.Controllers.Nozzles.Validators

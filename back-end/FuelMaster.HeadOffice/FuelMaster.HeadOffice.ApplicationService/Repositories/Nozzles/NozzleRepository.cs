@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using FuelMaster.HeadOffice.Core.Contracts.Authentication;
-using FuelMaster.HeadOffice.Core.Contracts.Caching;
-using FuelMaster.HeadOffice.Core.Contracts.Database;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles.Dtos;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.Nozzles.Results;
+using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
+using FuelMaster.HeadOffice.Core.Interfaces.Caching;
+using FuelMaster.HeadOffice.Core.Interfaces.Database;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Nozzles.Results;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Extenssions;
 using FuelMaster.HeadOffice.Core.Helpers;

@@ -1,7 +1,7 @@
-using FuelMaster.HeadOffice.Core.Contracts.Authentication;
-using FuelMaster.HeadOffice.Core.Contracts.Database;
-using FuelMaster.HeadOffice.Core.Contracts.Services;
-using FuelMaster.HeadOffice.Core.Contracts.Services.PricingService;
+using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
+using FuelMaster.HeadOffice.Core.Interfaces.Database;
+using FuelMaster.HeadOffice.Core.Interfaces.Services;
+using FuelMaster.HeadOffice.Core.Interfaces.Services.PricingService;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Zones.Exceptions;
 using FuelMaster.HeadOffice.Infrastructure.Contexts;

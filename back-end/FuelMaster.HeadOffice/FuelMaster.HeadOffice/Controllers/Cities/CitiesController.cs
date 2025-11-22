@@ -1,6 +1,6 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Entities;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.City.Dtos;
-using FuelMaster.HeadOffice.Core.Contracts.Repositories.City.Results;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.City.Dtos;
+using FuelMaster.HeadOffice.Core.Interfaces.Repositories.City.Results;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Core.Resources;

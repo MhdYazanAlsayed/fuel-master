@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Database;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Database;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Infrastructure.Contexts.Configurations;

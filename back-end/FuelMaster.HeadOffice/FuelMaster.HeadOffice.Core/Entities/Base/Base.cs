@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using FuelMaster.HeadOffice.Core.Contracts.Database;
+using FuelMaster.HeadOffice.Core.Interfaces.Database;
 
 namespace FuelMaster.HeadOffice.Core.Entities
 {

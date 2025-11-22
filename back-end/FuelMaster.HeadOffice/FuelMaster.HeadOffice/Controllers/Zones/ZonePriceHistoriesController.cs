@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Core.Contracts.Entities.Zones;
+﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities.Zones;
 using FuelMaster.HeadOffice.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 

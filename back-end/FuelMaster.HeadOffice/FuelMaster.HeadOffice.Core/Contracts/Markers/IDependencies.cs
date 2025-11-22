@@ -1,4 +1,4 @@
-﻿namespace FuelMaster.HeadOffice.Core.Contracts.Markers
+﻿namespace FuelMaster.HeadOffice.Core.Interfaces.Markers
 {
     public interface ISingletonDependency
     {
