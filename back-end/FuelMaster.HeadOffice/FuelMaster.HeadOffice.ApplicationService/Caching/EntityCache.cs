@@ -1,5 +1,4 @@
-using FuelMaster.HeadOffice.Core.Interfaces.Caching;
-using FuelMaster.HeadOffice.Core.Interfaces.Services;
+using FuelMaster.HeadOffice.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
@@ -33,19 +32,7 @@ public class EntityCache<T> : IEntityCache<T> where T : class
 
     public async Task<IEnumerable<T>?> GetAllEntitiesAsync()
     {
-        _logger.LogDebug("Getting all {TypeName} entities from cache", typeof(T).Name);
-        
         var cachedEntities = await _cacheService.GetAsync<IEnumerable<T>>(_cacheKey);
-        
-        if (cachedEntities != null)
-        {
-            _logger.LogDebug("Retrieved {Count} {TypeName} entities from cache", cachedEntities.Count(), typeof(T).Name);
-        }
-        else
-        {
-            _logger.LogDebug("{TypeName} entities not found in cache", typeof(T).Name);
-        }
-        
         return cachedEntities;
     }
 

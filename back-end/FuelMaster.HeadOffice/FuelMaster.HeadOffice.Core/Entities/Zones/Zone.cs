@@ -1,11 +1,10 @@
-﻿using FuelMaster.HeadOffice.Core.Entities.Zones.Events;
-using FuelMaster.HeadOffice.Core.Helpers;
+﻿using FuelMaster.HeadOffice.Core.Helpers;
 
 namespace FuelMaster.HeadOffice.Core.Entities
 {
-    public class Zone : AggregateRoot<int>
+    public class Zone : Entity<int>
     {
-        public Zone(string arabicName, string englishName)
+        public Zone(string arabicName, string englishName, List<int>? fuelTypeIds = null)
         {
             if (string.IsNullOrEmpty(arabicName))
             {
@@ -18,6 +17,14 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
             ArabicName = arabicName;
             EnglishName = englishName;
+
+            if (fuelTypeIds is not null)
+            {
+                foreach (var fuelTypeId in fuelTypeIds)
+                {
+                    InitializePrice(fuelTypeId);
+                }
+            }
         }
 
         public string ArabicName { get; private set; }
@@ -58,6 +65,14 @@ namespace FuelMaster.HeadOffice.Core.Entities
                 return;
 
             _prices.Add(new ZonePrice(Id, fuelTypeId, 0));
+        }
+
+        public void InitializePrices(List<int> fuelTypeIds)
+        {
+            foreach (var fuelTypeId in fuelTypeIds)
+            {
+                InitializePrice(fuelTypeId);
+            }
         }
 
         public void Update (string arabicName, string englishName)

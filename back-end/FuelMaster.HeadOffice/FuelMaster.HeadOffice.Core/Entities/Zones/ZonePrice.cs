@@ -22,16 +22,28 @@ namespace FuelMaster.HeadOffice.Core.Entities
             Price = price;
         }
 
-        internal void ChangePrice(string userId, decimal newPrice)
+        /// <summary>
+        /// Change the price of the zone price
+        /// </summary>
+        /// <param name="userId">The user id</param>
+        /// <param name="newPrice">The new price</param>
+        /// <returns>True if the price was changed, false otherwise</returns>
+        public bool ChangePrice(string userId, decimal newPrice)
         {
             if (newPrice <= 0)
             {
                 throw new ZonePriceInvalidException("Price must be greater than 0");
             }
 
+            if (Price == newPrice)
+            {
+                return false;
+            }
+
             _histories.Add(new ZonePriceHistory(Id, userId, Price, newPrice));
             Price = newPrice;
             UpdatedAt = DateTimeCulture.Now;
+            return true;
         }
     }
 }

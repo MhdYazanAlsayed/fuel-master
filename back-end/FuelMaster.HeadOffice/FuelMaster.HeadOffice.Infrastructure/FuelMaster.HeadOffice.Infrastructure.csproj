@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FuelMaster.HeadOffice.Application\FuelMaster.HeadOffice.Application.csproj" />
     <ProjectReference Include="..\FuelMaster.HeadOffice.Core\FuelMaster.HeadOffice.Core.csproj" />
   </ItemGroup>
 

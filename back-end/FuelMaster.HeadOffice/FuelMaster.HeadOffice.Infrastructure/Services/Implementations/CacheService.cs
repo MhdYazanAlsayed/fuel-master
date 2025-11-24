@@ -1,3 +1,4 @@
+using FuelMaster.HeadOffice.Application.Services.Interfaces;
 using FuelMaster.HeadOffice.Core.Configurations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -80,7 +81,6 @@ public class CacheService : ICacheService
         foreach (var key in cacheKeys)
         {
             _cache.Remove(key);
-            _logger.LogDebug("Removed cache entry: {Key}", key);
         }
         
         return Task.CompletedTask;

@@ -79,31 +79,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
            return new PaginationDto<ZoneResult>(_mapper.Map<List<ZoneResult>>(pagination.Data), pagination.Pages);
        }
 
-       public async Task<ResultDto<ZoneResult>> CreateAsync(ZoneDto dto)
-       {
-           _logger.LogInformation("Creating new zone with Arabic name: {ArabicName}, English name: {EnglishName}", 
-               dto.ArabicName, dto.EnglishName);
-
-           try
-           {
-               var zone = new Zone(dto.ArabicName, dto.EnglishName);
-               await _context.Zones.AddAsync(zone);
-               await _context.SaveChangesAsync();
-
-               // Update caches incrementally - cache entity, not DTO
-               await _zoneCache.UpdateCacheAfterCreateAsync(zone);
-
-               _logger.LogInformation("Successfully created zone with ID: {Id}", zone.Id);
-
-               return Results.Success(_mapper.Map<ZoneResult>(zone));
-           }
-           catch (Exception ex)
-           {
-               _logger.LogError(ex, "Error creating zone with Arabic name: {ArabicName}, English name: {EnglishName}", 
-                   dto.ArabicName, dto.EnglishName);
-               return Results.Failure<ZoneResult>(Resource.EntityNotFound);
-           }
-       }
+    
 
        public async Task<ResultDto<ZoneResult>> EditAsync(int id, ZoneDto dto)
        {
@@ -165,29 +141,7 @@ namespace FuelMaster.HeadOffice.ApplicationService.Entities.Zones
 
            return null;
        }
-
-       public async Task<ResultDto> DeleteAsync(int id)
-       {
-           _logger.LogInformation("Deleting zone with ID: {Id}", id);
-
-           var zone = await _context.Zones.FindAsync(id);
-           if (zone == null)
-           {
-               _logger.LogWarning("Zone with ID {Id} not found for deletion", id);
-               return Results.Failure(Resource.EntityNotFound);
-           }
-
-           _context.Zones.Remove(zone);
-           await _context.SaveChangesAsync();
-
-           // Update caches incrementally
-           await _zoneCache.UpdateCacheAfterDeleteAsync(id);
-           await _cacheService.RemoveAsync($"Zone_Details_{id}");
-           
-           _logger.LogInformation("Successfully deleted zone with ID: {Id}", id);
-
-           return Results.Success();
-       }
+ 
 
        public async Task<PaginationDto<ZonePriceHistoryPaginationResult>> GetHistoriesAsync(int currentPage, int zonePrice)
        {

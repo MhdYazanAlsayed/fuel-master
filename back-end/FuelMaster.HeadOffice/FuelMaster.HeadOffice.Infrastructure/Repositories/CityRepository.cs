@@ -15,17 +15,15 @@ public class CityRepository : ICityRepository
         _context = contextFactory.CurrentContext;
     }
   
-    public async Task<City> CreateAsync(City entity)
+    public City Create(City entity)
     {
         _context.Cities.Add(entity);
-        await _context.SaveChangesAsync();
         return entity;
     }
 
-    public async Task<City> DeleteAsync(City entity)
+    public City Delete(City entity)
     {
         _context.Cities.Remove(entity);
-        await _context.SaveChangesAsync();
         return entity;
     }
 
@@ -46,10 +44,9 @@ public class CityRepository : ICityRepository
         return (data, count);
     }
 
-    public async Task<City> UpdateAsync(City entity)
+    public City Update(City entity)
     {
         _context.Cities.Update(entity);
-        await _context.SaveChangesAsync();
         return entity;
     }
 }
