@@ -9,6 +9,7 @@ using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Interfaces;
 using FuelMaster.HeadOffice.Core.Interfaces.Repositories;
+using FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.Extensions.Logging;
 
@@ -21,18 +22,21 @@ public class CityService : ICityService
     private readonly IEntityCache<City> _cityCache;
     private readonly ILogger<CityService> _logger;
     private readonly IMapper _mapper;
+    private readonly IStationRepository _stationRepository;
     public CityService(
     ICityRepository cityRepository, 
     IUnitOfWork unitOfWork,
     IEntityCache<City> cityCache, 
     IMapper mapper,
-    ILogger<CityService> logger)
+    ILogger<CityService> logger,
+    IStationRepository stationRepository)
     {
         _cityRepository = cityRepository;
         _unitOfWork = unitOfWork;
         _cityCache = cityCache;
         _mapper = mapper;
         _logger = logger;
+        _stationRepository = stationRepository;
     }
 
     public async Task<PaginationDto<CityResult>> GetPaginationAsync(int currentPage)
