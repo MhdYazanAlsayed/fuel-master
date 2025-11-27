@@ -85,7 +85,7 @@ public class FuelTypeService : IFuelTypeService
         return _mapper.Map<FuelTypeResult?>(fuelTypes.FirstOrDefault(x => x.Id == id));
     }
 
-    public async Task<ResultDto<FuelTypeResult>> EditAsync(int id, FuelTypeDto dto)
+    public async Task<ResultDto<FuelTypeResult>> UpdateAsync(int id, FuelTypeDto dto)
     {
         var fuelTypes = await GetCachedFuelTypesAsync();
         var fuelType = fuelTypes.FirstOrDefault(x => x.Id == id);

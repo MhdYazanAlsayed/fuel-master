@@ -11,3 +11,4 @@ back-end/FuelMaster.HeadOffice/FuelMaster.HeadOffice/appsettings.Development.jso
 /front-end/dist/
 /front-end/build.rar
 /front-end/node_modules
+*/node_modules

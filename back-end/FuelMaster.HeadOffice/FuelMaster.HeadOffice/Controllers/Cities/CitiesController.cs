@@ -1,12 +1,12 @@
-﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.City.Dtos;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.City.Results;
-using FuelMaster.HeadOffice.Core.Helpers;
-using FuelMaster.HeadOffice.Core.Models.Dtos;
+﻿ 
 using FuelMaster.HeadOffice.Core.Resources;
 using FuelMaster.HeadOffice.Controllers.Cities.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FuelMaster.HeadOffice.Helpers;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
+using FuelMaster.HeadOffice.Application.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Implementations.Cities.DTOs;
 
 
 namespace FuelMaster.HeadOffice.Controllers
@@ -14,15 +14,15 @@ namespace FuelMaster.HeadOffice.Controllers
     [Route("api/cities")]
     public class CitiesController : FuelMasterController
     {
-        private readonly ICityRepository _cityRepository;
+        private readonly ICityService _cityRepository;
 
-        public CitiesController(ICityRepository cityService)
+        public CitiesController(ICityService cityService)
         {
             _cityRepository = cityService;
         }
 
         [HttpGet("pagination")]
-        public async Task<ActionResult<PaginationDto<CityResult>>> GetPaginationAsync([FromQuery] int page)
+        public async Task<IActionResult> GetPaginationAsync([FromQuery] int page)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CityResult>>> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
@@ -50,7 +50,7 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateAsync([FromBody] CityDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody] CityDto dto)
         {
 			var validator = new CityDtoValidator();
 			var validationResult = validator.Validate(dto);
@@ -77,7 +77,7 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> EditAsync(int id, [FromBody] CityDto dto)
+        public async Task<IActionResult> EditAsync(int id, [FromBody] CityDto dto)
         {
 			var validator = new CityDtoValidator();
 			var validationResult = validator.Validate(dto);
@@ -92,7 +92,7 @@ namespace FuelMaster.HeadOffice.Controllers
 
             try
             {
-                var result = await _cityRepository.EditAsync(id, dto);
+                var result = await _cityRepository.UpdateAsync(id, dto);
                 if (!result.Succeeded) return BadRequest(result.Message);
 
                 return Ok(result.Entity);
@@ -104,7 +104,7 @@ namespace FuelMaster.HeadOffice.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CityResult>> DetailsAsync(int id)
+        public async Task<IActionResult> DetailsAsync(int id)
         {
             try
             {

@@ -1,11 +1,8 @@
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.FuelTypes.Dtos;
-using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
-using FuelMaster.HeadOffice.Core.Helpers;
-using FuelMaster.HeadOffice.Core.Models.Dtos;
 using FuelMaster.HeadOffice.Controllers.FuelTypes.Validators;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc; 
+using FuelMaster.HeadOffice.Helpers;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
+using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.DTOs;
 
 namespace FuelMaster.HeadOffice.Controllers
 {
@@ -13,17 +10,17 @@ namespace FuelMaster.HeadOffice.Controllers
     [ApiController]
     public class FuelTypesController : FuelMasterController
     {
-        private readonly IFuelTypeRepository _fuelTypeRepository;
+        private readonly IFuelTypeService _fuelTypeService;
         
-        public FuelTypesController(IFuelTypeRepository fuelTypeRepository)
+        public FuelTypesController(IFuelTypeService fuelTypeRepository)
         {
-            _fuelTypeRepository = fuelTypeRepository;
+            _fuelTypeService = fuelTypeRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var fuelTypes = await _fuelTypeRepository.GetAllAsync();
+            var fuelTypes = await _fuelTypeService.GetAllAsync();
             return Ok(fuelTypes);
         }
 
@@ -41,7 +38,7 @@ namespace FuelMaster.HeadOffice.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _fuelTypeRepository.CreateAsync(dto);
+            var result = await _fuelTypeService.CreateAsync(dto);
             if (!result.Succeeded) return BadRequest(result.Message);
 
             return Ok(result.Entity);
@@ -57,7 +54,7 @@ namespace FuelMaster.HeadOffice.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            var result = await _fuelTypeRepository.UpdateAsync(id, dto);
+            var result = await _fuelTypeService.UpdateAsync(id, dto);
             if (!result.Succeeded) return BadRequest(result.Message);
 
             return Ok(result.Entity);

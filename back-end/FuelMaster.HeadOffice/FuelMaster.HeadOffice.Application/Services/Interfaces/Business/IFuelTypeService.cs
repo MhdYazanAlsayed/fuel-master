@@ -5,7 +5,7 @@ using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 
 namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
 
-public interface IFuelTypeService : IBusinessService<FuelTypeDto, FuelTypeResult>
+public interface IFuelTypeService : IDefaultBusinessQueryService<FuelTypeResult>, IBusinessService<FuelTypeDto, FuelTypeResult>
 {
     Task<List<FuelType>> GetCachedFuelTypesAsync();
 }

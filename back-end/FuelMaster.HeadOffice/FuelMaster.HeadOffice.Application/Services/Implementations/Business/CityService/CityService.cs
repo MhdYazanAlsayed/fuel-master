@@ -91,7 +91,7 @@ public class CityService : ICityService
         }
     }
 
-    public async Task<ResultDto<CityResult>> EditAsync(int id, CityDto dto)
+    public async Task<ResultDto<CityResult>> UpdateAsync(int id, CityDto dto)
     {
         try
         {

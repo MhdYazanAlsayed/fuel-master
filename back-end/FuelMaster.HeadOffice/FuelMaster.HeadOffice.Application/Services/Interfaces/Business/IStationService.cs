@@ -6,7 +6,7 @@ using FuelMaster.HeadOffice.Core.Interfaces.Markers;
 
 namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
 
-public interface IStationService : IBusinessService<CreateStationDto, EditStationDto, StationResult>, IScopedDependency
+public interface IStationService : IDefaultBusinessQueryService<StationResult>, IBusinessService<CreateStationDto, EditStationDto, StationResult>, IScopedDependency
 {
     Task<List<Station>> GetCachedStationsAsync();
 }

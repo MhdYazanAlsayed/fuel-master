@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuelFlow - Next-Generation Fuel Management System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-fuel-pump-fill text-primary"></i>
+                <span class="brand-name">FuelFlow</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#use-cases">Use Cases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard.html">Sign In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary ms-2" href="#pricing">Start Free Trial</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 fade-in">
+                    <h1 class="hero-title">Next-Generation Fuel Management System</h1>
+                    <p class="hero-subtitle">Manage stations, prices, tanks, pumps, employees, and fuel data with full automation.</p>
+                    <div class="hero-cta">
+                        <a href="#pricing" class="btn btn-primary btn-lg me-3">Start Free Trial</a>
+                        <a href="#pricing" class="btn btn-outline-primary btn-lg">View Pricing</a>
+                    </div>
+                    <div class="hero-stats mt-5">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Active Stations</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50M+</div>
+                            <div class="stat-label">Transactions/Month</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 fade-in-delay">
+                    <div class="hero-illustration">
+                        <div class="dashboard-mockup">
+                            <div class="mockup-header">
+                                <div class="mockup-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                            <div class="mockup-content">
+                                <div class="mockup-sidebar"></div>
+                                <div class="mockup-main">
+                                    <div class="mockup-card"></div>
+                                    <div class="mockup-card"></div>
+                                    <div class="mockup-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center fade-in">
+                <h2>How It Works</h2>
+                <p class="section-subtitle">Simple, powerful, and automated fuel management in 4 steps</p>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-3 slide-up">
+                    <div class="step-card">
+                        <div class="step-number">01</div>
+                        <div class="step-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h3>Add Stations</h3>
+                        <p>Set up fuel stations across multiple cities with complete location and zone management.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 slide-up slide-up-delay-1">
+                    <div class="step-card">
+                        <div class="step-number">02</div>
+                        <div class="step-icon">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                        </div>
+                        <h3>Create Zones & Prices</h3>
+                        <p>Define pricing zones and update prices for multiple stations simultaneously.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 slide-up slide-up-delay-2">
+                    <div class="step-card">
+                        <div class="step-number">03</div>
+                        <div class="step-icon">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+                        <h3>Configure Infrastructure</h3>
+                        <p>Add tanks, nozzles, pumps, and employee permissions for complete control.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 slide-up slide-up-delay-3">
+                    <div class="step-card">
+                        <div class="step-number">04</div>
+                        <div class="step-icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <h3>Real-Time Integration</h3>
+                        <p>Connect with PTS-Controller for automated, real-time fuel data tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header text-center fade-in">
+                <h2>Seamless PTS-Controller Integration</h2>
+                <p class="section-subtitle">Real-time data flow from station to cloud</p>
+            </div>
+            <div class="integration-pipeline mt-5 fade-in">
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">
+                        <i class="bi bi-fuel-pump"></i>
+                    </div>
+                    <div class="pipeline-label">Fuel Station</div>
+                </div>
+                <div class="pipeline-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <div class="pipeline-label">PTS Controller</div>
+                </div>
+                <div class="pipeline-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">
+                        <i class="bi bi-cloud-upload"></i>
+                    </div>
+                    <div class="pipeline-label">Cloud Platform</div>
+                </div>
+                <div class="pipeline-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <div class="pipeline-label">Dashboard</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center fade-in">
+                <h2>Powerful Features for Complete Control</h2>
+                <p class="section-subtitle">Everything you need to manage your fuel operations efficiently</p>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-4 fade-in">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <h3>Real-time Station Monitoring</h3>
+                        <p>Monitor all your fuel stations in real-time with live data updates and instant alerts.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 fade-in fade-in-delay-1">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-file-earmark-bar-graph"></i>
+                        </div>
+                        <h3>Automated Reporting</h3>
+                        <p>Generate comprehensive reports automatically with customizable templates and schedules.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 fade-in fade-in-delay-2">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <h3>Centralized Pricing</h3>
+                        <p>Update fuel prices across multiple stations instantly with zone-based pricing control.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 fade-in">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3>Employee & Permissions Management</h3>
+                        <p>Manage staff access with role-based permissions and detailed activity tracking.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 fade-in fade-in-delay-1">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <h3>Alerts & Notifications</h3>
+                        <p>Receive instant notifications for critical events, anomalies, and system updates.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 fade-in fade-in-delay-2">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3>Multi-tenant Workspace</h3>
+                        <p>Manage multiple organizations and stations from a single unified platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="section-padding">
+        <div class="container">
+            <div class="section-header text-center fade-in">
+                <h2>Built for Every Fuel Business</h2>
+                <p class="section-subtitle">Trusted by industry leaders across the fuel management sector</p>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-lg-4 fade-in">
+                    <div class="use-case-card">
+                        <div class="use-case-image">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <h3>Fuel Company Owners</h3>
+                        <p>Get complete oversight of your entire fuel distribution network with centralized management and real-time analytics.</p>
+                        <ul class="use-case-benefits">
+                            <li><i class="bi bi-check-circle-fill"></i> Multi-station oversight</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Profit tracking & analytics</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Strategic decision support</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 fade-in fade-in-delay-1">
+                    <div class="use-case-card">
+                        <div class="use-case-image">
+                            <i class="bi bi-person-gear"></i>
+                        </div>
+                        <h3>Station Managers</h3>
+                        <p>Streamline daily operations with automated inventory tracking, employee management, and real-time reporting.</p>
+                        <ul class="use-case-benefits">
+                            <li><i class="bi bi-check-circle-fill"></i> Inventory automation</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Staff scheduling</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Operational efficiency</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 fade-in fade-in-delay-2">
+                    <div class="use-case-card">
+                        <div class="use-case-image">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <h3>Multi-City Distributors</h3>
+                        <p>Scale your operations across cities with zone-based pricing, regional analytics, and unified management.</p>
+                        <ul class="use-case-benefits">
+                            <li><i class="bi bi-check-circle-fill"></i> Regional price control</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Cross-city analytics</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Scalable infrastructure</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section-padding bg-light">
+        <div class="container">
+            <div class="section-header text-center fade-in">
+                <h2>Simple, Transparent Pricing</h2>
+                <p class="section-subtitle">Choose the plan that fits your business needs</p>
+            </div>
+            <div class="pricing-toggle text-center mt-4 fade-in">
+                <span class="toggle-label">Monthly</span>
+                <label class="switch">
+                    <input type="checkbox" id="pricingToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Yearly <span class="badge bg-success">Save 20%</span></span>
+            </div>
+            <div class="row g-4 mt-4 justify-content-center">
+                <div class="col-lg-4 col-md-6 slide-up">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Basic</h3>
+                            <div class="pricing-subtitle">For small operations</div>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="currency">$</span>
+                            <span class="amount monthly-price">49</span>
+                            <span class="amount yearly-price" style="display: none;">39</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle-fill"></i> Up to 3 stations</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Real-time monitoring</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Basic reporting</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Email support</li>
+                            <li><i class="bi bi-check-circle-fill"></i> 5 employee accounts</li>
+                        </ul>
+                        <a href="/dashboard.html" class="btn btn-outline-primary w-100">Start Free Trial</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 slide-up slide-up-delay-1">
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">Most Popular</div>
+                        <div class="pricing-header">
+                            <h3>Pro</h3>
+                            <div class="pricing-subtitle">For growing businesses</div>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="currency">$</span>
+                            <span class="amount monthly-price">149</span>
+                            <span class="amount yearly-price" style="display: none;">119</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle-fill"></i> Up to 15 stations</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Advanced analytics</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Automated reporting</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+                            <li><i class="bi bi-check-circle-fill"></i> 25 employee accounts</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Zone pricing</li>
+                            <li><i class="bi bi-check-circle-fill"></i> API access</li>
+                        </ul>
+                        <a href="/dashboard.html" class="btn btn-primary w-100">Start Free Trial</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 slide-up slide-up-delay-2">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Enterprise</h3>
+                            <div class="pricing-subtitle">For large operations</div>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="custom-price">Custom</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle-fill"></i> Unlimited stations</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Custom integrations</li>
+                            <li><i class="bi bi-check-circle-fill"></i> White-label options</li>
+                            <li><i class="bi bi-check-circle-fill"></i> 24/7 phone support</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Unlimited employees</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Advanced security</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dedicated account manager</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Custom SLA</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-outline-primary w-100">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="fade-in">Ready to Transform Your Fuel Management?</h2>
+            <p class="cta-subtitle fade-in">Join hundreds of fuel companies already using FuelFlow</p>
+            <a href="#pricing" class="btn btn-light btn-lg mt-3 fade-in">Start Your Free Trial Today</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <i class="bi bi-fuel-pump-fill"></i>
+                        <span>FuelFlow</span>
+                    </div>
+                    <p class="footer-description">Next-generation fuel management system for modern businesses. Automate, monitor, and scale your fuel operations with confidence.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#use-cases">Use Cases</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" id="contactLink">Contact</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FuelFlow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact Us</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/scripts/main.js"></script>
+</body>
+</html>

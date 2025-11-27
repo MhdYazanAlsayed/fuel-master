@@ -1,10 +1,9 @@
 ﻿using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Helpers;
-using FuelMaster.HeadOffice.Core.Models.Dtos;
 
 namespace FuelMaster.HeadOffice.Core.Entities
 {
-    public class Tank : AggregateRoot<int>
+    public class Tank : Entity<int>
     {
         public int StationId { get; private set; }
         public Station? Station { get; private set; }
@@ -32,11 +31,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
         public Tank(int stationId, int fuelTypeId, int number, decimal capacity, decimal maxLimit, decimal minLimit, decimal currentLevel, decimal currentVolume, bool hasSensor)
         {
-            var result = Validate(capacity, maxLimit, minLimit, currentLevel, currentVolume, number, stationId, fuelTypeId);
-            if (!result.Succeeded)
-            {
-                throw new ArgumentException(result.Message);
-            }
+            Validate(capacity, maxLimit, minLimit, currentLevel, currentVolume, number, stationId, fuelTypeId);
            
             StationId = stationId;
             FuelTypeId = fuelTypeId;
@@ -51,11 +46,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
         public void Update(decimal capacity, decimal maxLimit, decimal minLimit, decimal currentLevel, decimal currentVolume, bool hasSensor)
         {
-            var result = Validate(capacity, maxLimit, minLimit, currentLevel, currentVolume, Number, StationId, FuelTypeId);
-            if (!result.Succeeded)
-            {
-                throw new ArgumentException(result.Message);
-            }
+            Validate(capacity, maxLimit, minLimit, currentLevel, currentVolume, Number, StationId, FuelTypeId);
 
             Capacity = capacity;
             MaxLimit = maxLimit;
@@ -72,24 +63,22 @@ namespace FuelMaster.HeadOffice.Core.Entities
             _nozzles.Add(nozzle);
         }
 
-        private ResultDto Validate (decimal capacity, decimal maxLimit, decimal minLimit, decimal currentLevel, decimal currentVolume, int number, int stationId, int fuelTypeId)
+        private void Validate (decimal capacity, decimal maxLimit, decimal minLimit, decimal currentLevel, decimal currentVolume, int number, int stationId, int fuelTypeId)
         {
-            if (capacity <= 0) return Results.Failure("Capacity must be greater than 0");
-            if (maxLimit <= 0) return Results.Failure("Max limit must be greater than 0");
-            if (minLimit <= 0) return Results.Failure("Min limit must be greater than 0");
-            if (currentLevel <= 0) return Results.Failure("Current level must be greater than 0");
-            if (currentVolume <= 0) return Results.Failure("Current volume must be greater than 0");
-            if (number <= 0) return Results.Failure("Number must be greater than 0");
-            if (stationId < 0) return Results.Failure("Station id must be greater than 0");
-            if (fuelTypeId < 0) return Results.Failure("Fuel type id must be greater than 0");
-            if (maxLimit >= capacity) return Results.Failure("Max limit must be less than capacity");
-            if (minLimit >= maxLimit) return Results.Failure("Min limit must be less than max limit");
-            if (currentVolume > maxLimit) return Results.Failure("Current volume must be less than max limit");
-            if (currentVolume < minLimit) return Results.Failure("Current volume must be greater than min limit");
-            if (currentLevel > maxLimit) return Results.Failure("Current level must be less than max limit");
-            if (currentLevel < minLimit) return Results.Failure("Current level must be greater than min limit");
-            
-            return Results.Success();
+            if (capacity <= 0) throw new ArgumentException("Capacity must be greater than 0");
+            if (maxLimit <= 0) throw new ArgumentException("Max limit must be greater than 0");
+            if (minLimit <= 0) throw new ArgumentException("Min limit must be greater than 0");
+            if (currentLevel <= 0) throw new ArgumentException("Current level must be greater than 0");
+            if (currentVolume <= 0) throw new ArgumentException("Current volume must be greater than 0");
+            if (number <= 0) throw new ArgumentException("Number must be greater than 0");
+            if (stationId < 0) throw new ArgumentException("Station id must be greater than 0");
+            if (fuelTypeId < 0) throw new ArgumentException("Fuel type id must be greater than 0");
+            if (maxLimit >= capacity) throw new ArgumentException("Max limit must be less than capacity");
+            if (minLimit >= maxLimit) throw new ArgumentException("Min limit must be less than max limit");
+            if (currentVolume > maxLimit) throw new ArgumentException("Current volume must be less than max limit");
+            if (currentVolume < minLimit) throw new ArgumentException("Current volume must be greater than min limit");
+            if (currentLevel > maxLimit) throw new ArgumentException("Current level must be less than max limit");
+            if (currentLevel < minLimit) throw new ArgumentException("Current level must be greater than min limit");
         }
      
     }

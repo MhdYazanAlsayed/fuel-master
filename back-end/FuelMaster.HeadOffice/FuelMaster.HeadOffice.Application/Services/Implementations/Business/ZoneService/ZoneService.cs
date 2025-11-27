@@ -12,6 +12,7 @@ using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Zones.Exceptions;
 using FuelMaster.HeadOffice.Core.Interfaces;
 using FuelMaster.HeadOffice.Core.Interfaces.Repositories;
+using FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +27,7 @@ public class ZoneService : IZoneService
     private readonly ILogger<ZoneService> _logger;
     private readonly IEntityCache<Zone> _zoneCache;
     private readonly IFuelTypeService _fuelTypeService;
-
+    private readonly IStationRepository _stationRepository;
     public ZoneService(
         IZoneRepository zoneRepository,
         IUnitOfWork unitOfWork,
@@ -34,7 +35,8 @@ public class ZoneService : IZoneService
         IEntityCache<Zone> zoneCache,
         ILogger<ZoneService> logger,
         IFuelTypeService fuelTypeService,
-        IPricingService pricingService)
+        IPricingService pricingService,
+        IStationRepository stationRepository)
     {
         _zoneRepository = zoneRepository;
         _unitOfWork = unitOfWork;
@@ -43,6 +45,7 @@ public class ZoneService : IZoneService
         _zoneCache = zoneCache;
         _fuelTypeService = fuelTypeService;
         _pricingService = pricingService;
+        _stationRepository = stationRepository;
     }
 
     public async Task<ResultDto<ZoneResult>> CreateAsync(ZoneDto dto)
@@ -96,7 +99,7 @@ public class ZoneService : IZoneService
         return _mapper.Map<ZoneResult>(zones.FirstOrDefault(x => x.Id == id));
     }
 
-    public async Task<ResultDto<ZoneResult>> EditAsync(int id, ZoneDto dto)
+    public async Task<ResultDto<ZoneResult>> UpdateAsync(int id, ZoneDto dto)
     {
         try 
         {
@@ -124,8 +127,18 @@ public class ZoneService : IZoneService
     public async Task<IEnumerable<ZoneResult>> GetAllAsync()
     {
         var cachedZones = await GetCachedZonesAsync();
+        var stations = await _stationRepository.GetAllAsync();
 
-        return _mapper.Map<List<ZoneResult>>(cachedZones);
+        return stations.Select(x => 
+        {
+            return new ZoneResult() 
+            {
+                Id = x.Id,
+                ArabicName = x.ArabicName,
+                EnglishName = x.EnglishName,
+                CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id)
+            };
+        }).ToList();
     }
 
     public async Task<PaginationDto<ZoneResult>> GetPaginationAsync(int currentPage)
@@ -133,6 +146,7 @@ public class ZoneService : IZoneService
         var cachedZones = await GetCachedZonesAsync();
         
         var paginatedData = cachedZones.ToPagination(currentPage);
+        var stations = await _stationRepository.GetAllAsync();
 
         var mappedData = paginatedData.Data.Select(x => 
         {
@@ -142,7 +156,7 @@ public class ZoneService : IZoneService
                 ArabicName = x.ArabicName,
                 EnglishName = x.EnglishName,
                 // TODO : Add station service to check if the zone can be deleted
-                // CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id)
+                CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id)
             };
         });
         
