@@ -47,7 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Repositories\" />
+    <Folder Include="Models\Dtos\" />
+    <Folder Include="Models\Responses\PTS\" />
+    <Folder Include="Models\Responses\Reports\" />
   </ItemGroup>
 
 </Project>

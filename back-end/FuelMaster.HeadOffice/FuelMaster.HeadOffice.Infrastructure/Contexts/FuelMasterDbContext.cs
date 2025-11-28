@@ -1,9 +1,8 @@
-﻿using FuelMaster.HeadOffice.Core.Interfaces.Database;
-using FuelMaster.HeadOffice.Core.Entities;
+﻿using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
-using FuelMaster.HeadOffice.Infrastructure.Contexts.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using FuelMaster.HeadOffice.Infrastructure.Services.Interfaces;
 
 namespace FuelMaster.HeadOffice.Infrastructure.Contexts
 {

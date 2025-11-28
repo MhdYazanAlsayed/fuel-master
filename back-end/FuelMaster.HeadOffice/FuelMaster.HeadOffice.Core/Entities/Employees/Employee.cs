@@ -12,6 +12,8 @@ namespace FuelMaster.HeadOffice.Core.Entities
         public string CardNumber { get; private set; }
         public string? Address { get; private set; }
         public FuelMasterUser? User { get; private set; }
+
+        // TODO : User may have multiple stations
         public Station? Station { get; private set; }
         public int? StationId { get; private set; }
         public string? PTSNumber { get; private set; }

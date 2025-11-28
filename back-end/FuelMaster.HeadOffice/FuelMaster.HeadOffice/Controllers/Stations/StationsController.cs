@@ -1,22 +1,22 @@
-﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Station.Dtos;
-using FuelMaster.HeadOffice.Core.Entities;
-using FuelMaster.HeadOffice.Core.Helpers;
+﻿using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Resources;
 using FuelMaster.HeadOffice.Controllers.Stations.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using FuelMaster.HeadOffice.Helpers;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
+using FuelMaster.HeadOffice.Application.Services.Implementations.Business.StationService.DTOs;
 
 namespace FuelMaster.HeadOffice.Controllers
 {
     [Route("api/stations")]
     public class StationsController: FuelMasterController
     {
-        private readonly IStationRepository _stationService;
+        private readonly IStationService _stationService;
         private readonly ILogger<StationsController> _logger;
 
-        public StationsController(IStationRepository stationService, ILogger<StationsController> logger)
+        public StationsController(IStationService stationService, ILogger<StationsController> logger)
         {
             _stationService = stationService;
             _logger = logger;

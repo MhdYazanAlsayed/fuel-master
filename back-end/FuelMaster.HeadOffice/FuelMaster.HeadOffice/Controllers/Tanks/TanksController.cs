@@ -1,32 +1,36 @@
 ﻿using FuelMaster.HeadOffice.Core.Interfaces.Entities;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories.Tanks.Dtos;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Helpers;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using FuelMaster.HeadOffice.Helpers;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
+using FuelMaster.HeadOffice.Application.Services.Implementations.Business.TankService.DTOs;
+using FuelMaster.HeadOffice.Controllers.Tanks.Validators;
 
 namespace FuelMaster.HeadOffice.Controllers
 {
    [Route("api/tanks")]
    public class TanksController: FuelMasterController
    {
-       private readonly ITankRepository _tankRepository;
+       private readonly ITankService _tankService;
        private readonly ILogger<TanksController> _logger;
 
-       public TanksController(ITankRepository tankRepository, ILogger<TanksController> logger)
+       public TanksController(ITankService tankService, ILogger<TanksController> logger)
        {
-           _tankRepository = tankRepository;
+           _tankService = tankService;
            _logger = logger;
        }
 
        [HttpGet("pagination")]
-       public async Task<IActionResult> GetPaginationAsync([FromQuery , BindRequired] int page , [FromQuery] GetTankRequest dto)
+       public async Task<IActionResult> GetPaginationAsync
+       ([FromQuery , BindRequired] int page , [FromQuery] GetTankDto dto)
        {
            try
            {
-               var result = await _tankRepository.GetPaginationAsync(page, dto);
+               var result = await _tankService.GetPaginationAsync(page, dto);
                return Ok(result);
            }
            catch (Exception ex)
@@ -37,11 +41,11 @@ namespace FuelMaster.HeadOffice.Controllers
        }
 
        [HttpGet]
-       public async Task<IActionResult> GetAll([FromQuery] GetTankRequest dto)
+       public async Task<IActionResult> GetAll([FromQuery] GetTankDto dto)
        {
            try
            {
-               var tanks = await _tankRepository.GetAllAsync(dto);
+               var tanks = await _tankService.GetAllAsync(dto);
                return Ok(tanks);
            }
            catch (Exception ex)
@@ -52,13 +56,22 @@ namespace FuelMaster.HeadOffice.Controllers
        }
 
        [HttpPost]
-       public async Task<ActionResult> Create([FromBody] CreateTankDto tankDto)
+       public async Task<ActionResult> Create([FromBody] TankDto dto)
        {
-           if (!ModelState.IsValid) return BadRequest(ModelState);
+           var validator = new TankDtoValidator();
+           var validationResult = validator.Validate(dto);
+           if (!validationResult.IsValid)
+           {
+               foreach (var error in validationResult.Errors)
+               {
+                   ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+               }
+               return BadRequest(ModelState);
+           }
 
            try
            {
-               var result = await _tankRepository.CreateAsync(tankDto);
+               var result = await _tankService.CreateAsync(dto);
                if (!result.Succeeded) return BadRequest(result.Message);
 
                return Ok(result.Entity);
@@ -76,13 +89,22 @@ namespace FuelMaster.HeadOffice.Controllers
        }
 
        [HttpPut("{id}")]
-       public async Task<ActionResult> Edit(int id, [FromBody] EditTankDto tankDto)
+       public async Task<ActionResult> Edit(int id, [FromBody] TankDto dto)
        {
-           if (!ModelState.IsValid) return BadRequest(ModelState);
+           var validator = new TankDtoValidator();
+           var validationResult = validator.Validate(dto);
+           if (!validationResult.IsValid)
+           {
+               foreach (var error in validationResult.Errors)
+               {
+                   ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+               }
+               return BadRequest(ModelState);
+           }
 
            try
            {
-               var result = await _tankRepository.EditAsync(id, tankDto);
+               var result = await _tankService.UpdateAsync(id, dto);
                if (!result.Succeeded) return BadRequest(result.Message);
 
                return Ok(result.Entity);
@@ -104,7 +126,7 @@ namespace FuelMaster.HeadOffice.Controllers
        {
            try
            {
-               var tank = await _tankRepository.DetailsAsync(id);
+               var tank = await _tankService.DetailsAsync(id);
                if (tank == null)
                {
                    return NotFound();
@@ -124,7 +146,7 @@ namespace FuelMaster.HeadOffice.Controllers
        {
            try 
            {
-               var result = await _tankRepository.DeleteAsync(id);
+               var result = await _tankService.DeleteAsync(id);
                if (!result.Succeeded) return BadRequest(result.Message);
 
                return Ok();

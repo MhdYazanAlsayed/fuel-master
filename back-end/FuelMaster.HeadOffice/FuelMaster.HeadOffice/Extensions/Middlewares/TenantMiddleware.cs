@@ -1,17 +1,23 @@
-﻿using FuelMaster.HeadOffice.Core.Configurations;
-using FuelMaster.HeadOffice.Core.Constants;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using FuelMaster.HeadOffice.Application.Constants;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Tenancy;
+using FuelMaster.HeadOffice.Infrastructure.Configurations;
+using FuelMaster.HeadOffice.Services;
 
 namespace FuelMaster.HeadOffice.Extensions.Middlewares
 {
     public class TenantMiddleware
     {
         private readonly RequestDelegate _next;
+
+        // TODO : Call tanent service instead of getting it from configuration
         private readonly TenantConfiguration _configuration;
-        public TenantMiddleware(RequestDelegate next, TenantConfiguration configuration)
+        private readonly TanentService _tanentService;
+        public TenantMiddleware(RequestDelegate next, TenantConfiguration configuration, TanentService tanentService)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _tanentService = tanentService ?? throw new ArgumentNullException(nameof(tanentService));
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -82,7 +88,8 @@ namespace FuelMaster.HeadOffice.Extensions.Middlewares
 
         private void SetTenantContext(HttpContext context, string tenantId)
         {
-            context.Items[ConfigKeys.TanentId] = tenantId;
+            // context.Items[ConfigKeys.TanentId] = tenantId;
+            _tanentService.TenantId = tenantId;
         }
 
         private async Task ReturnErrorResponse(HttpContext context, int statusCode, string message)

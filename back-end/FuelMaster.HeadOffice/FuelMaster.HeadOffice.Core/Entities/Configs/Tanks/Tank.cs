@@ -57,10 +57,12 @@ namespace FuelMaster.HeadOffice.Core.Entities
             UpdatedAt = DateTimeCulture.Now;
         }
 
-        public void AddNozzle(int pumpId, int number, decimal amount, decimal volume, decimal totalizer, decimal price, string? readerNumber = null)
+        public Nozzle AddNozzle(int pumpId, int number, decimal amount, decimal volume, decimal totalizer, decimal price, string? readerNumber = null)
         {
             var nozzle = new Nozzle(Id, pumpId, number, amount, volume, totalizer, price, readerNumber);
             _nozzles.Add(nozzle);
+
+            return nozzle;
         }
 
         private void Validate (decimal capacity, decimal maxLimit, decimal minLimit, decimal currentLevel, decimal currentVolume, int number, int stationId, int fuelTypeId)

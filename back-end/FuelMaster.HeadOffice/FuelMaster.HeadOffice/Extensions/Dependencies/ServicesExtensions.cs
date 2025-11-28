@@ -1,8 +1,8 @@
-﻿using FuelMaster.HeadOffice.ApplicationService.Database;
-using FuelMaster.HeadOffice.ApplicationService.Services;
+﻿using FuelMaster.HeadOffice.Application.Mappers;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Tenancy;
 using FuelMaster.HeadOffice.Core.Interfaces.Markers;
-using FuelMaster.HeadOffice.Core.Interfaces.Services;
-using FuelMaster.HeadOffice.Core.Mapper;
+using FuelMaster.HeadOffice.Infrastructure.Services.Implementations.DB;
+using FuelMaster.HeadOffice.Services;
 using MediatR;
 using Scrutor;
 using System.Reflection;
@@ -43,6 +43,8 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
 
             // Register SeederDiscoveryService
             services.AddScoped<SeederDiscoveryService>();
+            services.AddScoped<TanentService>();
+            services.AddScoped<ITanentService>(sp => sp.GetRequiredService<TanentService>());
 
             return services;
         }

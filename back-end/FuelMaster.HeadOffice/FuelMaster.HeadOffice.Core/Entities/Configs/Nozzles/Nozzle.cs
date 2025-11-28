@@ -1,7 +1,5 @@
 ﻿using FuelMaster.HeadOffice.Core.Enums;
 using FuelMaster.HeadOffice.Core.Helpers;
-using FuelMaster.HeadOffice.Core.Models.Dtos;
-using FuelMaster.HeadOffice.Core.Entities.Configs.Nozzles.Exceptions;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 
 namespace FuelMaster.HeadOffice.Core.Entities
@@ -38,11 +36,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
         internal Nozzle(int tankId , int pumpId, int number, decimal amount, decimal volume, decimal totalizer, decimal price , string? readerNumber = null)
         {
-            var result = Validate(tankId, pumpId, number, amount, volume);
-            if (!result.Succeeded)
-            {
-                throw new InvalidNozzleDataException(result.Message ?? "Invalid nozzle data");
-            }
+            Validate(tankId, pumpId, number, amount, volume);
             
             TankId = tankId;
             PumpId = pumpId;
@@ -55,15 +49,13 @@ namespace FuelMaster.HeadOffice.Core.Entities
             Price = price;
         }
 
-        private ResultDto Validate(int tankId, int pumpId, int number, decimal amount, decimal volume)
+        private void Validate(int tankId, int pumpId, int number, decimal amount, decimal volume)
         {
-            if (tankId <= 0) return Results.Failure("Tank id must be greater than 0");
-            if (pumpId <= 0) return Results.Failure("Pump id must be greater than 0");
-            if (number <= 0) return Results.Failure("Number must be greater than 0");
-            if (amount < 0) return Results.Failure("Amount must be greater than or equal to 0");
-            if (volume < 0) return Results.Failure("Volume must be greater than or equal to 0");
-            
-            return Results.Success();
+            if (tankId <= 0) throw new ArgumentException("Tank id must be greater than 0");
+            if (pumpId <= 0) throw new ArgumentException("Pump id must be greater than 0");
+            if (number <= 0) throw new ArgumentException("Number must be greater than 0");
+            if (amount < 0) throw new ArgumentException("Amount must be greater than or equal to 0");
+            if (volume < 0) throw new ArgumentException("Volume must be greater than or equal to 0");
         }
     
         public void ChangePrice(decimal newPrice)
@@ -76,6 +68,19 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
             Price = newPrice;
             UpdatedAt = DateTimeCulture.Now;    
+        }
+
+        public void Update(decimal amount, decimal volume, decimal totalizer, string? readerNumber)
+        {
+            Validate(TankId, PumpId, Number, amount, volume);
+
+            Amount = amount;
+            Volume = volume;
+            Totalizer = totalizer;
+            ReaderNumber = readerNumber;
+            UpdatedAt = DateTimeCulture.Now;
+
+            // TODO : After this operation we have to add this to activity log.
         }
     }
 }

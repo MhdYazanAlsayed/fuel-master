@@ -5,12 +5,11 @@ using FuelMaster.HeadOffice.Application.Extensions;
 using FuelMaster.HeadOffice.Application.Helpers;
 using FuelMaster.HeadOffice.Application.Services.Implementations.Business.NozzleService.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Implementations.Business.NozzleService.Results;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Authentication;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Core.Zones;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Interfaces;
-using FuelMaster.HeadOffice.Core.Interfaces.Authentication;
-using FuelMaster.HeadOffice.Core.Interfaces.Database;
-using FuelMaster.HeadOffice.Core.Interfaces.Repositories;
 using FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 using FuelMaster.HeadOffice.Core.Resources;
 using Microsoft.Extensions.Logging;
@@ -20,19 +19,21 @@ namespace FuelMaster.HeadOffice.Application.Services.Implementations.Business.No
 public class NozzleService : INozzleService
 {
     private readonly INozzleRepository _nozzleRepository;
-    private readonly ITankRepository _tankRepository;
-    private readonly IZoneRepository _zoneRepository;
+    private readonly ITankService _tankService;
+    private readonly IZoneService _zoneService;
+    private readonly ITankRepository _tankRepository; // Needed for updating tank after adding nozzle
     private readonly IMapper _mapper;
     private readonly ISigninService _authorization;
     private readonly ILogger<NozzleService> _logger;
     private readonly IEntityCache<Nozzle> _nozzleCache;
-    private readonly IEntityCache<Tank> _tankCache;
+    private readonly IEntityCache<Tank> _tankCache; // Needed for cache updates
     private readonly IUnitOfWork _unitOfWork;
 
     public NozzleService(
         INozzleRepository nozzleRepository,
+        ITankService tankService,
+        IZoneService zoneService,
         ITankRepository tankRepository,
-        IZoneRepository zoneRepository,
         IMapper mapper,
         ISigninService authorization,
         ILogger<NozzleService> logger,
@@ -41,8 +42,9 @@ public class NozzleService : INozzleService
         IUnitOfWork unitOfWork)
     {
         _nozzleRepository = nozzleRepository;
+        _tankService = tankService;
+        _zoneService = zoneService;
         _tankRepository = tankRepository;
-        _zoneRepository = zoneRepository;
         _mapper = mapper;
         _authorization = authorization;
         _logger = logger;
@@ -60,7 +62,7 @@ public class NozzleService : INozzleService
             var stationId = (await _authorization.TryToGetStationIdAsync()) ?? null;
             if (stationId.HasValue)
             {
-                var tanks = await _tankCache.GetAllEntitiesAsync();
+                var tanks = await _tankService.GetCachedTanksAsync();
                 var tankIds = tanks?.Where(t => t.StationId == stationId.Value).Select(t => t.Id).ToList() ?? new List<int>();
                 var filtered = cachedNozzleEntities.Where(x => tankIds.Contains(x.TankId)).ToList();
                 _logger.LogInformation("Filtered to {Count} nozzles based on authorization", filtered.Count);
@@ -105,8 +107,11 @@ public class NozzleService : INozzleService
             // Apply filters
             if (stationId.HasValue)
             {
-                var tanks = await _tankCache.GetAllEntitiesAsync();
-                var tankIds = tanks?.Where(t => t.StationId == stationId.Value).Select(t => t.Id).ToList() ?? new List<int>();
+                var tanks = await _tankService.GetCachedTanksAsync();
+                var tankIds = tanks?
+                .Where(t => t.StationId == stationId.Value)
+                .Select(t => t.Id)
+                .ToList() ?? new List<int>();
                 mappedNozzles = mappedNozzles.Where(x => x.Tank != null && tankIds.Contains(x.Tank.Id)).ToList();
             }
 
@@ -153,15 +158,8 @@ public class NozzleService : INozzleService
     {
         _logger.LogDebug("Getting zone price for tank ID: {TankId}", tankId);
 
-        var tanks = await _tankCache.GetAllEntitiesAsync();
+        var tanks = await _tankService.GetCachedTanksAsync();
         var tank = tanks?.FirstOrDefault(t => t.Id == tankId);
-        
-        if (tank == null)
-        {
-            // If not in cache, fetch from repository
-            var tankList = await _tankRepository.GetAllAsync(includeStation: true, includeFuelType: true, includeNozzles: false);
-            tank = tankList.FirstOrDefault(t => t.Id == tankId);
-        }
 
         if (tank == null || tank.Station == null)
         {
@@ -169,8 +167,8 @@ public class NozzleService : INozzleService
             throw new InvalidOperationException($"Tank {tankId} or its station not found");
         }
 
-        // Get zone with prices
-        var zones = await _zoneRepository.GetAllAsync(includePrices: true, includeFuelType: false, includeStations: false, includeTanks: false, includeNozzles: false);
+        // Get zone with prices using zone service
+        var zones = await _zoneService.GetCachedZonesAsync();
         var zone = zones?.FirstOrDefault(z => z.Id == tank.Station.ZoneId);
 
         if (zone == null)
@@ -202,16 +200,10 @@ public class NozzleService : INozzleService
             // Get zone price for the tank's fuel type
             var price = await GetZonePriceAsync(dto.TankId);
 
-            // Get tank from cache or repository
-            var tanks = await _tankCache.GetAllEntitiesAsync();
+            // Get tank from cache using tank service
+            var tanks = await _tankService.GetCachedTanksAsync();
             var tank = tanks?.FirstOrDefault(t => t.Id == dto.TankId);
             
-            if (tank == null)
-            {
-                var tankList = await _tankRepository.GetAllAsync(includeStation: true, includeFuelType: true, includeNozzles: false);
-                tank = tankList.FirstOrDefault(t => t.Id == dto.TankId);
-            }
-
             if (tank == null)
             {
                 _logger.LogWarning("Tank with ID {TankId} not found", dto.TankId);
@@ -219,31 +211,19 @@ public class NozzleService : INozzleService
             }
 
             // Create Nozzle using Tank's AddNozzle method which has access to internal constructor
-            tank.AddNozzle(dto.PumpId, dto.Number, dto.Amount, dto.Volume, dto.Totalizer, price, dto.ReaderNumber);
-            var nozzle = tank.Nozzles.Last();
+            var nozzle = tank.AddNozzle(dto.PumpId, dto.Number, dto.Amount, dto.Volume, dto.Totalizer, price, dto.ReaderNumber);
 
             // Update tank to save the nozzle (EF Core will track the nozzle in tank's collection)
+            // Note: We use repository here since we're modifying the entity directly and need to persist it.
+            // The service layer works with DTOs, so this is a necessary exception for domain entity operations.
             _tankRepository.Update(tank);
             await _unitOfWork.SaveChangesAsync();
 
-            // // Get the created nozzle with includes for mapping
-            // var context = _contextFactory.CurrentContext;
-            // await context.Entry(nozzle)
-            //     .Reference(x => x.Tank)
-            //     .LoadAsync();
-            // await context.Entry(nozzle)
-            //     .Reference(x => x.Pump)
-            //     .LoadAsync();
-            // await context.Entry(nozzle)
-            //     .Reference(x => x.FuelType)
-            //     .LoadAsync();
-
             // Update caches incrementally
             await _nozzleCache.UpdateCacheAfterCreateAsync(nozzle);
-            await _tankCache.UpdateCacheAfterEditAsync(tank);
 
             var nozzleResult = _mapper.Map<NozzleResult>(nozzle);
-            nozzleResult.CanDelete = true; // TODO: Implement CanDelete logic
+            nozzleResult.CanDelete = true; 
 
             _logger.LogInformation("Successfully created nozzle with ID: {Id}", nozzle.Id);
 
@@ -271,17 +251,7 @@ public class NozzleService : INozzleService
                 return Result.Failure<NozzleResult>(Resource.EntityNotFound);
             }
 
-            // Note: Nozzle entity doesn't have a public Update method
-            // Most properties are private setters, so we can only change the price via ChangePrice
-            // For now, we'll update what we can - if the DTO has different values, 
-            // we might need to handle this differently or throw an error
-            
-            // If price needs to be updated, get new zone price
-            var newPrice = await GetZonePriceAsync(dto.TankId);
-            if (nozzle.Price != newPrice)
-            {
-                nozzle.ChangePrice(newPrice);
-            }
+            nozzle.Update(dto.Amount, dto.Volume, dto.Totalizer, dto.ReaderNumber);
 
             // Update nozzle in repository
             _nozzleRepository.Update(nozzle);
@@ -315,15 +285,6 @@ public class NozzleService : INozzleService
                 _logger.LogWarning("Nozzle with ID {Id} not found for deletion", id);
                 return Result.Failure(Resource.EntityNotFound);
             }
-
-            // TODO: Check if NozzleHistory has any records referencing this nozzle
-            // For now, allow deletion
-            // var nozzleHistories = await _nozzleHistoryCache.GetAllEntitiesAsync();
-            // if (nozzleHistories != null && nozzleHistories.Any(nh => nh.NozzleId == id))
-            // {
-            //     _logger.LogWarning("Cannot delete nozzle with ID: {Id} because it has associated history records", id);
-            //     return Result.Failure(Resource.CantDelete);
-            // }
 
             _nozzleRepository.Delete(nozzle);
             await _unitOfWork.SaveChangesAsync();
