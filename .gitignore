@@ -4,11 +4,14 @@
 *.docx
 *.mdj
 *.txt
-back-end/FuelMaster.HeadOffice/FuelMaster.HeadOffice/appsettings.json
-back-end/FuelMaster.HeadOffice/FuelMaster.HeadOffice/appsettings.Development.json
 
-/front-end/build/
-/front-end/dist/
-/front-end/build.rar
-/front-end/node_modules
-*/node_modules
+
+*/node_modules/
+Website/frontend/node_modules/
+
+*/*.rar
+*/*.zip
+*/dist/
+*/build/
+*/bin/
+*/obj/
