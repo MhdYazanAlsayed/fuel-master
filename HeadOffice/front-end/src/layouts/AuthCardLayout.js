@@ -14,9 +14,8 @@ import Logo from 'components/theme/common/Logo';
 
 const AuthCardLayout = ({ children }) => {
   const _languageService = useService(Services.LanguageService);
-  const _authService = useService(Services.AuthenticatorService);
-
-  if (_authService.isAuthenticated) return <Navigate to={'/'} />;
+  const _identityService = useService(Services.IdentityService);
+  if (_identityService.isAuthenticated()) return <Navigate to={'/'} />;
 
   return (
     <Section fluid className="py-0">

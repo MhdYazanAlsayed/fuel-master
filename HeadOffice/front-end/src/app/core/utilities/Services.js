@@ -14,4 +14,5 @@ export default class Services {
   static HostEnviromentService = 'HostEnviroment';
   static LocalStorageService = 'LocalStorageService';
   static LanguageService = 'LanguageService';
+  static PermissionService = 'PermissionService';
 }

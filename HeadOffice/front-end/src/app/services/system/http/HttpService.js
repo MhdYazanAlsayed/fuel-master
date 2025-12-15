@@ -19,7 +19,7 @@ export default class HttpService extends WebService {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        credentials: 'include', // include, *same-origin, omit
         headers: {
           'Content-Type': 'application/json',
           'X-Language': this._language.isRTL ? 'ar' : 'en'
@@ -44,7 +44,7 @@ export default class HttpService extends WebService {
         method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        credentials: 'include', // include, *same-origin, omit
         headers: {
           'Content-Type': 'application/json',
           'X-Language': this._language.isRTL ? 'ar' : 'en'
@@ -69,7 +69,7 @@ export default class HttpService extends WebService {
         method: 'PUT', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        credentials: 'include', // include, *same-origin, omit
         headers: {
           'Content-Type': 'application/json',
           'X-Language': this._language.isRTL ? 'ar' : 'en'
@@ -95,7 +95,7 @@ export default class HttpService extends WebService {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        credentials: 'include', // include, *same-origin, omit
         headers: {
           'X-Language': this._language.isRTL ? 'ar' : 'en'
         },
@@ -120,7 +120,7 @@ export default class HttpService extends WebService {
         method: 'PUT', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        credentials: 'include', // include, *same-origin, omit
         headers: {
           'X-Language': this._language.isRTL ? 'ar' : 'en'
         },
@@ -143,6 +143,7 @@ export default class HttpService extends WebService {
     try {
       let response = await fetch(this._api + url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'X-Language': this._language.isRTL ? 'ar' : 'en'
@@ -163,6 +164,7 @@ export default class HttpService extends WebService {
     try {
       let response = await fetch(this._api + url, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'X-Language': this._language.isRTL ? 'ar' : 'en'

@@ -9,6 +9,7 @@ namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Authentication
         // Task<string?> GetLoggedUserIdAsync();
         // Task<IdentityResult> RegisterAsync(FuelMasterUser user, string password);
         Task<LoginResult?> LoginAsync(LoginDto request);
+        Task<CurrentUserResult?> GetCurrentUserAsync();
         // Task DeleteUserAsync(string userId);
         // Task<IdentityResult> UpdateAsync(FuelMasterUser user);
         // Task<IdentityResult> ResetAdminPasswordAsync(string userId);

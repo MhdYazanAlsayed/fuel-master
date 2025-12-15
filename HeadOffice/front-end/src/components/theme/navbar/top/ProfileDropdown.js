@@ -3,13 +3,21 @@ import { Link } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import team3 from 'assets/img/team/avatar.png';
 import Avatar from 'components/theme/common/Avatar';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { useService } from 'hooks/useService';
 import Services from 'app/core/utilities/Services';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileDropdown = () => {
   const _languageService = useService(Services.LanguageService);
   const _identityService = useService(Services.IdentityService);
+  const _userService = useService(Services.UserService);
+  const navigate = useNavigate();
+
+  const handleLogout = e => {
+    e.preventDefault();
+    _userService.logoutAsync();
+    navigate('/account/login');
+  };
 
   return (
     <Dropdown navbar={true} as="li">
@@ -46,7 +54,7 @@ const ProfileDropdown = () => {
             as={Link}
             to="/account/logout"
             className="text-danger"
-            onClick={() => _identityService.logout()}
+            onClick={handleLogout}
           >
             {_languageService.resources.logout}
           </Dropdown.Item>

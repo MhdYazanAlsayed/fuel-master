@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useService } from 'hooks/useService';
 import Services from 'app/core/utilities/Services';
 import { Spinner } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const LoginForm = () => {
   const _languageService = useService(Services.LanguageService);
   const _userService = useService(Services.UserService);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // State
   const [formData, setFormData] = useState({
@@ -58,13 +60,35 @@ const LoginForm = () => {
 
       <Form.Group className="mb-3">
         <Form.Label>{_languageService.resources.password}</Form.Label>
-        <Form.Control
-          placeholder={_languageService.resources.password}
-          value={formData.password}
-          name="password"
-          onChange={handleFieldChange}
-          type="password"
-        />
+        <div style={{ position: 'relative' }}>
+          <Form.Control
+            placeholder={_languageService.resources.password}
+            value={formData.password}
+            name="password"
+            onChange={handleFieldChange}
+            type={showPassword ? 'text' : 'password'}
+            style={{ paddingRight: '40px' }}
+          />
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute',
+              right: '5px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              padding: '4px 8px',
+              color: '#6c757d',
+              textDecoration: 'none',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer'
+            }}
+          >
+            <FontAwesomeIcon icon={showPassword ? 'eye' : 'eye-slash'} />
+          </Button>
+        </div>
       </Form.Group>
 
       <Row className="justify-content-between align-items-center">

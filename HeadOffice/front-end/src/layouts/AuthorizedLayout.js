@@ -5,7 +5,6 @@ import Services from 'app/core/utilities/Services';
 
 const AuthorizedLayout = () => {
   const _authenticatorService = useService(Services.AuthenticatorService);
-
   if (!_authenticatorService.isAuthenticated)
     return <Navigate to={'/account/login'} />;
 

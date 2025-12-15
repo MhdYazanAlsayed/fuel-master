@@ -8,6 +8,7 @@ import LoggerService from 'app/services/system/loggers/LoggerService';
 import LanguageService from 'app/services/system/language/LanguageService';
 import LocalStorageService from 'app/services/system/storage/LocalStorageService';
 import UserService from 'app/services/UserService';
+import PermissionService from 'app/services/user-management/area-of-access/PermissionService';
 
 export function injectServices() {
   // Host environment service
@@ -49,4 +50,10 @@ export function injectServices() {
 
   // User service
   DependenciesInjector.services.addService(Services.UserService, UserService);
+
+  // Permission service
+  DependenciesInjector.services.addService(
+    Services.PermissionService,
+    PermissionService
+  );
 }

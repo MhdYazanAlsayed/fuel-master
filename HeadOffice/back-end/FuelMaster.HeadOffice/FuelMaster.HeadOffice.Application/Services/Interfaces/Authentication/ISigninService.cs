@@ -5,7 +5,7 @@ namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Authentication
 {
     public interface ISigninService : IScopedDependency
     {
-        Task<FuelMasterUser?> GetCurrentUserAsync(bool includeEmployee = false);
+        Task<FuelMasterUser?> GetCurrentUserAsync(bool includeEmployee = false, bool includeAreaOfAccess = false);
         string? GetCurrentUserId();
         int? GetCurrentEmployeeId();
         List<int> GetCurrentStationIds();

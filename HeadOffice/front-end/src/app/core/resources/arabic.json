@@ -266,5 +266,6 @@
   "fuelTypesText": "نوع الوقود",
   "priceAfterChange": "السعر بعد التحديث",
   "tenantName": "اسم المستأجر",
-  "example": "مثال"
+  "example": "مثال",
+  "checkingAuthenticationHealth": "يتم التحقق من صحة الدخول..."
 }

@@ -13,38 +13,36 @@ namespace FuelMaster.HeadOffice.Controllers.Accounts
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            try 
-            {
-                var result = await _userService.LoginAsync(request);
-                if (result is null) return BadRequest("Invalid username or password");
+            var result = await _userService.LoginAsync(request);
+            if (result is null) return BadRequest("Invalid username or password");
 
-                // Set cookies for access token and refresh token
-                Response.Cookies.Append("access_token", result.AccessToken.Token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = result.AccessToken.ExpiresAt
-                });
-                //Response.Cookies.Append("refresh_token", result.RefreshToken.Token, new CookieOptions
-                //{
-                //    HttpOnly = true,
-                //    Expires = result.RefreshToken.ExpiresAt
-                //});
-
-                return Ok(new
-                {
-                    UserName = result.UserName,
-                    FullName = result.FullName,
-                    Email = result.Email,
-                    Scope = result.Scope,
-                    CityId = result.CityId,
-                    StationId = result.StationId,
-                    AreaId = result.AreaId,
-                });
-            }
-            catch (Exception ex)
+            // Set cookies for access token and refresh token
+            var cookieOptions = new CookieOptions
             {
-                return BadRequest(ex.Message);
-            }
+                HttpOnly = true,
+                Secure = Request.IsHttps, // Set Secure flag based on HTTPS
+                SameSite = SameSiteMode.None, // Use Lax for better compatibility, or None if cross-site needed
+                Expires = result.AccessToken.ExpiresAt,
+                Path = "/" // Ensure cookie is available across entire site
+            };
+            
+            Response.Cookies.Append("access_token", result.AccessToken.Token, cookieOptions);
+            //Response.Cookies.Append("refresh_token", result.RefreshToken.Token, new CookieOptions
+            //{
+            //    HttpOnly = true,
+            //    Expires = result.RefreshToken.ExpiresAt
+            //});
+
+            return Ok(new
+            {
+                UserName = result.UserName,
+                FullName = result.FullName,
+                Email = result.Email,
+                Scope = result.Scope,
+                //CityId = result.CityId,
+                //StationId = result.StationId,
+                //AreaId = result.AreaId,
+            });
         }
 
         [Authorize]
@@ -67,9 +65,11 @@ namespace FuelMaster.HeadOffice.Controllers.Accounts
 
         [Authorize]
         [HttpGet("health")]
-        public IActionResult health()
+        public async Task<IActionResult> HealthAsync ()
         {
-            return Ok("You are logged in");
+            var user = await _userService.GetCurrentUserAsync();
+
+            return Ok(user);
         }
     }
 }

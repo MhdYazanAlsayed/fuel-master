@@ -12,9 +12,9 @@ import routes from 'routes/routes';
 import { capitalize } from 'helpers/utils';
 import NavbarTopDropDownMenus from 'components/theme/navbar/top/NavbarTopDropDownMenus';
 import bgNavbar from 'assets/img/generic/bg-navbar.png';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { useService } from 'hooks/useService';
 import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const NavbarVertical = () => {
   const {
@@ -29,6 +29,7 @@ const NavbarVertical = () => {
   const HTMLClassList = document.getElementsByTagName('html')[0].classList;
   const [sidebarLinks, setSidebarLinks] = useState(null);
   const _languageService = useService(Services.LanguageService);
+  const _permissionService = useService(Services.PermissionService);
 
   useEffect(() => {
     if (isNavbarVerticalCollapsed) {
@@ -73,6 +74,8 @@ const NavbarVertical = () => {
   }, [_languageService.renderState]);
 
   function formatRoute(route) {
+    if (!_permissionService.check(route.areaOfAccess)) return null;
+
     return (
       <Fragment key={route.label}>
         {!route.labelDisable &&

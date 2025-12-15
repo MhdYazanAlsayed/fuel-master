@@ -11,7 +11,6 @@ export default class UserService extends WebService {
     this._identityService = this.getService(Services.IdentityService);
     this._localStorage = this.getService(Services.LocalStorageService);
     this._languageService = this.getService(Services.LanguageService);
-    this._authenticatorService = this.getService(Services.AuthenticatorService);
     this._logger = this.getService(Services.LoggerService);
   }
 
@@ -46,9 +45,7 @@ export default class UserService extends WebService {
         fullName: responseAsJson.fullName,
         email: responseAsJson.email,
         scope: responseAsJson.scope,
-        stationId: responseAsJson.stationId,
-        areaId: responseAsJson.areaId,
-        cityId: responseAsJson.cityId
+        areasOfAccess: responseAsJson.areasOfAccess
       }
     };
 
@@ -65,30 +62,38 @@ export default class UserService extends WebService {
     return { succeeded: true };
   }
 
-  async checkAuthHealth() {
-    const storedData = this._localStorage.getItem('authentication');
-    const response = await this._httpService.getData('/auth/health');
-    if (!response || !response.ok || !storedData) {
+  async checkAuthHealthAsync() {
+    const response = await this._httpService.getData(this.endpoint + '/health');
+    if (!response || !response.ok) {
       this._logger.logError('Failed to check authentication health');
       this._localStorage.removeItem('authentication');
-      this._authonticator.identity = null;
+      this._identityService.setIdentity(null);
       return false;
     }
 
-    this._logger.logInfo('Authentication health checked successfully');
+    var updatedData = await response.json();
+
+    const data = {
+      user: updatedData
+    };
+    this._localStorage.setItem('authentication', data);
+    this._identityService.setIdentity(data);
+
+    this._logger.logInformation('Authentication health checked successfully');
     return true;
   }
 
   async logoutAsync() {
+    console.log('logoutAsync');
+    this._identityService.logout();
+
     const response = await this._httpService.getData(this.endpoint + '/logout');
 
     if (!response || !response.ok) {
-      toast.error(this._languageService.resources.sthWentWrong);
       this._logger.logError('Failed to logout user');
       return { succeeded: false };
     }
 
-    this._identityService.logout();
     this._logger.logInformation('User logged out successfully');
 
     return { succeeded: true };

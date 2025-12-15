@@ -1,25 +1,17 @@
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
+
 export const reportRoutes = {
   label: 'Reports',
   keyword: 'reports',
   labelDisable: true,
-  permissions: [
-    'TimeReportShow',
-    'TransactionReportShow',
-    'DeliveryReportShow',
-    'RealTimeReportShow'
-  ],
+
   children: [
     {
       name: 'Reports',
       keyword: 'reports',
       active: true,
+      areaOfAccess: AreaOfAccess.ReportView,
       icon: 'chart-pie',
-      permissions: [
-        'TimeReportShow',
-        'TransactionReportShow',
-        'DeliveryReportShow',
-        'RealTimeReportShow'
-      ],
       children: [
         {
           name: 'Dashboard',
@@ -32,25 +24,21 @@ export const reportRoutes = {
           name: 'RealTime Reports',
           keyword: 'realTimeReports',
           to: '/reports/realtime',
-          active: true,
-          permissions: 'RealTimeReportShow'
+          active: true
         },
         {
-          permissions: 'TimeReportShow',
           name: 'Time Reports',
           keyword: 'timeReports',
           to: '/reports/time',
           active: true
         },
         {
-          permissions: 'TransactionReportShow',
           name: 'Transaction Reports',
           keyword: 'transactionReports',
           to: '/reports/transactions',
           active: true
         },
         {
-          permissions: 'DeliveryReportShow',
           name: 'Delivery Reports',
           keyword: 'deliveryReports',
           to: '/reports/deliveries',
@@ -64,18 +52,9 @@ export const reportRoutes = {
 export const managementRoutes = {
   label: 'Management',
   keyword: 'management',
-  permissions: [
-    'CitiesShow',
-    'ZonesShow',
-    'StationsShow',
-    'TanksShow',
-    'PumpsShow',
-    'NozzlesShow',
-    'DeliveriesCreate'
-  ],
+  areaOfAccess: AreaOfAccess.ConfigurationView,
   children: [
     {
-      permissions: ['CitiesShow'],
       name: 'Cities',
       keyword: 'cities',
       active: true,
@@ -83,7 +62,6 @@ export const managementRoutes = {
       to: '/cities'
     },
     {
-      permissions: ['FuelTypesShow'],
       name: 'Fuel Types',
       keyword: 'fuelTypesText',
       active: true,
@@ -91,7 +69,6 @@ export const managementRoutes = {
       to: '/fuel-types'
     },
     {
-      permissions: ['ZonesShow'],
       name: 'Zones',
       keyword: 'zones',
       active: true,
@@ -99,7 +76,6 @@ export const managementRoutes = {
       to: '/zones'
     },
     {
-      permissions: ['StationsShow'],
       name: 'Stations',
       active: true,
       keyword: 'stations',
@@ -107,7 +83,6 @@ export const managementRoutes = {
       to: '/stations'
     },
     {
-      permissions: ['TanksShow'],
       name: 'Tanks',
       active: true,
       keyword: 'tanks',
@@ -115,7 +90,6 @@ export const managementRoutes = {
       to: '/tanks'
     },
     {
-      permissions: ['PumpsShow'],
       name: 'Pumps & Dispensers',
       active: true,
       keyword: 'pumps',
@@ -123,7 +97,6 @@ export const managementRoutes = {
       to: '/pumps'
     },
     {
-      permissions: ['NozzlesShow'],
       name: 'Nozzles',
       active: true,
       icon: 'gas-pump',
@@ -131,14 +104,13 @@ export const managementRoutes = {
       to: '/nozzles'
     },
     {
-      permissions: 'DeliveriesCreate',
       name: 'Deliveries',
       active: true,
       keyword: 'deliveries',
       icon: 'truck',
+      areaOfAccess: AreaOfAccess.DeliveryManage,
       children: [
         {
-          permissions: 'DeliveriesCreate',
           name: 'Create new',
           to: '/deliveries/create',
           keyword: 'createNew',
@@ -177,24 +149,21 @@ export const managementRoutes = {
 export const usersAndGroupsRoutes = {
   label: 'User Management',
   keyword: 'userManagement',
-  permissions: ['EmployeesShow', 'GroupsShow'],
+  areaOfAccess: AreaOfAccess.EmployeeView,
   children: [
     {
-      permissions: ['EmployeesShow', 'EmployeesCreate'],
       name: 'Employees',
       active: true,
       icon: 'users',
       keyword: 'employees',
       children: [
         {
-          permissions: 'EmployeesShow',
           name: 'Show all',
           to: '/employees',
           keyword: 'showAll',
           active: true
         },
         {
-          permissions: 'EmployeesCreate',
           name: 'Create new',
           keyword: 'createNew',
           to: '/employees/create',
@@ -203,21 +172,18 @@ export const usersAndGroupsRoutes = {
       ]
     },
     {
-      permissions: ['GroupsShow', 'GroupsCreate'],
       name: 'Groups & Roles',
       active: true,
       keyword: 'groupsAndRoles',
       icon: 'people-group',
       children: [
         {
-          permissions: 'GroupsShow',
           name: 'Show all',
           to: '/groups',
           keyword: 'showAll',
           active: true
         },
         {
-          permissions: 'GroupsCreate',
           name: 'Create new',
           keyword: 'createNew',
           to: '/groups/create',
@@ -1521,12 +1487,12 @@ export const documentationRoutes = {
 };
 
 export default [
-  reportRoutes,
-  managementRoutes,
-  usersAndGroupsRoutes,
-  dashboardRoutes,
-  appRoutes,
-  pagesRoutes,
-  modulesRoutes,
-  documentationRoutes
+  reportRoutes, // 0
+  managementRoutes, // 1
+  usersAndGroupsRoutes, // 2
+  dashboardRoutes, // 3
+  appRoutes, // 4
+  pagesRoutes, // 5
+  modulesRoutes, // 6
+  documentationRoutes // 7
 ];

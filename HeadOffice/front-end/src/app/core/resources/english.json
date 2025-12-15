@@ -264,5 +264,6 @@
   "fuelTypesText": "Fuel Types",
   "priceAfterChange": "Price After Change",
   "tenantName": "Tenant Name",
-  "example": "example"
+  "example": "example",
+  "checkingAuthenticationHealth": "Checking authentication health..."
 }

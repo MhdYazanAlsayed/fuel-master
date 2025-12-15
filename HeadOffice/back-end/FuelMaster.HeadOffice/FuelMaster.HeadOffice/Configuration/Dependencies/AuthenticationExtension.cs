@@ -29,6 +29,25 @@ namespace FuelMaster.HeadOffice.Extensions.Dependencies
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        // Try to read token from Authorization header first
+                        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                        // If not found in header, try to read from cookies
+                        if (string.IsNullOrEmpty(token))
+                        {
+                            token = context.Request.Cookies["access_token"];
+                        }
+
+                        // Set the token if found
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
                     OnChallenge = context =>
                     {
                         // Skip the default logic.
