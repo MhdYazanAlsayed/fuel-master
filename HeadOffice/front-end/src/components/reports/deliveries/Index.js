@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import FilterBox from './FilterBox';
 import Deliveries from './Deliveries';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
-const _reportService = DependenciesInjector.services.reportService;
 const Index = () => {
+  const _reportService = useService(Services.ReportService);
+
+  if (!_roleManager.check(AreaOfAccess.ReportView))
+    return <Navigate to="/errors/404" />;
+
   const [deliveries, setDeliveries] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,

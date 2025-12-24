@@ -1,10 +1,11 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 import ModalCenter from 'components/shared/ModalCenter';
 import React from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 const DetailsModal = ({ open, setOpen, nozzle }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
 
   return !nozzle ? null : (
     <ModalCenter
@@ -20,8 +21,8 @@ const DetailsModal = ({ open, setOpen, nozzle }) => {
                 readOnly
                 value={
                   _languageService.isRTL
-                    ? nozzle?.pump?.station?.arabicName
-                    : nozzle?.pump?.station?.englishName
+                    ? nozzle?.tank?.station?.arabicName
+                    : nozzle?.tank?.station?.englishName
                 }
               />
             </Form.Group>

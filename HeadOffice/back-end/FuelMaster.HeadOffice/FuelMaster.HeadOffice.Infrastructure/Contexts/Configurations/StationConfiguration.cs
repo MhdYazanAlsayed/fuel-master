@@ -47,6 +47,12 @@ namespace FuelMaster.HeadOffice.Infrastructure.Contexts.Configurations
             builder
             .HasIndex(x => new { x.AreaId, x.Id })
             .IsUnique(true);
+
+            builder
+            .HasIndex(x => new { x.CityId, x.Id })
+            .IsUnique(true);
+
+            
         }
     }
 }

@@ -1,12 +1,12 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import ModalCenter from 'components/shared/ModalCenter';
 import React from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-
-const _languageService = DependenciesInjector.services.languageService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const DetailsModal = ({ open, setOpen, tank }) => {
-  console.log(tank);
+  const _languageService = useService(Services.LanguageService);
+
   return tank === null ? null : (
     <ModalCenter
       open={open}

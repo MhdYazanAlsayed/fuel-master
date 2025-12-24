@@ -48,15 +48,7 @@ public class PumpService : IPumpService
         if (cachedPumpEntities != null)
         {
             // Apply authorization filtering after getting from cache
-            int? stationId = _signInService.GetCurrentStationIds().FirstOrDefault();
-            if (stationId != null)
-            {
-                var filtered = cachedPumpEntities.Where(x => x.StationId == stationId.Value).ToList();
-                _logger.LogInformation("Filtered to {Count} pumps based on authorization", filtered.Count);
-                return filtered;
-            }
-            
-            return cachedPumpEntities.ToList();
+            return Filter(cachedPumpEntities.ToList());
         }
 
         _logger.LogInformation("Pumps not in cache, fetching from database");
@@ -66,7 +58,7 @@ public class PumpService : IPumpService
         // Cache entities
         await _pumpCache.SetAllAsync(pumps);
         
-        return pumps;
+        return Filter(pumps);
     }
 
     public async Task<IEnumerable<PumpResult>> GetAllAsync(GetPumpDto dto)
@@ -76,7 +68,7 @@ public class PumpService : IPumpService
             _logger.LogInformation("Getting all pumps with StationId: {StationId}", dto.StationId);
 
             // Apply authorization filtering
-            int? authStationId = _signInService.GetCurrentStationIds().FirstOrDefault();
+            int? authStationId = _signInService.GetCurrentStationId();
             var stationId = authStationId ?? dto.StationId;
 
             var pumps = await GetCachedPumpsAsync();
@@ -153,12 +145,9 @@ public class PumpService : IPumpService
             _pumpRepository.Create(pump);
             await _unitOfWork.SaveChangesAsync();
 
+            pump = await _pumpRepository.DetailsAsync(pump.Id, includeStation: true);
+            await _pumpCache.UpdateCacheAfterCreateAsync(pump!);
             var pumpResult = _mapper.Map<PumpResult>(pump);
-
-            // Update caches incrementally - cache entity, not DTO
-            await _pumpCache.UpdateCacheAfterCreateAsync(pump);
-
-            _logger.LogInformation("Successfully created pump with ID: {Id}", pump.Id);
 
             return Result.Success(pumpResult);
         }
@@ -170,7 +159,7 @@ public class PumpService : IPumpService
         }
     }
 
-    public async Task<ResultDto<PumpResult>> UpdateAsync(int id, PumpDto dto)
+    public async Task<ResultDto<PumpResult>> UpdateAsync(int id, UpdatePumpDto dto)
     {
         try
         {
@@ -183,7 +172,6 @@ public class PumpService : IPumpService
 
             pump.Update(
                 dto.Number,
-                dto.StationId,
                 dto.Manufacturer);
 
             _pumpRepository.Update(pump);
@@ -274,6 +262,28 @@ public class PumpService : IPumpService
             _logger.LogError(ex, "Error getting pump details for ID: {Id}", id);
             return null;
         }
+    }
+
+    private List<Pump> Filter (List<Pump> pumps)
+    {
+        var scope = _signInService.GetCurrentScope();
+        var cityId = _signInService.GetCurrentCityId();
+        var areaId = _signInService.GetCurrentAreaId();
+        var stationId = _signInService.GetCurrentStationId();
+
+        if (scope == Scope.ALL)
+            return pumps;
+
+        if (scope == Scope.City)
+            return pumps.Where(x => x.Station!.CityId == cityId).ToList();
+
+        if (scope == Scope.Area)
+            return pumps.Where(x => x.Station!.AreaId == areaId).ToList();
+
+        if (scope == Scope.Station || scope == Scope.Self)
+            return pumps.Where(x => x.Station!.Id == stationId).ToList();
+            
+        throw new NotImplementedException();
     }
 }
 

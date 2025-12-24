@@ -1,20 +1,20 @@
-import { Permissions } from 'app/core/enums/Permissions';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import Loader from 'components/shared/Loader';
 import React, { useEffect, useState } from 'react';
 import { Badge } from 'react-bootstrap';
 import { Navigate, useParams } from 'react-router-dom';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zonePriceHistoryService =
-  DependenciesInjector.services.zonePriceHistoryService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Histories = () => {
-  // if (!_roleManager.check(Permissions.ShowPricesHistories))
-  //   return <Navigate to="/errors/404" />;
-  // States
+  const _languageService = useService(Services.LanguageService);
+  const _zonePriceHistoryService = useService(Services.ZonePriceHistoryService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.PricingView))
+    return <Navigate to={'/errors/404'} />;
+
   const [histories, setHistories] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -77,6 +77,8 @@ const Histories = () => {
       pagination.currentPage
     );
     if (!response) return;
+
+    console.log(response);
 
     setPagination(prev => ({
       ...prev,

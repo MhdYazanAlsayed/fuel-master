@@ -11,8 +11,16 @@ export default class Services {
   static StationService = 'StationService';
   static TankService = 'TankService';
   static PumpService = 'PumpService';
+  static NozzleService = 'NozzleService';
   static HostEnviromentService = 'HostEnviroment';
   static LocalStorageService = 'LocalStorageService';
   static LanguageService = 'LanguageService';
   static PermissionService = 'PermissionService';
+  static ReportService = 'ReportService';
+  static CityService = 'CityService';
+  static FuelTypeService = 'FuelTypeService';
+  static AreaService = 'AreaService';
+  static EmployeeService = 'EmployeeService';
+  static AccessOfAreaService = 'AccessOfAreaService';
+  static RoleService = 'RoleService';
 }

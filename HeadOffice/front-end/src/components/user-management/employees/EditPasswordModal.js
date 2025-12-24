@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import ModalTop from 'components/shared/ModalTop';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import { toast } from 'react-toastify';
-import { Permissions } from 'app/core/enums/Permissions';
-import { Navigate } from 'react-router-dom';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _employeeService = DependenciesInjector.services.employeeSerivce;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const EditPasswordModal = ({ open, setOpen, employeeId }) => {
-  if (!_roleManager.check(Permissions.EmployeesEdit))
-    return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  const _employeeService = useService(Services.EmployeeService);
 
   const [formData, setFormData] = useState({
     password: '',

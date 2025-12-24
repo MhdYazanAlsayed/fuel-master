@@ -1,11 +1,9 @@
 ﻿using FuelMaster.HeadOffice.Core.Entities.Configs.Area;
-using FuelMaster.HeadOffice.Core.Entities.Configs.Tanks.Exceptions;
-using FuelMaster.HeadOffice.Core.Entities.Zones.Exceptions;
 using FuelMaster.HeadOffice.Core.Helpers;
 
 namespace FuelMaster.HeadOffice.Core.Entities
 {
-    public class Station : AggregateRoot<int>
+    public class Station : Entity<int>
     {
         public string EnglishName { get; private set; }
         public string ArabicName { get; private set; }
@@ -24,7 +22,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
         public List<Tank> _tanks = new List<Tank>();
         public IReadOnlyList<Tank> Tanks => _tanks.AsReadOnly();
 
-        public Station(string englishName, string arabicName , int cityId , int zoneId)
+        public Station(string englishName, string arabicName , int cityId , int zoneId, int? areaId)
         {
             if (string.IsNullOrEmpty(englishName))
             {
@@ -42,14 +40,19 @@ namespace FuelMaster.HeadOffice.Core.Entities
             {
                 throw new ArgumentException("Zone id must be greater than 0");
             }
+            if (areaId is not null && areaId <= 0)
+            {
+                throw new ArgumentException("Area id must be greater than 0");
+            }
 
             EnglishName = englishName;
             ArabicName = arabicName;
             CityId = cityId;
             ZoneId = zoneId;
+            AreaId = areaId;
         }
     
-        public void Update(string englishName, string arabicName, int zoneId)
+        public void Update(string englishName, string arabicName, int zoneId, int? areaId)
         {
             if (string.IsNullOrEmpty(englishName))
             {
@@ -65,10 +68,15 @@ namespace FuelMaster.HeadOffice.Core.Entities
             {
                 throw new ArgumentException("Zone id must be greater than 0");
             }
+            if (areaId is not null && areaId <= 0)
+            {
+                throw new ArgumentException("Area id must be greater than 0");
+            }
 
             EnglishName = englishName;
             ArabicName = arabicName;
             ZoneId = zoneId;
+            AreaId = areaId;
             UpdatedAt = DateTimeCulture.Now;
         }
     

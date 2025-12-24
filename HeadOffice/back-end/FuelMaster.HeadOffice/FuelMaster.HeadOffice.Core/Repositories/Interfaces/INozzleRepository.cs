@@ -7,7 +7,9 @@ namespace FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 
 public interface INozzleRepository : IRepository<Nozzle>, IScopedDependency
 {
-    Task<List<Nozzle>> GetAllAsync(bool includeTank = false, bool includePump = false, bool includeFuelType = false);
-    Task<(List<Nozzle>, int)> GetPaginationAsync(int page, int pageSize, bool includeTank = false, bool includePump = false, bool includeFuelType = false);
+    Task<Nozzle?> DetailsAsync(int id, bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false);
+    Task<List<Nozzle>> GetAllByStationIdAsync(int stationId , bool includeTank = false, bool includePump = false, bool includeFuelType = false);
+    Task<List<Nozzle>> GetAllAsync(bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false);
+    Task<(List<Nozzle>, int)> GetPaginationAsync(int page, int pageSize,bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false);
 }
 

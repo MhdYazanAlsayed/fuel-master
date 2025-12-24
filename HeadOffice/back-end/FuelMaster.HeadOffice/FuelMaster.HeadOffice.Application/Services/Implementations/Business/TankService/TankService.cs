@@ -48,14 +48,7 @@ public class TankService : ITankService
         if (cachedTankEntities != null)
         {
             // Apply authorization filtering after getting from cache
-            int? stationId = _signInService.GetCurrentStationIds().FirstOrDefault();
-            if (stationId.HasValue)
-            {
-                var filtered = cachedTankEntities.Where(x => x.StationId == stationId.Value).ToList();
-                return filtered;
-            }
-            
-            return cachedTankEntities.ToList();
+            return Filter(cachedTankEntities.ToList());
         }
 
         var tanks = await _tankRepository.GetAllAsync(includeStation: true, includeFuelType: true, includeNozzles: false);
@@ -63,7 +56,7 @@ public class TankService : ITankService
         // Cache entities
         await _tankCache.SetAllAsync(tanks);
         
-        return tanks;
+        return Filter(tanks.ToList());
     }
 
     public async Task<IEnumerable<TankResult>> GetAllAsync(GetTankDto dto)
@@ -73,7 +66,7 @@ public class TankService : ITankService
             _logger.LogInformation("Getting all tanks with StationId: {StationId}", dto.StationId);
 
             // Apply authorization filtering
-            int? authStationId = _signInService.GetCurrentStationIds().FirstOrDefault();
+            int? authStationId = _signInService.GetCurrentStationId();
             var stationId = authStationId ?? dto.StationId;
 
             var tanks = await GetCachedTanksAsync();
@@ -146,12 +139,11 @@ public class TankService : ITankService
             _tankRepository.Create(tank);
             await _unitOfWork.SaveChangesAsync();
 
-            var tankResult = _mapper.Map<TankResult>(tank);
+            tank = await _tankRepository.DetailsAsync(tank.Id, includeStation: true, includeFuelType: true, includeNozzles: false);
 
             // Update caches incrementally - cache entity, not DTO
-            await _tankCache.UpdateCacheAfterCreateAsync(tank);
-
-            _logger.LogInformation("Successfully created tank with ID: {Id}", tank.Id);
+            var tankResult = _mapper.Map<TankResult>(tank);
+            await _tankCache.UpdateCacheAfterCreateAsync(tank!);
 
             return Result.Success(tankResult);
         }
@@ -159,11 +151,11 @@ public class TankService : ITankService
         {
             _logger.LogError(ex, "Error creating tank with StationId: {StationId}, FuelTypeId: {FuelTypeId}, Number: {Number}", 
                 dto.StationId, dto.FuelTypeId, dto.Number);
-            return Result.Failure<TankResult>(Resource.EntityNotFound);
+            return Result.Failure<TankResult>(ex.Message);
         }
     }
 
-    public async Task<ResultDto<TankResult>> UpdateAsync(int id, TankDto dto)
+    public async Task<ResultDto<TankResult>> UpdateAsync(int id, EditTankDto dto)
     {
         try
         {
@@ -261,5 +253,27 @@ public class TankService : ITankService
             _logger.LogError(ex, "Error getting tank details for ID: {Id}", id);
             return null;
         }
+    }
+
+    private List<Tank> Filter (List<Tank> tanks)
+    {
+        var scope = _signInService.GetCurrentScope();
+        var cityId = _signInService.GetCurrentCityId();
+        var areaId = _signInService.GetCurrentAreaId();
+        var stationId = _signInService.GetCurrentStationId();
+        
+        if (scope == Scope.ALL)
+            return tanks;
+
+        if (scope == Scope.City)
+            return tanks.Where(x => x.Station!.CityId == cityId).ToList();
+
+        if (scope == Scope.Area)
+            return tanks.Where(x => x.Station!.AreaId == areaId).ToList();
+
+        if (scope == Scope.Station || scope == Scope.Self)
+            return tanks.Where(x => x.Station!.Id == stationId).ToList();
+
+        throw new NotImplementedException();
     }
 }

@@ -52,10 +52,12 @@ namespace FuelMaster.HeadOffice.Core.Entities
             IdentificationNumber = identificationNumber;
             CardNumber = cardNumber;
             Address = address;
-            StationId = stationId;
             PTSNumber = pTSNumber;
             Scope = scope;
             RoleId = roleId;
+            StationId = scope == Scope.Station ? stationId : null;
+            AreaId = scope == Scope.Area ? areaId : null;
+            CityId = scope == Scope.City ? cityId : null;
         }
     
         public void Update(string fullName, string cardNumber, Scope scope, int roleId, int? stationId = null, int? areaId = null, int? cityId = null, string? phoneNumber = null, string? emailAddress = null, int? age = null, string? identificationNumber = null, string? address = null, string? pTSNumber = null)
@@ -76,11 +78,13 @@ namespace FuelMaster.HeadOffice.Core.Entities
             IdentificationNumber = identificationNumber;
             CardNumber = cardNumber;
             Address = address;
-            StationId = stationId;
             PTSNumber = pTSNumber;
             UpdatedAt = DateTimeCulture.Now;
-            Scope = scope;
             RoleId = roleId;
+            Scope = scope;
+            StationId = scope == Scope.Station ? stationId : null;
+            AreaId = scope == Scope.Area ? areaId : null;
+            CityId = scope == Scope.City ? cityId : null;
         }
     }
 }

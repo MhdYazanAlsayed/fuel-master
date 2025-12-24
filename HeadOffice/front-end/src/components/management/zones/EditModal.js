@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import ModalCenter from 'components/shared/ModalCenter';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zoneService = DependenciesInjector.services.zoneService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const EditModal = ({ open, setOpen, zone, handleUpdateZone }) => {
+  const _languageService = useService(Services.LanguageService);
+  const _zoneService = useService(Services.ZoneService);
+
   const [formData, setFormData] = useState({
     arabicName: '',
     englishName: ''

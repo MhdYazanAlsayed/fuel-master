@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -8,14 +7,21 @@ import EditPasswordModal from './EditPasswordModal';
 import Loader from 'components/shared/Loader';
 import DetailsModal from './DetailsModal';
 import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _employeeService = DependenciesInjector.services.employeeSerivce;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.EmployeesShow))
+  const _languageService = useService(Services.LanguageService);
+  const _employeeService = useService(Services.EmployeeService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.EmployeeView))
     return <Navigate to="/errors/404" />;
+
+  const canManageEmployees = _permissionService.check(
+    AreaOfAccess.EmployeeManage
+  );
 
   // States
   const [employees, setEmployees] = useState([]);
@@ -39,30 +45,12 @@ const Index = () => {
       Cell: data => <>{data?.user?.userName}</>
     },
     {
-      header: _languageService.resources.group,
-      Cell: data => (
-        <>
-          {_languageService.isRTL
-            ? data?.user?.group?.arabicName
-            : data?.user?.group?.englishName}
-        </>
-      )
+      header: _languageService.resources.role,
+      Cell: data => <>{_languageService.resources.scopes[data.role.id]}</>
     },
     {
       header: _languageService.resources.cardNumber,
       Cell: data => <>{data?.cardNumber}</>
-    },
-    {
-      header: _languageService.resources.station,
-      Cell: data => (
-        <>
-          {data.station === null
-            ? ' - '
-            : _languageService.isRTL
-            ? data?.station?.arabicName
-            : data?.station?.englishName}
-        </>
-      )
     },
     {
       header: _languageService.resources.isActive,
@@ -84,7 +72,7 @@ const Index = () => {
               {_languageService.resources.details}
             </Dropdown.Item>
 
-            {_roleManager.check(Permissions.EmployeesEdit) && (
+            {canManageEmployees && (
               <Fragment>
                 <Dropdown.Item as={Link} to={`/employees/${data.id}/edit`}>
                   {_languageService.resources.edit}
@@ -119,6 +107,7 @@ const Index = () => {
     const response = await _employeeService.getPaginationAsync(
       pagination.currentPage
     );
+    console.log(response);
     if (!response) return;
 
     setPagination(prev => ({
@@ -156,11 +145,13 @@ const Index = () => {
         employee={current}
       />
 
-      <EditPasswordModal
-        open={editPasswordModal}
-        setOpen={setEditPasswordModal}
-        employeeId={current?.id}
-      />
+      {canManageEmployees && (
+        <EditPasswordModal
+          open={editPasswordModal}
+          setOpen={setEditPasswordModal}
+          employeeId={current?.id}
+        />
+      )}
     </Loader>
   );
 };

@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FormCard from 'components/shared/FormCard';
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
@@ -6,16 +5,19 @@ import { useEvents } from 'hooks/useEvents';
 import { Navigate, useNavigate } from 'react-router-dom';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _nozzleService = DependenciesInjector.services.nozzleService;
-const _stationService = DependenciesInjector.services.stationService;
-const _tankService = DependenciesInjector.services.tankService;
-const _pumpService = DependenciesInjector.services.pumpService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Create = () => {
-  if (!_roleManager.check(Permissions.NozzlesCreate))
+  const _languageService = useService(Services.LanguageService);
+  const _nozzleService = useService(Services.NozzleService);
+  const _stationService = useService(Services.StationService);
+  const _tankService = useService(Services.TankService);
+  const _pumpService = useService(Services.PumpService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationManage))
     return <Navigate to="/errors/404" />;
 
   // States
@@ -84,7 +86,9 @@ const Create = () => {
       response.map((item, index) => (
         <option value={item.id} key={index}>
           {_languageService.resources.tankNumber + ' ' + item.number} {' - '}
-          {_languageService.resources.fuelTypes[item.fuelType]}
+          {_languageService.isRTL
+            ? item.fuelType.arabicName
+            : item.fuelType.englishName}
         </option>
       ))
     );
@@ -282,7 +286,7 @@ const Create = () => {
               formData.pumpId === -1 ||
               formData.amount < 0 ||
               formData.volume < 0 ||
-              formData.totalizer < 0 
+              formData.totalizer < 0
             }
           >
             {_languageService.resources.create}

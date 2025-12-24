@@ -62,6 +62,13 @@ export const managementRoutes = {
       to: '/cities'
     },
     {
+      name: 'Areas',
+      keyword: 'areas',
+      active: true,
+      icon: 'map-location',
+      to: '/areas'
+    },
+    {
       name: 'Fuel Types',
       keyword: 'fuelTypesText',
       active: true,
@@ -172,21 +179,20 @@ export const usersAndGroupsRoutes = {
       ]
     },
     {
-      name: 'Groups & Roles',
+      name: 'Roles & Permissions',
       active: true,
-      keyword: 'groupsAndRoles',
-      icon: 'people-group',
+      icon: 'shield-alt',
       children: [
         {
           name: 'Show all',
-          to: '/groups',
+          to: '/roles',
           keyword: 'showAll',
           active: true
         },
         {
           name: 'Create new',
           keyword: 'createNew',
-          to: '/groups/create',
+          to: '/roles/create',
           active: true
         }
       ]

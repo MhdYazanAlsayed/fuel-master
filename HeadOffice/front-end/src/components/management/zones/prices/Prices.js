@@ -6,15 +6,17 @@ import { Badge, Dropdown } from 'react-bootstrap';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Navigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zonePriceService = DependenciesInjector.services.zonePriceService;
-// const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Prices = () => {
-  // if (!_roleManager.check(Permissions.ShowPrices))
-  //   return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  const _zonePriceService = useService(Services.ZonePriceService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.PricingView))
+    return <Navigate to={'/errors/404'} />;
 
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);

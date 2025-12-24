@@ -27,7 +27,7 @@ public class PricingService : IPricingService
         _logger = logger;
     }
 
-    public async Task<List<ZonePrice>> ChangePricesAsync(int zoneId, List<ChangePricesDto> dto)
+    public async Task ChangePricesAsync(int zoneId, List<ChangePricesDto> dto)
     {
         // Extract fuel type IDs to avoid using dto.Any() in queries
         var fuelTypeIds = dto.Select(d => d.FuelTypeId).ToList();
@@ -73,7 +73,6 @@ public class PricingService : IPricingService
             throw new UnauthorizedAccessException();
         }
 
-        var changedZonePrices = new List<ZonePrice>();
         await _unitOfWork.BeginTransactionAsync();
         try
         {
@@ -94,15 +93,11 @@ public class PricingService : IPricingService
 
                 _logger.LogInformation("Price changed for zone {ZoneId} with fuel type {FuelTypeId} to {NewPrice}", zoneId, item.FuelTypeId, item.Price);
             
-                changedZonePrices.Add(result.Zone.Prices.Single(x => x.FuelTypeId == item.FuelTypeId));
-            
                 _zoneRepository.Update(result.Zone);
             }
 
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.CommitTransactionAsync();
-
-            return changedZonePrices;
         }
         catch (Exception ex)
         {

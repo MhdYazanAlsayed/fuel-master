@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -8,18 +7,22 @@ import DeleteModal from './DeleteModal';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _pumpService = DependenciesInjector.services.pumpService;
-const _roleManager = DependenciesInjector.services.roleManager;
-const _stationService = DependenciesInjector.services.stationService;
-const _identityService = DependenciesInjector.services.identityService;
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.PumpsShow))
+  const _languageService = useService(Services.LanguageService);
+  const _pumpService = useService(Services.PumpService);
+  const _stationService = useService(Services.StationService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to="/errors/404" />;
 
+  const canManagePumps = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
   // States
   const [stations, setStations] = useState([]);
   const [pumps, setPumps] = useState([]);
@@ -61,10 +64,10 @@ const Index = () => {
     {
       header: '',
       headerProps: { className: 'text-start' },
-      Cell: data => (
-        <CardDropdown>
-          <div className="py-2">
-            {_roleManager.check(Permissions.PumpsEdit) && (
+      Cell: data =>
+        canManagePumps && (
+          <CardDropdown>
+            <div className="py-2">
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer"
@@ -72,9 +75,6 @@ const Index = () => {
               >
                 {_languageService.resources.edit}
               </Dropdown.Item>
-            )}
-
-            {data.canDelete && _roleManager.check(Permissions.PumpsDelete) && (
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer text-danger"
@@ -82,10 +82,9 @@ const Index = () => {
               >
                 {_languageService.resources.delete}
               </Dropdown.Item>
-            )}
-          </div>
-        </CardDropdown>
-      )
+            </div>
+          </CardDropdown>
+        )
     }
   ];
 
@@ -107,9 +106,6 @@ const Index = () => {
   };
 
   const handleGetStationsAsync = async () => {
-    if (_identityService.currentUser.stationId !== null) {
-      return;
-    }
     const response = await _stationService.getAllAsync();
     if (!response) return;
     setStations(response);
@@ -192,51 +188,53 @@ const Index = () => {
         pagination={pagination}
         setPagination={setPagination}
         buttons={
-          _identityService.currentUser.stationId === null && (
-            <Fragment>
-              <select className="form-control" onChange={handleOnStationChange}>
-                <option value="-1">
-                  {_languageService.resources.selectStation}
-                </option>
+          <Fragment>
+            {/* <select className="form-control" onChange={handleOnStationChange}>
+              <option value="-1">
+                {_languageService.resources.selectStation}
+              </option>
 
-                {stations.map((x, index) => (
-                  <option key={index} value={x.id}>
-                    {_languageService.isRTL ? x.arabicName : x.englishName}
-                  </option>
-                ))}
-              </select>
-              {_roleManager.check(Permissions.PumpsCreate) && (
-                <button
-                  className="btn btn-primary ms-2"
-                  onClick={() => setCreateModal(true)}
-                >
-                  <i className="fa-solid fa-plus"></i>
-                </button>
-              )}
-            </Fragment>
-          )
+              {stations.map((x, index) => (
+                <option key={index} value={x.id}>
+                  {_languageService.isRTL ? x.arabicName : x.englishName}
+                </option>
+              ))}
+            </select> */}
+            {canManagePumps && (
+              <button
+                className="btn btn-primary ms-2"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            )}
+          </Fragment>
         }
       />
 
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        id={current}
-        refresh={handleRefershDelete}
-      />
+      {canManagePumps && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleRefreshPage={handleRefreshPage}
+          />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleRefreshPage={handleRefreshPage}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            pump={currentPump}
+            handleUpdatePump={handleUpdatePump}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        pump={currentPump}
-        handleUpdatePump={handleUpdatePump}
-      />
+          <DeleteModal
+            open={deleteModal}
+            setOpen={setDeleteModal}
+            id={current}
+            refresh={handleRefershDelete}
+          />
+        </>
+      )}
     </Loader>
   );
 };

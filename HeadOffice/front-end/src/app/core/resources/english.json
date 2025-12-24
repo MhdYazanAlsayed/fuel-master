@@ -265,5 +265,18 @@
   "priceAfterChange": "Price After Change",
   "tenantName": "Tenant Name",
   "example": "example",
-  "checkingAuthenticationHealth": "Checking authentication health..."
+  "checkingAuthenticationHealth": "Checking authentication health...",
+  "areas": "Areas",
+  "area": "Area",
+  "createArea": "Create Area",
+  "editArea": "Edit Area",
+  "role": "Role",
+  "scope": "Scope",
+  "scopes": {
+    "0": "All",
+    "1": "City",
+    "2": "Area",
+    "3": "Station",
+    "4": "Employee"
+  }
 }

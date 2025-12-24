@@ -5,6 +5,7 @@ using FuelMaster.HeadOffice.Application.Helpers;
 using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
+using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Interfaces;
 using FuelMaster.HeadOffice.Core.Repositories.Interfaces;
@@ -20,18 +21,21 @@ public class FuelTypeService : IFuelTypeService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IEntityCache<FuelType> _fuelTypeCache;
+    private readonly IEntityCache<Zone> _zoneCache;
     public FuelTypeService(
         ILogger<FuelTypeService> logger,
         IFuelTypeRepository fuelTypeRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        IEntityCache<FuelType> fuelTypeCache)
+        IEntityCache<FuelType> fuelTypeCache,
+        IEntityCache<Zone> zoneCache)
     {
         _logger = logger;
         _fuelTypeRepository = fuelTypeRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _fuelTypeCache = fuelTypeCache;
+        _zoneCache = zoneCache;
     }
 
     public async Task<ResultDto<FuelTypeResult>> CreateAsync(FuelTypeDto dto)
@@ -44,7 +48,7 @@ public class FuelTypeService : IFuelTypeService
 
             // Update caches incrementally
             await _fuelTypeCache.UpdateCacheAfterCreateAsync(fuelType);
-
+            
             _logger.LogInformation("Successfully created fuel type with ID: {Id}", fuelType.Id);
 
             return Result.Success(_mapper.Map<FuelTypeResult>(fuelType));

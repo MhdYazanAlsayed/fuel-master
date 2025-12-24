@@ -1,4 +1,5 @@
 using FuelMaster.HeadOffice.Application.Services.Interfaces;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Tenancy;
 using FuelMaster.HeadOffice.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,15 +11,13 @@ public class CacheService : ICacheService
 {
     private readonly IMemoryCache _cache;
     private readonly CacheConfiguration _cacheConfig;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private const string TenantIdItemKey = "TenantId";
-
+    private readonly ICurrentTenant _currentTenant;
     public CacheService(IMemoryCache cache, IOptions<CacheConfiguration> cacheConfig, 
-        IHttpContextAccessor httpContextAccessor)
+        ICurrentTenant currentTenant)
     {
         _cache = cache;
         _cacheConfig = cacheConfig.Value;
-        _httpContextAccessor = httpContextAccessor;
+        _currentTenant = currentTenant;
     }
 
     public Task<T?> GetAsync<T>(string key) where T : class
@@ -136,12 +135,7 @@ public class CacheService : ICacheService
     // Tenant context helper methods
     private string? GetCurrentTenantId()
     {
-        var context = _httpContextAccessor.HttpContext;
-        if (context?.Items.TryGetValue(TenantIdItemKey, out var tenantId) == true)
-        {
-            return tenantId?.ToString();
-        }
-        return null;
+        return _currentTenant.TenantId.ToString();
     }
 
     private string GetTenantAwareKey(string baseKey)

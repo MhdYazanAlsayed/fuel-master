@@ -59,7 +59,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
 
         public Nozzle AddNozzle(int pumpId, int number, decimal amount, decimal volume, decimal totalizer, decimal price, string? readerNumber = null)
         {
-            var nozzle = new Nozzle(Id, pumpId, number, amount, volume, totalizer, price, readerNumber);
+            var nozzle = new Nozzle(Id, pumpId, FuelTypeId, number, amount, volume, totalizer, price, readerNumber);
             _nozzles.Add(nozzle);
 
             return nozzle;
@@ -70,17 +70,15 @@ namespace FuelMaster.HeadOffice.Core.Entities
             if (capacity <= 0) throw new ArgumentException("Capacity must be greater than 0");
             if (maxLimit <= 0) throw new ArgumentException("Max limit must be greater than 0");
             if (minLimit <= 0) throw new ArgumentException("Min limit must be greater than 0");
-            if (currentLevel <= 0) throw new ArgumentException("Current level must be greater than 0");
-            if (currentVolume <= 0) throw new ArgumentException("Current volume must be greater than 0");
+            if (currentLevel < 0) throw new ArgumentException("Current level must be greater than 0");
+            if (currentVolume < 0) throw new ArgumentException("Current volume must be greater than 0");
             if (number <= 0) throw new ArgumentException("Number must be greater than 0");
             if (stationId < 0) throw new ArgumentException("Station id must be greater than 0");
             if (fuelTypeId < 0) throw new ArgumentException("Fuel type id must be greater than 0");
             if (maxLimit >= capacity) throw new ArgumentException("Max limit must be less than capacity");
             if (minLimit >= maxLimit) throw new ArgumentException("Min limit must be less than max limit");
             if (currentVolume > maxLimit) throw new ArgumentException("Current volume must be less than max limit");
-            if (currentVolume < minLimit) throw new ArgumentException("Current volume must be greater than min limit");
             if (currentLevel > maxLimit) throw new ArgumentException("Current level must be less than max limit");
-            if (currentLevel < minLimit) throw new ArgumentException("Current level must be greater than min limit");
         }
      
     }

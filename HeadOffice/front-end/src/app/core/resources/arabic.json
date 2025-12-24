@@ -267,5 +267,18 @@
   "priceAfterChange": "السعر بعد التحديث",
   "tenantName": "اسم المستأجر",
   "example": "مثال",
-  "checkingAuthenticationHealth": "يتم التحقق من صحة الدخول..."
+  "checkingAuthenticationHealth": "يتم التحقق من صحة الدخول...",
+  "areas": "المناطق",
+  "area": "المنطقة",
+  "createArea": "انشاء منطقة",
+  "editArea": "تعديل المنطقة",
+  "role": "الصلاحية",
+  "scope": "المجال",
+  "scopes": {
+    "0": "الكل",
+    "1": "المدينة",
+    "2": "المنطقة",
+    "3": "المحطة",
+    "4": "الموظف"
+  }
 }

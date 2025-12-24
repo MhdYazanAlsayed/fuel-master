@@ -40,9 +40,22 @@ public class FuelMasterRoleService : IFuelMasterRoleService
         return _mapper.Map<List<FuelMasterRoleResult>>(roles);
     }
 
-    public Task<PaginationDto<FuelMasterRoleResult>> GetPaginationAsync(int currentPage)
+    public async Task<PaginationDto<FuelMasterRoleResult>> GetPaginationAsync(int currentPage)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _roleRepository.GetPaginationAsync(currentPage, 20);
+
+            var mappedData = _mapper.Map<List<FuelMasterRoleResult>>(result.Data);
+            _logger.LogInformation("Retrieved paginated roles for page {CurrentPage}", currentPage);
+
+            return new PaginationDto<FuelMasterRoleResult>(mappedData, (int)Math.Ceiling(result.TotalCount / 20m));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting paginated roles for page: {CurrentPage}", currentPage);
+            return new PaginationDto<FuelMasterRoleResult>(new List<FuelMasterRoleResult>(), 0);
+        }
     }
 
     public async Task<ResultDto<FuelMasterRoleResult>> CreateAsync(FuelMasterRoleDto dto)
@@ -115,7 +128,7 @@ public class FuelMasterRoleService : IFuelMasterRoleService
 
     public async Task<FuelMasterRoleResult?> DetailsAsync(int id)
     {
-        var role = await _roleRepository.GetAllAsync(includeAreasOfAccess: true);
+        var role = await _roleRepository.DetailsAsync(id, includeAreasOfAccess: true);
         
         if (role is null)
             return null;

@@ -72,12 +72,15 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("EnglishName");
 
+                    b.Property<int>("StationCount")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Area");
+                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes.FuelType", b =>
@@ -575,13 +578,14 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CityId");
-
                     b.HasIndex("ZoneId");
 
                     b.HasIndex("AreaId", "Id")
                         .IsUnique()
                         .HasFilter("[AreaId] IS NOT NULL");
+
+                    b.HasIndex("CityId", "Id")
+                        .IsUnique();
 
                     b.ToTable("Stations");
                 });

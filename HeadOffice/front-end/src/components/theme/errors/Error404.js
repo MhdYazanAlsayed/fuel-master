@@ -3,10 +3,11 @@ import { Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const Error404 = () => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
 
   return (
     <Card className="text-center">

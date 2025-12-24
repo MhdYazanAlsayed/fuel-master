@@ -1,11 +1,14 @@
 import { toast } from 'react-toastify';
+import WebService from 'app/core/abstracts/webService';
+import Services from 'app/core/utilities/Services';
 
-export default class ReportService {
+export default class ReportService extends WebService {
   endpoint = 'api/reports';
 
-  constructor(_httpService, _languageService) {
-    this._httpService = _httpService;
-    this._languageService = _languageService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
   }
 
   async getRealTimeAsync(stationId) {

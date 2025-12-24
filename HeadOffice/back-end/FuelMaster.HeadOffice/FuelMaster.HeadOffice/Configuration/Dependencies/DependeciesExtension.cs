@@ -4,7 +4,6 @@ using Serilog;
 using Serilog.Events;
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 
 namespace FuelMaster.HeadOffice.Extensions.Dependencies
 {

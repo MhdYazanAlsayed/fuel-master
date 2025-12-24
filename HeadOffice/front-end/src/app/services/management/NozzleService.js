@@ -1,11 +1,14 @@
 import { toast } from 'react-toastify';
+import WebService from 'app/core/abstracts/webService';
+import Services from 'app/core/utilities/Services';
 
-export default class NozzleService {
+export default class NozzleService extends WebService {
   _api = 'api/nozzles';
 
-  constructor(httpService, languageService) {
-    this._httpService = httpService;
-    this._languageService = languageService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
   }
 
   async getPaginationAsync(currentPage) {

@@ -34,12 +34,13 @@ namespace FuelMaster.HeadOffice.Core.Entities
         public FuelType? FuelType { get; private set; }
         public int FuelTypeId { get; private set; }
 
-        internal Nozzle(int tankId , int pumpId, int number, decimal amount, decimal volume, decimal totalizer, decimal price , string? readerNumber = null)
+        internal Nozzle(int tankId , int pumpId, int fuelTypeId, int number, decimal amount, decimal volume, decimal totalizer, decimal price , string? readerNumber = null)
         {
-            Validate(tankId, pumpId, number, amount, volume);
+            Validate(tankId, pumpId, fuelTypeId, number, amount, volume);
             
             TankId = tankId;
             PumpId = pumpId;
+            FuelTypeId = fuelTypeId;
             Number = number;
             Status = NozzleStatus.Disabled;
             Amount = amount;
@@ -49,8 +50,9 @@ namespace FuelMaster.HeadOffice.Core.Entities
             Price = price;
         }
 
-        private void Validate(int tankId, int pumpId, int number, decimal amount, decimal volume)
+        private void Validate(int tankId, int pumpId, int fuelTypeId, int number, decimal amount, decimal volume)
         {
+            if (fuelTypeId <= 0) throw new ArgumentException("FuelType id must be greater than 0");
             if (tankId <= 0) throw new ArgumentException("Tank id must be greater than 0");
             if (pumpId <= 0) throw new ArgumentException("Pump id must be greater than 0");
             if (number <= 0) throw new ArgumentException("Number must be greater than 0");
@@ -70,17 +72,24 @@ namespace FuelMaster.HeadOffice.Core.Entities
             UpdatedAt = DateTimeCulture.Now;    
         }
 
-        public void Update(decimal amount, decimal volume, decimal totalizer, string? readerNumber)
+        public void Update(decimal amount, decimal volume, decimal totalizer, int number, string? readerNumber)
         {
-            Validate(TankId, PumpId, Number, amount, volume);
+            Validate(TankId, PumpId, FuelTypeId, number, amount, volume);
 
             Amount = amount;
             Volume = volume;
             Totalizer = totalizer;
+            Number = number;
             ReaderNumber = readerNumber;
             UpdatedAt = DateTimeCulture.Now;
 
             // TODO : After this operation we have to add this to activity log.
+        }
+   
+        public void UpdateStatus(NozzleStatus status)
+        {
+            Status = status;
+            UpdatedAt = DateTimeCulture.Now;
         }
     }
 }

@@ -1,21 +1,18 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FormCard from 'components/shared/FormCard';
 import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _employeeService = DependenciesInjector.services.employeeSerivce;
-const _groupService = DependenciesInjector.services.groupService;
-const _stationService = DependenciesInjector.services.stationService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { Scope } from 'app/core/abstracts/Scope';
 
 const Create = () => {
-  if (!_roleManager.check(Permissions.EmployeesCreate))
-    return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  // const _roleService = useService(Services.RoleService);
+  const _employeeService = useService(Services.EmployeeService);
+  const _stationService = useService(Services.StationService);
 
   // States
   const [formData, setFormData] = useState({
@@ -30,9 +27,12 @@ const Create = () => {
     age: '',
     identificationNumber: '',
     address: '',
-    stationId: -1
+    stationId: -1,
+    cityId: -1,
+    areaId: -1,
+    scope: Scope.ALL
   });
-  const [groups, setGroups] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
 

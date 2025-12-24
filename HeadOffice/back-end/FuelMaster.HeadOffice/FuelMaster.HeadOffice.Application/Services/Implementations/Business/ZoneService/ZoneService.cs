@@ -2,10 +2,10 @@ using AutoMapper;
 using FuelMaster.HeadOffice.Application.DTOs;
 using FuelMaster.HeadOffice.Application.Extensions;
 using FuelMaster.HeadOffice.Application.Helpers;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Pricing;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Pricing.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core.Zones;
 using FuelMaster.HeadOffice.Core.Entities;
@@ -129,16 +129,14 @@ public class ZoneService : IZoneService
         var cachedZones = await GetCachedZonesAsync();
         var stations = await _stationRepository.GetAllAsync();
 
-        return stations.Select(x => 
+        return cachedZones.Select(x => new ZoneResult 
         {
-            return new ZoneResult() 
-            {
-                Id = x.Id,
-                ArabicName = x.ArabicName,
-                EnglishName = x.EnglishName,
-                CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id)
-            };
-        }).ToList();
+            Id = x.Id,
+            ArabicName = x.ArabicName,
+            EnglishName = x.EnglishName,
+            CanDelete = stations == null || !stations.Any(s => s.Zone?.Id == x.Id)
+        })
+        .ToList();
     }
 
     public async Task<PaginationDto<ZoneResult>> GetPaginationAsync(int currentPage)
@@ -191,10 +189,15 @@ public class ZoneService : IZoneService
 
             _zoneRepository.Update(zone);
             await _unitOfWork.SaveChangesAsync();
-            await _zoneCache.UpdateCacheAfterEditAsync(zone);
+
+            zone = await _zoneRepository.DetailsAsync(
+                zoneId, 
+                includePrices: true, includeFuelType: true);   
+
+            await _zoneCache.UpdateCacheAfterEditAsync(zone!);
         }
 
-        return _mapper.Map<IEnumerable<ZonePriceResult>>(zone.Prices);
+        return _mapper.Map<IEnumerable<ZonePriceResult>>(zone!.Prices);
     }
 
     public async Task<ResultDto> ChangePriceAsync(int zoneId, ChangePriceDto dto)
@@ -202,16 +205,12 @@ public class ZoneService : IZoneService
         try
         {
             var mappedPrices = _mapper.Map<List<ChangePricesDto>>(dto.Prices);
-            var changedZonePrices = await _pricingService.ChangePricesAsync(zoneId, mappedPrices);
+            await _pricingService.ChangePricesAsync(zoneId, mappedPrices);
 
-            foreach (var zonePrice in changedZonePrices)
-            {
-                if (zonePrice.Zone is null)
-                    throw new ZoneNotFoundException($"Zone with id {zoneId} not found");
+            var zone = await _zoneRepository
+            .DetailsAsync(zoneId, includePrices: true, includeFuelType: true);
 
-                await _zoneCache.UpdateCacheAfterEditAsync(zonePrice.Zone);
-            }
-
+            await _zoneCache.UpdateCacheAfterEditAsync(zone!);
             return Result.Success();
         }
         catch (ZoneNotFoundException)

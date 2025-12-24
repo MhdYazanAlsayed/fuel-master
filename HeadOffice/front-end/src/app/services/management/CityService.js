@@ -1,11 +1,14 @@
 import { toast } from 'react-toastify';
+import WebService from 'app/core/abstracts/webService';
+import Services from 'app/core/utilities/Services';
 
-export default class CityService {
+export default class CityService extends WebService {
   _api = 'api/cities';
 
-  constructor(httpService, languageService) {
-    this._httpService = httpService;
-    this._languageService = languageService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
   }
 
   async getPaginationAsync(currentPage) {
@@ -27,7 +30,7 @@ export default class CityService {
 
     if (!response || !response.ok) {
       toast.error(this._languageService.resources.sthWentWrong);
-      return [];
+    return [];
     }
 
     return await response.json();

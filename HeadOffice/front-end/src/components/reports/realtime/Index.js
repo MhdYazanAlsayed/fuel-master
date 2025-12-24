@@ -6,13 +6,16 @@ import '../../styles/reports/realtime.css';
 import Loader from 'components/shared/Loader';
 import StationSelect from './StationSelect';
 import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
-const _languageService = DependenciesInjector.services.languageService;
-const _reportService = DependenciesInjector.services.reportService;
-const _httpService = DependenciesInjector.services.httpService;
-const _identityService = DependenciesInjector.services.identityService;
-
+//
 const Index = () => {
+  const _languageService = useService(Services.LanguageService);
+  const _reportService = useService(Services.ReportService);
+  const _httpService = useService(Services.HttpService);
+  const _identityService = useService(Services.IdentityService);
+
   // States
   const [nozzles, setNozzles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,29 +26,26 @@ const Index = () => {
   }, []);
 
   const handleRealTimeConnectionAsync = async () => {
-    const connection = new HubConnectionBuilder()
-      .withUrl(_httpService._api + 'realtime?tenantId=foryou', {
-        accessTokenFactory: () => _identityService.accessToken,
-        withCredentials: true
-      })
-      .build();
-
-    await connection.start();
-
-    connection.on('realtime-report', data => {
-      setNozzles(prev => {
-        for (let currentNozzle of data.nozzles) {
-          const index = prev.findIndex(x => x.id === currentNozzle.id);
-          if (index === -1) throw new Error();
-          console.log(currentNozzle);
-          prev[index].status = currentNozzle.status;
-          prev[index].amount = currentNozzle.amount;
-          prev[index].volume = currentNozzle.volume;
-        }
-
-        return [...prev];
-      });
-    });
+    // const connection = new HubConnectionBuilder()
+    //   .withUrl(_httpService._api + 'realtime?tenantId=foryou', {
+    //     accessTokenFactory: () => _identityService.accessToken,
+    //     withCredentials: true
+    //   })
+    //   .build();
+    // await connection.start();
+    // connection.on('realtime-report', data => {
+    //   setNozzles(prev => {
+    //     for (let currentNozzle of data.nozzles) {
+    //       const index = prev.findIndex(x => x.id === currentNozzle.id);
+    //       if (index === -1) throw new Error();
+    //       console.log(currentNozzle);
+    //       prev[index].status = currentNozzle.status;
+    //       prev[index].amount = currentNozzle.amount;
+    //       prev[index].volume = currentNozzle.volume;
+    //     }
+    //     return [...prev];
+    //   });
+    // });
   };
 
   const handleOnLoadComponentAsync = async () => {
@@ -73,7 +73,7 @@ const Index = () => {
         <Card.Header>
           <div className="d-flex align-items-center justify-content-between">
             <h4>{_languageService.resources.nozzles}</h4>
-            <StationSelect handleChangeStation={handleChangeStationAsync} />
+            {/* <StationSelect handleChangeStation={handleChangeStationAsync} /> */}
           </div>
         </Card.Header>
         <Card.Body>

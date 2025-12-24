@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -9,14 +8,22 @@ import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _cityService = DependenciesInjector.services.cityService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.CitiesShow))
+  const _languageService = useService(Services.LanguageService);
+  const _cityService = useService(Services.CityService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to={'/errors/404'} />;
+
+  // Permissions
+  const canManageCities = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
 
   // States
   const [cities, setCities] = useState([]);
@@ -44,10 +51,10 @@ const Index = () => {
     {
       header: '',
       headerProps: { className: 'text-start' },
-      Cell: data => (
-        <CardDropdown>
-          <div className="py-2">
-            {_roleManager.check(Permissions.CitiesEdit) && (
+      Cell: data =>
+        canManageCities && (
+          <CardDropdown>
+            <div className="py-2">
               <Dropdown.Item
                 as={'div'}
                 className="cursor-pointer"
@@ -55,9 +62,7 @@ const Index = () => {
               >
                 {_languageService.resources.edit}
               </Dropdown.Item>
-            )}
 
-            {data.canDelete && _roleManager.check(Permissions.CitiesDelete) && (
               <Dropdown.Item
                 className="text-danger cursor-pointer"
                 as={'div'}
@@ -65,10 +70,9 @@ const Index = () => {
               >
                 {_languageService.resources.delete}
               </Dropdown.Item>
-            )}
-          </div>
-        </CardDropdown>
-      )
+            </div>
+          </CardDropdown>
+        )
     }
   ];
 
@@ -127,36 +131,42 @@ const Index = () => {
         pagination={pagination}
         setPagination={setPagination}
         buttons={
-          <Fragment>
-            <button
-              className="btn btn-primary"
-              onClick={() => setCreateModal(true)}
-            >
-              <i className="fa-solid fa-plus"></i>
-            </button>
-          </Fragment>
+          canManageCities && (
+            <Fragment>
+              <button
+                className="btn btn-primary"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            </Fragment>
+          )
         }
       />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleRefreshPage={handleRefreshPage}
-      />
+      {canManageCities && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleRefreshPage={handleRefreshPage}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        city={currentCity}
-        handleUpdateCity={handleUpdateCity}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            city={currentCity}
+            handleUpdateCity={handleUpdateCity}
+          />
 
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        id={current}
-        handleRefreshPage={handleRefreshPage}
-      />
+          <DeleteModal
+            open={deleteModal}
+            setOpen={setDeleteModal}
+            id={current}
+            handleRefreshPage={handleRefreshPage}
+          />
+        </>
+      )}
     </Loader>
   );
 };

@@ -27,6 +27,23 @@ public class PumpRepository : IPumpRepository
         return entity;
     }
 
+    public async Task<Pump?> DetailsAsync(int id, bool includeStation = false, bool includeNozzles = false)
+    {
+        var query = _context.Pumps.AsQueryable();
+
+        if (includeStation)
+        {
+            query = query.Include(x => x.Station); 
+        }
+
+        if (includeNozzles)
+        {
+            query = query.Include(x => x.Nozzles);
+        }
+
+        return await query.SingleOrDefaultAsync(x => x.Id == id);
+    }
+
     public Task<List<Pump>> GetAllAsync(bool includeStation = false, bool includeNozzles = false)
     {
         var query = _context.Pumps.AsQueryable();

@@ -27,15 +27,53 @@ public class NozzleRepository : INozzleRepository
         return entity;
     }
 
-    public Task<List<Nozzle>> GetAllAsync(bool includeTank = false, bool includePump = false, bool includeFuelType = false)
+    public async Task<Nozzle?> DetailsAsync(int id, bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false)
     {
         var query = _context.Nozzles.AsQueryable();
         
-        if (includeTank)
+        if (includeStation)
         {
-            query = query.Include(n => n.Tank);
+            query = query
+                .Include(x => x.Tank)
+                .ThenInclude(x => x.Station);
         }
-        
+
+        // If includeStation = true -> Tank is already included
+        if (!includeStation && includeTank)
+        {
+            query = query.Include(x => x.Tank);
+        }
+
+        if (includePump)
+        {
+            query = query.Include(x => x.Pump);
+        }
+
+        if (includeFuelType)
+        {
+            query = query.Include(x => x.FuelType);
+        }
+
+        return await query.SingleOrDefaultAsync(x => x.Id == id);
+    }
+
+    public Task<List<Nozzle>> GetAllAsync(bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false)
+    {
+        var query = _context.Nozzles.AsQueryable();
+
+        if (includeStation)
+        {
+            query = query
+                .Include(x => x.Tank)
+                .ThenInclude(x => x.Station);
+        }
+
+        // If includeStation = true -> Tank is already included
+        if (!includeStation && includeTank)
+        {
+            query = query.Include(x => x.Tank);
+        }
+
         if (includePump)
         {
             query = query.Include(n => n.Pump);
@@ -49,15 +87,45 @@ public class NozzleRepository : INozzleRepository
         return query.ToListAsync();
     }
 
-    public async Task<(List<Nozzle>, int)> GetPaginationAsync(int page, int pageSize, bool includeTank = false, bool includePump = false, bool includeFuelType = false)
+    public async Task<List<Nozzle>> GetAllByStationIdAsync(int stationId, bool includeTank = false, bool includePump = false, bool includeFuelType = false)
     {
         var query = _context.Nozzles.AsQueryable();
-        
+
         if (includeTank)
         {
             query = query.Include(n => n.Tank);
         }
-        
+
+        if (includePump)
+        {
+            query = query.Include(n => n.Pump);
+        }
+
+        if (includeFuelType)
+        {
+            query = query.Include(n => n.FuelType);
+        }
+
+        return await query.Where(x => x.Tank!.StationId == stationId).ToListAsync();
+    }
+
+    public async Task<(List<Nozzle>, int)> GetPaginationAsync(int page, int pageSize, bool includeStation = false, bool includeTank = false, bool includePump = false, bool includeFuelType = false)
+    {
+        var query = _context.Nozzles.AsQueryable();
+
+        if (includeStation)
+        {
+            query = query
+                .Include(x => x.Tank)
+                .ThenInclude(x => x.Station);
+        }
+
+        // If includeStation = true -> Tank is already included
+        if (!includeStation && includeTank)
+        {
+            query = query.Include(x => x.Tank);
+        }
+
         if (includePump)
         {
             query = query.Include(n => n.Pump);

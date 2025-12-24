@@ -198,25 +198,17 @@ import ContactDetails from 'components/theme/app/support-desk/contact-details/Co
 import TicketsPreview from 'components/theme/app/support-desk/tickets-preview/TicketsPreview';
 import QuickLinks from 'components/theme/app/support-desk/quick-links/QuickLinks';
 import Reports from 'components/theme/app/support-desk/reports/Reports';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import Login from 'components/auth/Login';
 import Cities from 'components/management/cities/Index';
 import FuelTypes from 'components/management/fuel-types/Index';
 import AuthorizedLayout from './AuthorizedLayout';
 import Zones from 'components/management/zones/Index';
 import ChangePrices from 'components/management/zones/prices/ChangePrices';
-import PricesHistory from 'components/management/zones/prices/Prices';
 import Prices from 'components/management/zones/prices/Prices';
 import Histories from 'components/management/zones/prices/Histories';
 import Stations from 'components/management/stations/Index';
-import CreateStation from 'components/management/stations/Create';
-import EditStation from 'components/management/stations/Edit';
 import Tanks from 'components/management/tanks/Index';
-import CreateTank from 'components/management/tanks/Create';
-import EditTank from 'components/management/tanks/Edit';
 import Pumps from 'components/management/pumps/Index';
-import CreatePump from 'components/management/pumps/Create';
-import EditPump from 'components/management/pumps/Edit';
 import Nozzles from 'components/management/nozzles/Index';
 import CreateNozzle from 'components/management/nozzles/Create';
 import EditNozzle from 'components/management/nozzles/Edit';
@@ -236,6 +228,11 @@ import ProfileSettings from 'components/settings/Index';
 import Time from 'components/reports/time/Index';
 import { useService } from 'hooks/useService';
 import Services from 'app/core/utilities/Services';
+import Areas from 'components/management/areas/Index';
+import Roles from 'components/user-management/roles/Index';
+import CreateRole from 'components/user-management/roles/Create';
+import EditRole from 'components/user-management/roles/Edit';
+import RoleDetails from 'components/user-management/roles/Details';
 
 const Layout = () => {
   const _languageService = useService(Services.LanguageService);
@@ -279,53 +276,55 @@ const Layout = () => {
           <Route element={<AuthorizedLayout />}>
             {/* <Route path="/" element={<MainDashboard />} /> */}
             <Route path="/" element={<>Welcome !</>} />
-            {/* <Route path="/cities" element={<Cities />} />
+            <Route path="/cities" element={<Cities />} />
             <Route path="/fuel-types" element={<FuelTypes />} />
-
             <Route path="/zones" element={<Zones />} />
             <Route path="/zones/:zoneId/prices" element={<Prices />} />
             <Route
               path="/zones/prices/:zonePriceId/histories"
               element={<Histories />}
             />
+
             <Route
               path="/zones/:zoneId/change-prices"
               element={<ChangePrices />}
             />
-            <Route path="/zones/prices/history" element={<PricesHistory />} />
 
             <Route path="/stations" element={<Stations />} />
-            <Route path="/stations/create" element={<CreateStation />} />
-            <Route path="/stations/:id/edit" element={<EditStation />} />
-
             <Route path="/tanks" element={<Tanks />} />
-            <Route path="/tanks/create" element={<CreateTank />} />
-            <Route path="/tanks/:id/edit" element={<EditTank />} />
-
             <Route path="/pumps" element={<Pumps />} />
-            <Route path="/pumps/create" element={<CreatePump />} />
-            <Route path="/pumps/:id/edit" element={<EditPump />} />
 
             <Route path="/nozzles" element={<Nozzles />} />
             <Route path="/nozzles/create" element={<CreateNozzle />} />
             <Route path="/nozzles/:id/edit" element={<EditNozzle />} />
 
-            <Route path="/deliveries/create" element={<CreateDelivery />} />
-
+            <Route path="/areas" element={<Areas />} />
+            <Route path="/roles" element={<Roles />} />
+            <Route path="/roles/create" element={<CreateRole />} />
+            <Route path="/roles/:id/edit" element={<EditRole />} />
+            <Route path="/roles/:id/details" element={<RoleDetails />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/employees/create" element={<CreateEmployee />} />
             <Route path="/employees/:id/edit" element={<EditEmployee />} />
 
+            {/* 
+
+        
+
+            <Route path="/deliveries/create" element={<CreateDelivery />} />
+
+
+
             <Route path="/groups" element={<Groups />} />
             <Route path="/groups/create" element={<CreateGroup />} />
             <Route path="/groups/:id/edit" element={<EditGroup />} />
-            <Route path="/groups/:id/permissions" element={<Permissions />} />
+            <Route path="/groups/:id/permissions" element={<Permissions />} />*/}
 
             <Route path="/reports/realtime" element={<RealTime />} />
             <Route path="/reports/transactions" element={<Transaction />} />
             <Route path="/reports/deliveries" element={<Deliveries />} />
             <Route path="/reports/time" element={<Time />} />
-            <Route path="/account/settings" element={<ProfileSettings />} /> */}
+            <Route path="/account/settings" element={<ProfileSettings />} />
           </Route>
         </Route>
 

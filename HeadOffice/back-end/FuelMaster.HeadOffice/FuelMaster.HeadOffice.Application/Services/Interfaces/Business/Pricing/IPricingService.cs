@@ -8,5 +8,5 @@ namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Pricing
 
 public interface IPricingService : IScopedDependency
 {
-    Task<List<ZonePrice>> ChangePricesAsync(int zoneId, List<ChangePricesDto> dto);
+    Task ChangePricesAsync(int zoneId, List<ChangePricesDto> dto);
 }

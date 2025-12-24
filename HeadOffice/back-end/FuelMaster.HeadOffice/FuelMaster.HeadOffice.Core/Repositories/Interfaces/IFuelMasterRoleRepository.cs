@@ -6,8 +6,8 @@ namespace FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 
 public interface IFuelMasterRoleRepository : IRepository<FuelMasterRole>, IScopedDependency
 {
+    Task<FuelMasterRole?> DetailsAsync(int id, bool includeAreasOfAccess = false);
     Task<List<FuelMasterRole>> GetAllAsync(bool includeAreasOfAccess = false);
-    Task<(List<FuelMasterRole>, int)> GetPaginationAsync(int page, int pageSize, bool includeAreasOfAccess = false);
-    Task<FuelMasterRole?> DetailsAsync(int id);
+    Task<(List<FuelMasterRole> Data, int TotalCount)> GetPaginationAsync(int page, int pageSize, bool includeAreasOfAccess = false);
 }
 

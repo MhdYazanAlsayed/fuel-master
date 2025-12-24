@@ -1,18 +1,19 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FormCard from 'components/shared/FormCard';
 import Loader from 'components/shared/Loader';
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { useEvents } from 'hooks/useEvents';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zonePriceService = DependenciesInjector.services.zonePriceService;
-// const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const ChangePrices = () => {
-  // if (!_roleManager.check(Permissions.ChangePrices))
-  //   return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  const _zonePriceService = useService(Services.ZonePriceService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.PricingManage))
+    return <Navigate to={'/errors/404'} />;
 
   const [formData, setFormData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,14 +39,17 @@ const ChangePrices = () => {
     if (!response) return;
 
     setFormData(response);
-    console.log(response);
     setLoading(false);
   };
 
   const handleOnSubmitAsync = async e => {
     e.preventDefault();
 
-    const response = await _zonePriceService.changePriceAsync(zoneId, formData);
+    const data = formData.map(x => ({
+      fuelTypeId: x.fuelTypeId,
+      price: parseFloat(x.price)
+    }));
+    const response = await _zonePriceService.changePriceAsync(zoneId, data);
     if (!response.succeeded) return;
 
     navigate('/zones');
@@ -59,7 +63,7 @@ const ChangePrices = () => {
       <Loader loading={loading}>
         <form onSubmit={handleOnSubmitAsync}>
           {formData.map(x => (
-            <Form.Group className="mb-2">
+            <Form.Group className="mb-2" key={x.id}>
               <Form.Label>
                 {_languageService.isRTL
                   ? x.fuelType.arabicName
@@ -68,7 +72,9 @@ const ChangePrices = () => {
               <Form.Control
                 type="number"
                 value={x.price}
-                onChange={a => handleOnChange(x.id, a.currentTarget.value)}
+                onChange={a =>
+                  handleOnChange(x.id, parseFloat(a.currentTarget.value))
+                }
               />
             </Form.Group>
           ))}

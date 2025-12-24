@@ -1,17 +1,12 @@
-import { Permissions } from 'app/core/enums/Permissions';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import ModalTop from 'components/shared/ModalTop';
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { Navigate } from 'react-router-dom';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _nozzleService = DependenciesInjector.services.nozzleService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const DeleteModal = ({ open, setOpen, id, refresh }) => {
-  if (!_roleManager.check(Permissions.NozzlesDelete))
-    return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  const _nozzleService = useService(Services.NozzleService);
 
   const handleOnDeleteAsync = async e => {
     e.preventDefault();

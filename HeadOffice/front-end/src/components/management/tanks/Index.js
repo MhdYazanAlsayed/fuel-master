@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState, Fragment } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -9,18 +8,23 @@ import DetailsModal from './DetailsModal';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _tankService = DependenciesInjector.services.tankService;
-const _roleManager = DependenciesInjector.services.roleManager;
-const _stationService = DependenciesInjector.services.stationService;
-const _identityService = DependenciesInjector.services.identityService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.TanksShow))
+  const _languageService = useService(Services.LanguageService);
+  const _tankService = useService(Services.TankService);
+  const _permissionService = useService(Services.PermissionService);
+  const _stationService = useService(Services.StationService);
+  const _identityService = useService(Services.IdentityService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to="/errors/404" />;
 
+  const canManageTanks = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
   // States
   const [stations, setStations] = useState([]);
   const [tanks, setTanks] = useState([]);
@@ -83,25 +87,24 @@ const Index = () => {
             >
               {_languageService.resources.details}
             </Dropdown.Item>
+            {canManageTanks && (
+              <>
+                <Dropdown.Item
+                  as="div"
+                  className="cursor-pointer"
+                  onClick={() => handleOpenEditModal(data)}
+                >
+                  {_languageService.resources.edit}
+                </Dropdown.Item>
 
-            {_roleManager.check(Permissions.TanksEdit) && (
-              <Dropdown.Item
-                as="div"
-                className="cursor-pointer"
-                onClick={() => handleOpenEditModal(data)}
-              >
-                {_languageService.resources.edit}
-              </Dropdown.Item>
-            )}
-
-            {data.canDelete && _roleManager.check(Permissions.TanksDelete) && (
-              <Dropdown.Item
-                as="div"
-                className="cursor-pointer text-danger"
-                onClick={() => handleOpenDeleteModal(data)}
-              >
-                {_languageService.resources.delete}
-              </Dropdown.Item>
+                <Dropdown.Item
+                  as="div"
+                  className="cursor-pointer text-danger"
+                  onClick={() => handleOpenDeleteModal(data)}
+                >
+                  {_languageService.resources.delete}
+                </Dropdown.Item>
+              </>
             )}
           </div>
         </CardDropdown>
@@ -164,7 +167,7 @@ const Index = () => {
 
   const handleRefershDelete = () => {
     setTanks(prev => {
-      const index = prev.findIndex(x => x.id === current);
+      const index = prev.findIndex(x => x.id === current.id);
       if (index === -1) throw Error();
 
       prev.splice(index, 1);
@@ -189,25 +192,25 @@ const Index = () => {
     setCurrentTank(updatedTank);
   };
 
-  const handleOnStationChange = async e => {
-    const stationId = e.target.value;
-    if (stationId === '-1') {
-      setPagination(prev => ({
-        ...prev,
-        currentPage: 1,
-        perform: false
-      }));
-      await handleGetPaginationAsync(null);
-      return;
-    }
+  // const handleOnStationChange = async e => {
+  //   const stationId = e.target.value;
+  //   if (stationId === '-1') {
+  //     setPagination(prev => ({
+  //       ...prev,
+  //       currentPage: 1,
+  //       perform: false
+  //     }));
+  //     await handleGetPaginationAsync(null);
+  //     return;
+  //   }
 
-    setPagination(prev => ({
-      ...prev,
-      currentPage: 1,
-      perform: false
-    }));
-    await handleGetPaginationAsync(stationId);
-  };
+  //   setPagination(prev => ({
+  //     ...prev,
+  //     currentPage: 1,
+  //     perform: false
+  //   }));
+  //   await handleGetPaginationAsync(stationId);
+  // };
 
   return (
     <Loader loading={loading}>
@@ -218,9 +221,9 @@ const Index = () => {
         pagination={pagination}
         setPagination={setPagination}
         buttons={
-          _identityService.currentUser.stationId === null && (
+          canManageTanks && (
             <Fragment>
-              <select className="form-control" onChange={handleOnStationChange}>
+              {/* <select className="form-control" onChange={handleOnStationChange}>
                 <option value="-1">
                   {_languageService.resources.selectStation}
                 </option>
@@ -230,25 +233,16 @@ const Index = () => {
                     {_languageService.isRTL ? x.arabicName : x.englishName}
                   </option>
                 ))}
-              </select>
-              {_roleManager.check(Permissions.TanksCreate) && (
-                <button
-                  className="btn btn-primary ms-2"
-                  onClick={() => setCreateModal(true)}
-                >
-                  <i className="fa-solid fa-plus"></i>
-                </button>
-              )}
+              </select> */}
+              <button
+                className="btn btn-primary ms-2"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
             </Fragment>
           )
         }
-      />
-
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        entity={current}
-        refresh={handleRefershDelete}
       />
 
       <DetailsModal
@@ -257,18 +251,29 @@ const Index = () => {
         tank={current}
       />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleRefreshPage={handleRefreshPage}
-      />
+      {canManageTanks && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleRefreshPage={handleRefreshPage}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        tank={currentTank}
-        handleUpdateTank={handleUpdateTank}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            tank={currentTank}
+            handleUpdateTank={handleUpdateTank}
+          />
+
+          <DeleteModal
+            open={deleteModal}
+            setOpen={setDeleteModal}
+            entity={current}
+            refresh={handleRefershDelete}
+          />
+        </>
+      )}
     </Loader>
   );
 };

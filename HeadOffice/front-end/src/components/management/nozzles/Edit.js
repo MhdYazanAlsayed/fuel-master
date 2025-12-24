@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FormCard from 'components/shared/FormCard';
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
@@ -6,33 +5,33 @@ import { useEvents } from 'hooks/useEvents';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _nozzleService = DependenciesInjector.services.nozzleService;
-const _stationService = DependenciesInjector.services.stationService;
-const _tankService = DependenciesInjector.services.tankService;
-const _pumpService = DependenciesInjector.services.pumpService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Edit = () => {
-  if (!_roleManager.check(Permissions.NozzlesEdit))
+  const _languageService = useService(Services.LanguageService);
+  const _nozzleService = useService(Services.NozzleService);
+  const _stationService = useService(Services.StationService);
+  const _tankService = useService(Services.TankService);
+  const _pumpService = useService(Services.PumpService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationManage))
     return <Navigate to="/errors/404" />;
 
   // States
   const [formData, setFormData] = useState({
-    tankId: -1,
     number: 0,
     status: 0,
-    pumpId: -1,
     readerNumber: '',
     amount: 0,
     volume: 0,
-    totalizer: 0,
-    stationId: -1
+    totalizer: 0
   });
-  const [stations, setStations] = useState([]);
-  const [tanks, setTanks] = useState([]);
-  const [pumps, setPumps] = useState([]);
+  // const [stations, setStations] = useState([]);
+  // const [tanks, setTanks] = useState([]);
+  // const [pumps, setPumps] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { handleOnChange } = useEvents(setFormData);
@@ -45,7 +44,7 @@ const Edit = () => {
   }, []);
 
   const handleOnLoadComponentAsync = async () => {
-    await handleGetStationsAsync();
+    // await handleGetStationsAsync();
     await handleGetDetailsAsync();
 
     setLoading(false);
@@ -55,89 +54,84 @@ const Edit = () => {
     const response = await _nozzleService.detailsAsync(id);
     if (!response) return;
 
-    await handleGetTanksAndPumpsAsync(response.pump.station.id);
+    // await handleGetTanksAndPumpsAsync(response.pump.station.id);
 
     setFormData({
-      tankId: response.tank.id,
       number: response.number,
       status: response.status,
-      pumpId: response.pump.id,
       readerNumber: response.readerNumber,
       amount: response.amount,
       volume: response.volume,
-      totalizer: response.totalizer,
-      stationId: response.pump.station.id
+      totalizer: response.totalizer
     });
   };
 
-  const handleGetTanksAndPumpsAsync = async stationId => {
-    await handleGetTanksAsync(stationId);
-    await handleGetPumpsAsync(stationId);
-  };
+  // const handleGetTanksAndPumpsAsync = async stationId => {
+  //   await handleGetTanksAsync(stationId);
+  //   await handleGetPumpsAsync(stationId);
+  // };
 
-  const handleGetStationsAsync = async () => {
-    const response = await _stationService.getAllAsync();
+  // const handleGetStationsAsync = async () => {
+  //   const response = await _stationService.getAllAsync();
 
-    setStations(
-      response.map((item, index) => (
-        <option value={item.id} key={index}>
-          {_languageService.isRTL ? item.arabicName : item.englishName}
-        </option>
-      ))
-    );
-  };
+  //   setStations(
+  //     response.map((item, index) => (
+  //       <option value={item.id} key={index}>
+  //         {_languageService.isRTL ? item.arabicName : item.englishName}
+  //       </option>
+  //     ))
+  //   );
+  // };
 
-  const handleGetTanksAsync = async stationId => {
-    const response = await _tankService.getAllAsync(stationId);
+  // const handleGetTanksAsync = async stationId => {
+  //   const response = await _tankService.getAllAsync(stationId);
 
-    setTanks(
-      response.map((item, index) => (
-        <option value={item.id} key={index}>
-          {item.number +
-            ' — ' +
-            _languageService.resources.fuelTypes[item.fuelType]}
-        </option>
-      ))
-    );
-  };
+  //   setTanks(
+  //     response.map((item, index) => (
+  //       <option value={item.id} key={index}>
+  //         {item.number +
+  //           ' — ' +
+  //           _languageService.resources.fuelTypes[item.fuelType]}
+  //       </option>
+  //     ))
+  //   );
+  // };
 
-  const handleGetPumpsAsync = async stationId => {
-    const response = await _pumpService.getAllAsync(stationId);
+  // const handleGetPumpsAsync = async stationId => {
+  //   const response = await _pumpService.getAllAsync(stationId);
 
-    setPumps(
-      response.map((item, index) => (
-        <option value={item.id} key={index}>
-          {item.number}
-        </option>
-      ))
-    );
-  };
+  //   setPumps(
+  //     response.map((item, index) => (
+  //       <option value={item.id} key={index}>
+  //         {item.number}
+  //       </option>
+  //     ))
+  //   );
+  // };
 
-  const handleOnStationIdChangesAsync = async stationId => {
-    setFormData(prev => ({
-      ...prev,
-      stationId: stationId,
-      tankId: -1,
-      pumpId: -1
-    }));
+  // const handleOnStationIdChangesAsync = async stationId => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     stationId: stationId,
+  //     tankId: -1,
+  //     pumpId: -1
+  //   }));
 
-    if (stationId === -1) {
-      setTanks([]);
-      setPumps([]);
-      return;
-    }
+  //   if (stationId === -1) {
+  //     setTanks([]);
+  //     setPumps([]);
+  //     return;
+  //   }
 
-    await handleGetTanksAndPumpsAsync(stationId);
-  };
+  //   await handleGetTanksAndPumpsAsync(stationId);
+  // };
 
   const handleOnSubmitAsync = async e => {
     e.preventDefault();
 
     const response = await _nozzleService.editAsync(id, {
-      tankId: formData.tankId,
       number: formData.number,
       status: formData.status,
-      pumpId: formData.pumpId,
       readerNumber: formData.readerNumber,
       amount: formData.amount,
       volume: formData.volume,
@@ -155,7 +149,7 @@ const Edit = () => {
     >
       <Loader loading={loading}>
         <form onSubmit={handleOnSubmitAsync}>
-          <Form.Group className="mb-2">
+          {/* <Form.Group className="mb-2">
             <Form.Label>
               <span>{_languageService.resources.station}</span>
               <span className="text-danger fw-bold">*</span>
@@ -163,7 +157,7 @@ const Edit = () => {
             <Form.Select
               value={formData.stationId}
               onChange={x => {
-                handleOnStationIdChangesAsync(parseInt(x.currentTarget.value))
+                handleOnStationIdChangesAsync(parseInt(x.currentTarget.value));
               }}
             >
               <option value={-1}>
@@ -171,9 +165,9 @@ const Edit = () => {
               </option>
               {stations}
             </Form.Select>
-          </Form.Group>
+          </Form.Group> */}
 
-          <Form.Group className="mb-2">
+          {/* <Form.Group className="mb-2">
             <Form.Label>
               <span>{_languageService.resources.tank}</span>
               <span className="text-danger fw-bold">*</span>
@@ -189,9 +183,9 @@ const Edit = () => {
               </option>
               {tanks}
             </Form.Select>
-          </Form.Group>
+          </Form.Group> */}
 
-          <Form.Group className="mb-2">
+          {/* <Form.Group className="mb-2">
             <Form.Label>
               <span>{_languageService.resources.pump}</span>
               <span className="text-danger fw-bold">*</span>
@@ -207,7 +201,7 @@ const Edit = () => {
               </option>
               {pumps}
             </Form.Select>
-          </Form.Group>
+          </Form.Group> */}
 
           <Form.Group className="mb-2">
             <Form.Label>
@@ -264,7 +258,7 @@ const Edit = () => {
             />
           </Form.Group>
 
-          {/* <Form.Group className="mb-2">
+          <Form.Group className="mb-2">
             <Form.Label>
               <span>{_languageService.resources.amount}</span>
               <span className="text-danger fw-bold">*</span>
@@ -307,7 +301,7 @@ const Edit = () => {
                 handleOnChange('totalizer', parseInt(x.currentTarget.value))
               }
             />
-          </Form.Group> */}
+          </Form.Group>
 
           <Button
             variant="primary"

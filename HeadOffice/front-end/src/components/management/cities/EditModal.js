@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import ModalCenter from 'components/shared/ModalCenter';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _cityService = DependenciesInjector.services.cityService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const EditModal = ({ open, setOpen, city, handleUpdateCity }) => {
+  const _languageService = useService(Services.LanguageService);
+  const _cityService = useService(Services.CityService);
+
   const [formData, setFormData] = useState({
     arabicName: '',
     englishName: ''
@@ -78,8 +79,9 @@ const EditModal = ({ open, setOpen, city, handleUpdateCity }) => {
             type="submit"
             disabled={
               formData.arabicName.trim() === '' ||
-              formData.englishName.trim() === '' || 
-              (formData.englishName == city.englishName && formData.arabicName == city.arabicName)
+              formData.englishName.trim() === '' ||
+              (formData.englishName == city.englishName &&
+                formData.arabicName == city.arabicName)
             }
           >
             {_languageService.resources.edit}

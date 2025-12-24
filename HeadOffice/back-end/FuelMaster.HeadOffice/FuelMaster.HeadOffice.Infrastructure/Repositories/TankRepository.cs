@@ -26,6 +26,25 @@ public class TankRepository : ITankRepository
         return entity;
     }
 
+    public async Task<Tank?> DetailsAsync(int id, bool includeStation = false, bool includeFuelType = false, bool includeNozzles = false)
+    {
+        var query = _context.Tanks.AsQueryable();
+        if (includeStation)
+        {
+            query = query.Include(t => t.Station);
+        }
+        if (includeFuelType)
+        {
+            query = query.Include(t => t.FuelType);
+        }
+        if (includeNozzles)
+        {
+            query = query.Include(t => t.Nozzles);
+        }
+
+        return await query.SingleOrDefaultAsync(t => t.Id == id);
+    }
+
     public Task<List<Tank>> GetAllAsync(bool includeStation = false, bool includeFuelType = false, bool includeNozzles = false)
     {
         var query = _context.Tanks.AsQueryable();

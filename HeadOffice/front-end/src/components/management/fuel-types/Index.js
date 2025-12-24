@@ -1,21 +1,27 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import CardDropdown from 'components/theme/common/CardDropdown';
 import { Dropdown } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _fuelTypeService = DependenciesInjector.services.fuelTypeService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const FuelTypes = () => {
-  if (!_roleManager.check(Permissions.FuelTypesShow))
+  const _languageService = useService(Services.LanguageService);
+  const _fuelTypeService = useService(Services.FuelTypeService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to="/errors/404" />;
+
+  // Permissions
+  const canManageFuelTypes = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
 
   const [fuelTypes, setFuelTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,10 +41,10 @@ const FuelTypes = () => {
     {
       header: '',
       headerProps: { className: 'text-start' },
-      Cell: data => (
-        <CardDropdown>
-          <div className="py-2">
-            {_roleManager.check(Permissions.FuelTypesEdit) && (
+      Cell: data =>
+        canManageFuelTypes && (
+          <CardDropdown>
+            <div className="py-2">
               <Dropdown.Item
                 as="div"
                 className="cursor-pointer"
@@ -46,10 +52,9 @@ const FuelTypes = () => {
               >
                 {_languageService.resources.edit}
               </Dropdown.Item>
-            )}
-          </div>
-        </CardDropdown>
-      )
+            </div>
+          </CardDropdown>
+        )
     }
   ];
 
@@ -89,29 +94,35 @@ const FuelTypes = () => {
         data={fuelTypes}
         columns={columns}
         buttons={
-          <Fragment>
-            <button
-              className="btn btn-primary"
-              onClick={() => setCreateModal(true)}
-            >
-              <i className="fa-solid fa-plus"></i>
-            </button>
-          </Fragment>
+          canManageFuelTypes && (
+            <Fragment>
+              <button
+                className="btn btn-primary"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            </Fragment>
+          )
         }
       />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleAddFuelType={handleAddFuelType}
-      />
+      {canManageFuelTypes && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleAddFuelType={handleAddFuelType}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        fuelType={currentFuelType}
-        handleUpdateFuelType={handleUpdateFuelType}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            fuelType={currentFuelType}
+            handleUpdateFuelType={handleUpdateFuelType}
+          />
+        </>
+      )}
     </Loader>
   );
 };

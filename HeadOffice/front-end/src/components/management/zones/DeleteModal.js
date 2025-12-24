@@ -1,15 +1,12 @@
-import { Permissions } from 'app/core/enums/Permissions';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import ModalTop from 'components/shared/ModalTop';
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zoneService = DependenciesInjector.services.zoneService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const DeleteModal = ({ open, setOpen, id, refresh }) => {
-  if (!_roleManager.check(Permissions.ZonesDelete)) return <></>;
+  const _languageService = useService(Services.LanguageService);
+  const _zoneService = useService(Services.ZoneService);
 
   const handleOnDeleteAsync = async e => {
     e.preventDefault();

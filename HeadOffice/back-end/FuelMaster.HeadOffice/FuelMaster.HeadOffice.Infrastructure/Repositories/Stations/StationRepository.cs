@@ -25,7 +25,7 @@ public class StationRepository : IStationRepository
         return entity;
     }
 
-    public async Task<List<Station>> GetAllAsync(bool includeCity = false, bool includeZone = false)
+    public async Task<Station?> DetailsAsync(int id, bool includeCity = false, bool includeZone = false, bool includeArea = false)
     {
         var query = _context.Stations.AsQueryable();
         if (includeCity)
@@ -35,11 +35,34 @@ public class StationRepository : IStationRepository
         if (includeZone)
         {
             query = query.Include(s => s.Zone);
+        }
+        if (includeArea)
+        {
+            query = query.Include(s => s.Area);
+        }
+
+        return await query.SingleOrDefaultAsync(s => s.Id == id);
+    }
+
+    public async Task<List<Station>> GetAllAsync(bool includeCity = false, bool includeZone = false, bool includeArea = false)
+    {
+        var query = _context.Stations.AsQueryable();
+        if (includeCity)
+        {
+            query = query.Include(s => s.City);
+        }
+        if (includeZone)
+        {
+            query = query.Include(s => s.Zone);
+        }
+        if (includeArea)
+        {
+            query = query.Include(s => s.Area);
         }
         return await query.ToListAsync();
     }
 
-    public async Task<(List<Station>, int)> GetPaginationAsync(int currentPage, int pageSize, bool includeCity = false, bool includeZone = false)
+    public async Task<(List<Station>, int)> GetPaginationAsync(int currentPage, int pageSize, bool includeCity = false, bool includeZone = false, bool includeArea = false)
     {
         var query = _context.Stations.AsQueryable();
         if (includeCity)
@@ -49,6 +72,14 @@ public class StationRepository : IStationRepository
         if (includeZone)
         {
             query = query.Include(s => s.Zone);
+        }
+        if (includeArea)
+        {
+            query = query.Include(s => s.Area);
+        }
+        if (includeArea)
+        {
+            query = query.Include(s => s.Area);
         }
         var count = await query.CountAsync();
         var data = await query.Skip((currentPage - 1) * pageSize).Take(pageSize).ToListAsync();

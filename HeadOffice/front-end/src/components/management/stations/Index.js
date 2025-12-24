@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { Fragment, useEffect, useState } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -8,17 +7,21 @@ import DeleteModal from './DeleteModal';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _stationService = DependenciesInjector.services.stationService;
-const _roleManager = DependenciesInjector.services.roleManager;
-const _identityService = DependenciesInjector.services.identityService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.StationsShow))
+  const _languageService = useService(Services.LanguageService);
+  const _stationService = useService(Services.StationService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to="/errors/404" />;
 
+  const canManageStations = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
   // States
   const [stations, setStations] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -57,6 +60,16 @@ const Index = () => {
       )
     },
     {
+      header: _languageService.resources.area,
+      Cell: data => (
+        <>
+          {_languageService.isRTL
+            ? data?.area?.arabicName ?? '-'
+            : data?.area?.englishName ?? '-'}
+        </>
+      )
+    },
+    {
       header: _languageService.resources.zone,
       Cell: data => (
         <>
@@ -70,29 +83,23 @@ const Index = () => {
       header: '',
       headerProps: { className: 'text-start' },
       Cell: data =>
-        _identityService.currentUser.stationId === null && (
+        canManageStations && (
           <CardDropdown>
             <div className="py-2">
-              {_roleManager.check(Permissions.StationsEdit) && (
-                <Dropdown.Item
-                  as="div"
-                  className="cursor-pointer"
-                  onClick={() => handleOpenEditModal(data)}
-                >
-                  {_languageService.resources.edit}
-                </Dropdown.Item>
-              )}
-
-              {data.canDelete &&
-                _roleManager.check(Permissions.StationsDelete) && (
-                  <Dropdown.Item
-                    as="div"
-                    className="cursor-pointer text-danger"
-                    onClick={() => handleOpenDeleteModal(data.id)}
-                  >
-                    {_languageService.resources.delete}
-                  </Dropdown.Item>
-                )}
+              <Dropdown.Item
+                as="div"
+                className="cursor-pointer"
+                onClick={() => handleOpenEditModal(data)}
+              >
+                {_languageService.resources.edit}
+              </Dropdown.Item>
+              <Dropdown.Item
+                as="div"
+                className="cursor-pointer text-danger"
+                onClick={() => handleOpenDeleteModal(data.id)}
+              >
+                {_languageService.resources.delete}
+              </Dropdown.Item>
             </div>
           </CardDropdown>
         )
@@ -168,38 +175,41 @@ const Index = () => {
         setPagination={setPagination}
         buttons={
           <Fragment>
-            {_roleManager.check(Permissions.StationsCreate) &&
-              _identityService.currentUser.stationId === null && (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setCreateModal(true)}
-                >
-                  <i className="fa-solid fa-plus"></i>
-                </button>
-              )}
+            {canManageStations && (
+              <button
+                className="btn btn-primary"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            )}
           </Fragment>
         }
       />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleRefreshPage={handleRefreshPage}
-      />
+      {canManageStations && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleRefreshPage={handleRefreshPage}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        station={currentStation}
-        handleUpdateStation={handleUpdateStation}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            station={currentStation}
+            handleUpdateStation={handleUpdateStation}
+          />
 
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        id={current}
-        refresh={handleRefershDelete}
-      />
+          <DeleteModal
+            open={deleteModal}
+            setOpen={setDeleteModal}
+            id={current}
+            refresh={handleRefershDelete}
+          />
+        </>
+      )}
     </Loader>
   );
 };

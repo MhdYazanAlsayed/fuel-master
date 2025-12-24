@@ -8,15 +8,24 @@ import DeleteModal from './DeleteModal';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _zoneService = DependenciesInjector.services.zoneService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
 
 const Index = () => {
-  // if (!_roleManager.check(Permissions.ZonesShow))
-  //   return <Navigate to="/errors/404" />;
+  const _languageService = useService(Services.LanguageService);
+  const _zoneService = useService(Services.ZoneService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
+    return <Navigate to="/errors/404" />;
+
+  // Permissions
+  const canManageZones = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
+  const canViewPrices = _permissionService.check(AreaOfAccess.PricingView);
+  const canManagePrices = _permissionService.check(AreaOfAccess.PricingManage);
 
   // States
   const [zones, setZones] = useState([]);
@@ -43,43 +52,51 @@ const Index = () => {
     {
       header: '',
       headerProps: { className: 'text-start' },
-      Cell: data => (
-        <CardDropdown>
-          <div className="py-2">
-            {_roleManager.check(Permissions.ZonesEdit) && (
-              <Dropdown.Item
-                as="div"
-                className="cursor-pointer"
-                onClick={() => handleOpenEditModal(data)}
-              >
-                {_languageService.resources.edit}
-              </Dropdown.Item>
-            )}
+      Cell: data =>
+        !canManageZones && !canViewPrices && !canManagePrices ? null : (
+          <CardDropdown>
+            <div className="py-2">
+              {canManageZones && (
+                <Dropdown.Item
+                  as="div"
+                  className="cursor-pointer"
+                  onClick={() => handleOpenEditModal(data)}
+                >
+                  {_languageService.resources.edit}
+                </Dropdown.Item>
+              )}
 
-            {_roleManager.check(Permissions.ShowPrices) && (
-              <Dropdown.Item as={Link} to={`/zones/${data.id}/prices`}>
-                {_languageService.resources.zonePrices}
-              </Dropdown.Item>
-            )}
+              {_permissionService.check(AreaOfAccess.PricingView) && (
+                <>
+                  <Dropdown.Item as={Link} to={`/zones/${data.id}/prices`}>
+                    {_languageService.resources.zonePrices}
+                  </Dropdown.Item>
+                </>
+              )}
 
-            {_roleManager.check(Permissions.ChangePrices) && (
-              <Dropdown.Item as={Link} to={`/zones/${data.id}/change-prices`}>
-                {_languageService.resources.changePrices}
-              </Dropdown.Item>
-            )}
+              {_permissionService.check(AreaOfAccess.PricingManage) && (
+                <>
+                  <Dropdown.Item
+                    as={Link}
+                    to={`/zones/${data.id}/change-prices`}
+                  >
+                    {_languageService.resources.changePrices}
+                  </Dropdown.Item>
+                </>
+              )}
 
-            {data.canDelete && _roleManager.check(Permissions.ZonesDelete) && (
-              <Dropdown.Item
-                as="div"
-                className="cursor-pointer text-danger"
-                onClick={() => handleOpenDeleteModal(data.id)}
-              >
-                {_languageService.resources.delete}
-              </Dropdown.Item>
-            )}
-          </div>
-        </CardDropdown>
-      )
+              {canManageZones && (
+                <Dropdown.Item
+                  as="div"
+                  className="cursor-pointer text-danger"
+                  onClick={() => handleOpenDeleteModal(data.id)}
+                >
+                  {_languageService.resources.delete}
+                </Dropdown.Item>
+              )}
+            </div>
+          </CardDropdown>
+        )
     }
   ];
 
@@ -149,36 +166,42 @@ const Index = () => {
         pagination={pagination}
         setPagination={setPagination}
         buttons={
-          <Fragment>
-            <button
-              className="btn btn-primary"
-              onClick={() => setCreateModal(true)}
-            >
-              <i className="fa-solid fa-plus"></i>
-            </button>
-          </Fragment>
+          canManageZones && (
+            <Fragment>
+              <button
+                className="btn btn-primary"
+                onClick={() => setCreateModal(true)}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            </Fragment>
+          )
         }
       />
 
-      <CreateModal
-        open={createModal}
-        setOpen={setCreateModal}
-        handleRefreshData={handleRefreshData}
-      />
+      {canManageZones && (
+        <>
+          <CreateModal
+            open={createModal}
+            setOpen={setCreateModal}
+            handleRefreshData={handleRefreshData}
+          />
 
-      <EditModal
-        open={editModal}
-        setOpen={setEditModal}
-        zone={currentZone}
-        handleUpdateZone={handleUpdateZone}
-      />
+          <EditModal
+            open={editModal}
+            setOpen={setEditModal}
+            zone={currentZone}
+            handleUpdateZone={handleUpdateZone}
+          />
 
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        id={current}
-        refresh={handleRefershDelete}
-      />
+          <DeleteModal
+            open={deleteModal}
+            setOpen={setDeleteModal}
+            id={current}
+            refresh={handleRefershDelete}
+          />
+        </>
+      )}
     </Loader>
   );
 };

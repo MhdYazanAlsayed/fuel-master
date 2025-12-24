@@ -2,9 +2,9 @@ using AutoMapper;
 using FuelMaster.HeadOffice.Application.DTOs;
 using FuelMaster.HeadOffice.Application.Extensions;
 using FuelMaster.HeadOffice.Application.Helpers;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Cities.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Cities.Results;
-using FuelMaster.HeadOffice.Application.Services.Interfaces;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Authentication;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Cities.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Cities.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Interfaces;
@@ -23,13 +23,15 @@ public class CityService : ICityService
     private readonly ILogger<CityService> _logger;
     private readonly IMapper _mapper;
     private readonly IStationRepository _stationRepository;
+    private readonly ISigninService _signInService;
     public CityService(
     ICityRepository cityRepository, 
     IUnitOfWork unitOfWork,
     IEntityCache<City> cityCache, 
     IMapper mapper,
     ILogger<CityService> logger,
-    IStationRepository stationRepository)
+    IStationRepository stationRepository,
+    ISigninService signInService)
     {
         _cityRepository = cityRepository;
         _unitOfWork = unitOfWork;
@@ -37,6 +39,7 @@ public class CityService : ICityService
         _mapper = mapper;
         _logger = logger;
         _stationRepository = stationRepository;
+        _signInService = signInService;
     }
 
     public async Task<PaginationDto<CityResult>> GetPaginationAsync(int currentPage)
@@ -147,11 +150,31 @@ public class CityService : ICityService
         var cachedCityEntities = await _cityCache.GetAllEntitiesAsync();
         if (cachedCityEntities != null)
         {
-            return cachedCityEntities.ToList();
+            return Filter(cachedCityEntities.ToList());
         }
 
         var cities = await _cityRepository.GetAllAsync();
         await _cityCache.SetAllAsync(cities);
-        return cities.ToList();
+        
+        return Filter(cities.ToList());
+    }
+
+    private List<City> Filter (List<City> cities)
+    {
+        var scope = _signInService.GetCurrentScope();
+        var cityId = _signInService.GetCurrentCityId();
+        var areaId = _signInService.GetCurrentAreaId();
+        var stationId = _signInService.GetCurrentStationId();
+        
+        if (scope == Scope.ALL)
+            return cities;
+
+        if (scope == Scope.City)
+            return cities.Where(x => x.Id == cityId).ToList();
+
+        if (scope == Scope.Area || scope == Scope.Self || scope == Scope.Station)
+            return Enumerable.Empty<City>().ToList();
+            
+        throw new NotImplementedException();
     }
 }

@@ -27,11 +27,6 @@ public class FuelMasterRoleRepository : IFuelMasterRoleRepository
         return entity;
     }
 
-    public async Task<FuelMasterRole?> DetailsAsync(int id)
-    {
-        return await _context.FuelMasterRoles.FindAsync(id);
-    }
-
     public async Task<List<FuelMasterRole>> GetAllAsync(bool includeAreasOfAccess = false)
     {
         var query = _context.FuelMasterRoles.AsQueryable();
@@ -60,6 +55,19 @@ public class FuelMasterRoleRepository : IFuelMasterRoleRepository
             .ToListAsync();
 
         return (data, count);
+    }
+
+    public async Task<FuelMasterRole?> DetailsAsync(int id, bool includeAreasOfAccess = false)
+    {
+        var query = _context.FuelMasterRoles.AsQueryable();
+
+        if (includeAreasOfAccess)
+        {
+            query = query.Include(r => r.AreasOfAccess)
+                .ThenInclude(x => x.AreaOfAccess);
+        }
+
+        return await query.SingleOrDefaultAsync(r => r.Id == id);
     }
 
     public FuelMasterRole Update(FuelMasterRole entity)

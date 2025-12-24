@@ -3,11 +3,13 @@ import { useEvents } from 'hooks/useEvents';
 import React, { useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _userService = DependenciesInjector.services.userService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const Index = () => {
+  const _languageService = useService(Services.LanguageService);
+  const _userService = useService(Services.UserService);
+
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',

@@ -3,6 +3,8 @@ import { Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import Flex from 'components/theme/common/Flex';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const FuelMasterTable = ({
   title,
@@ -14,7 +16,7 @@ const FuelMasterTable = ({
   handleOpenSearch,
   handleOpenFilter
 }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
 
   const handleOnPreviousClick = () => {
     if (pagination.pages <= 1) return;

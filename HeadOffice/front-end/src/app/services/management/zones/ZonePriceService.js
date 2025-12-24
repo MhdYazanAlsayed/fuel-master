@@ -1,11 +1,14 @@
-import { toast } from 'react-toastify';
+import WebService from 'app/core/abstracts/webService';
+import Services from 'app/core/utilities/Services';
 
-export default class ZonePriceService {
+export default class ZonePriceService extends WebService {
   api = 'api/zones';
 
-  constructor(_httpService, _languageService) {
-    this._languageService = _languageService;
-    this._httpService = _httpService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
+    this._logger = this.getService(Services.LoggerService);
   }
 
   async getPricesAsync(zoneId) {
@@ -15,7 +18,6 @@ export default class ZonePriceService {
     );
 
     if (!response || !response.ok) {
-      toast.error(this._languageService.resources.sthWentWrong);
       return null;
     }
 
@@ -29,12 +31,6 @@ export default class ZonePriceService {
     );
 
     if (!response || !response.ok) {
-      try {
-        var resAsJson = await response.text();
-        toast.error(resAsJson);
-      } catch (error) {
-        toast.error(this._languageService.resources.sthWentWrong);
-      }
       return { succeeded: false };
     }
 

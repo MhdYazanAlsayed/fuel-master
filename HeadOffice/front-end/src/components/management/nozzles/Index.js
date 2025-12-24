@@ -1,4 +1,3 @@
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import FuelMasterTable from 'components/shared/FuelMasterTable';
 import React, { useEffect, useState } from 'react';
 import CardDropdown from 'components/theme/common/CardDropdown';
@@ -7,16 +6,22 @@ import { Link, Navigate } from 'react-router-dom';
 import DeleteModal from './DeleteModal';
 import DetailsModal from './DetailsModal';
 import Loader from 'components/shared/Loader';
-import { Permissions } from 'app/core/enums/Permissions';
-
-// Dependencies
-const _languageService = DependenciesInjector.services.languageService;
-const _nozzleService = DependenciesInjector.services.nozzleService;
-const _roleManager = DependenciesInjector.services.roleManager;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import { AreaOfAccess } from 'app/core/helpers/AreaOfAccess';
+import { Fragment } from 'react';
 
 const Index = () => {
-  if (!_roleManager.check(Permissions.NozzlesShow))
+  const _languageService = useService(Services.LanguageService);
+  const _nozzleService = useService(Services.NozzleService);
+  const _permissionService = useService(Services.PermissionService);
+
+  if (!_permissionService.check(AreaOfAccess.ConfigurationView))
     return <Navigate to="/errors/404" />;
+
+  const canManageNozzles = _permissionService.check(
+    AreaOfAccess.ConfigurationManage
+  );
 
   // States
   const [nozzles, setNozzles] = useState([]);
@@ -36,20 +41,27 @@ const Index = () => {
       Cell: data => (
         <>
           {_languageService.isRTL
-            ? data?.pump?.station?.arabicName
-            : data?.pump?.station?.englishName}
+            ? data?.tank?.station?.arabicName
+            : data?.tank?.station?.englishName}
         </>
       )
     },
     {
       header: _languageService.resources.tank,
-      Cell: data => (
-        <>
-          {data.tank?.number +
-            ' — ' +
-            _languageService.resources.fuelTypes[data.tank?.fuelType]}
-        </>
-      )
+      Cell: data => {
+        return (
+          <>
+            {`${data.tank.number} - ${
+              _languageService.isRTL
+                ? data.fuelType.arabicName
+                : data.fuelType.englishName
+            }`}
+            {/* {data.tank.number + ' — ' + _languageService.isRTL
+              ? data.fuelType.arabicName
+              : data.fuelType.englishName} */}
+          </>
+        );
+      }
     },
     {
       header: _languageService.resources.pump,
@@ -83,20 +95,20 @@ const Index = () => {
               {_languageService.resources.details}
             </Dropdown.Item>
 
-            {_roleManager.check(Permissions.NozzlesEdit) && (
-              <Dropdown.Item as={Link} to={`/nozzles/${data.id}/edit`}>
-                {_languageService.resources.edit}
-              </Dropdown.Item>
-            )}
+            {canManageNozzles && (
+              <>
+                <Dropdown.Item as={Link} to={`/nozzles/${data.id}/edit`}>
+                  {_languageService.resources.edit}
+                </Dropdown.Item>
 
-            {_roleManager.check(Permissions.NozzlesDelete) && (
-              <Dropdown.Item
-                as="div"
-                className="cursor-pointer text-danger"
-                onClick={() => handleOpenDeleteModal(data)}
-              >
-                {_languageService.resources.delete}
-              </Dropdown.Item>
+                <Dropdown.Item
+                  as="div"
+                  className="cursor-pointer text-danger"
+                  onClick={() => handleOpenDeleteModal(data)}
+                >
+                  {_languageService.resources.delete}
+                </Dropdown.Item>
+              </>
             )}
           </div>
         </CardDropdown>
@@ -185,6 +197,15 @@ const Index = () => {
         columns={columns}
         pagination={pagination}
         setPagination={setPagination}
+        buttons={
+          canManageNozzles && (
+            <Fragment>
+              <Link to="/nozzles/create" className="btn btn-primary">
+                <i className="fa-solid fa-plus"></i>
+              </Link>
+            </Fragment>
+          )
+        }
       />
 
       <DetailsModal
@@ -193,12 +214,14 @@ const Index = () => {
         nozzle={current}
       />
 
-      <DeleteModal
-        open={deleteModal}
-        setOpen={setDeleteModal}
-        id={current?.id}
-        refresh={handleRefershDelete}
-      />
+      {canManageNozzles && (
+        <DeleteModal
+          open={deleteModal}
+          setOpen={setDeleteModal}
+          id={current?.id}
+          refresh={handleRefershDelete}
+        />
+      )}
     </Loader>
   );
 };

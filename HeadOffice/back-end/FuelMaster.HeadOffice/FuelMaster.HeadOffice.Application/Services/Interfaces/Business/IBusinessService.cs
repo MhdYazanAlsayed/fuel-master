@@ -13,7 +13,7 @@ public interface IBusinessService<TDto, TResult> where TDto : class where TResul
 public interface IBusinessService<TCreateDto, TEditDto, TResult> where TCreateDto : class where TEditDto : class where TResult : class
 {
     Task<ResultDto<TResult>> CreateAsync(TCreateDto dto);
-    Task<ResultDto<TResult>> EditAsync(int id, TEditDto dto);
+    Task<ResultDto<TResult>> UpdateAsync(int id, TEditDto dto);
     Task<ResultDto> DeleteAsync(int id);
     Task<TResult?> DetailsAsync(int id);
 }

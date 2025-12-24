@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import ModalCenter from 'components/shared/ModalCenter';
 import { toast } from 'react-toastify';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _tankService = DependenciesInjector.services.tankService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const EditModal = ({ open, setOpen, tank, handleUpdateTank }) => {
+  const _languageService = useService(Services.LanguageService);
+  const _tankService = useService(Services.TankService);
+
   const [formData, setFormData] = useState({
     capacity: 0,
     maxLimit: 0,
@@ -36,39 +37,6 @@ const EditModal = ({ open, setOpen, tank, handleUpdateTank }) => {
     e.preventDefault();
     if (!tank) return;
 
-    if (
-      formData.capacity <= 0 ||
-      formData.maxLimit <= 0 ||
-      formData.minLimit <= 0
-    ) {
-      toast.error(_languageService.resources.valuesNotValid);
-      return;
-    }
-
-    if (formData.maxLimit >= formData.capacity) {
-      toast.error(_languageService.resources.maxLimitMustBeLessThanCapacity);
-      return;
-    }
-
-    if (formData.minLimit >= formData.maxLimit) {
-      toast.error(_languageService.resources.minLimitMustBeLessThanMaxLimit);
-      return;
-    }
-
-    if (formData.currentVolume > formData.maxLimit) {
-      toast.error(
-        _languageService.resources.currentVolumeMustBeLessThanMaxLimit
-      );
-      return;
-    }
-
-    if (formData.currentVolume < formData.minLimit) {
-      toast.error(
-        _languageService.resources.currentVolumeMustBeGreaterThanMinLimit
-      );
-      return;
-    }
-
     const updateData = {
       capacity: formData.capacity,
       maxLimit: formData.maxLimit,
@@ -85,23 +53,28 @@ const EditModal = ({ open, setOpen, tank, handleUpdateTank }) => {
     setOpen(false);
   };
 
+  const isThereChanges = (x, y) => {
+    return (
+      x.capacity != y.capacity ||
+      x.maxLimit != y.maxLimit ||
+      x.minLimit != y.minLimit ||
+      x.currentLevel != y.currentLevel ||
+      x.currentVolume != y.currentVolume ||
+      x.hasSensor != y.hasSensor
+    );
+  };
+
   const isDisabled =
-    !tank ||
     formData.capacity <= 0 ||
     formData.maxLimit <= 0 ||
     formData.minLimit <= 0 ||
     formData.currentLevel < 0 ||
     formData.currentVolume < 0 ||
-    formData.maxLimit >= formData.capacity ||
-    formData.minLimit >= formData.maxLimit ||
+    formData.maxLimit > formData.capacity ||
+    formData.minLimit > formData.maxLimit ||
     formData.currentVolume > formData.maxLimit ||
-    formData.currentVolume < formData.minLimit ||
-    (formData.capacity === (tank?.capacity ?? 0) &&
-      formData.maxLimit === (tank?.maxLimit ?? 0) &&
-      formData.minLimit === (tank?.minLimit ?? 0) &&
-      formData.currentLevel === (tank?.currentLevel ?? 0) &&
-      formData.currentVolume === (tank?.currentVolume ?? 0) &&
-      formData.hasSensor === (tank?.hasSensor ?? false));
+    formData.currentLevel > formData.maxLimit ||
+    !isThereChanges(formData, tank);
 
   return (
     <ModalCenter

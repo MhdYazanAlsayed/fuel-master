@@ -1,11 +1,14 @@
 import { toast } from 'react-toastify';
+import WebService from 'app/core/abstracts/webService';
+import Services from 'app/core/utilities/Services';
 
-export default class ZonePriceHistory {
+export default class ZonePriceHistory extends WebService {
   api = 'api/zones/prices';
 
-  constructor(_httpService, _languageService) {
-    this._languageService = _languageService;
-    this._httpService = _httpService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
   }
 
   async getHistoriesPaginationAsync(zonePriceId, page) {

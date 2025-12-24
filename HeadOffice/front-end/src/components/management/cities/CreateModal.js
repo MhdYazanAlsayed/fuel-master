@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import ModalCenter from 'components/shared/ModalCenter';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _cityService = DependenciesInjector.services.cityService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
+  const _languageService = useService(Services.LanguageService);
+  const _cityService = useService(Services.CityService);
+
   // States
   const [formData, setFormData] = useState({
     arabicName: '',

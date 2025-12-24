@@ -1,29 +1,41 @@
 ﻿using FuelMaster.HeadOffice.Core.Entities;
+using FuelMaster.HeadOffice.Core.Entities.Configs.Area;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Entities.Roles_Permissions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using FuelMaster.HeadOffice.Infrastructure.Services.Interfaces;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Authentication;
+using FuelMaster.HeadOffice.Infrastructure.Contexts.QueryFilters;
 
 namespace FuelMaster.HeadOffice.Infrastructure.Contexts
 {
     public class FuelMasterDbContext : IdentityDbContext<FuelMasterUser>
     {
         private readonly IDomainEventPublisher? _domainEventPublisher;
+        private readonly ISigninService _signinService;
 
-        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options): base(options)
+        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, ISigninService signinService): base(options)
         {
+            _signinService = signinService;
         }
 
-        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, IDomainEventPublisher? domainEventPublisher = null) : base(options)
+        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, ISigninService signinService, IDomainEventPublisher? domainEventPublisher = null) : base(options)
         {
             _domainEventPublisher = domainEventPublisher;
+            _signinService = signinService;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Employee>().ApplyFilterAsync(
+                 _signinService.GetCurrentScope() ?? throw new InvalidOperationException("Current scope is not set"),
+                 _signinService.GetCurrentCityId(), 
+                 _signinService.GetCurrentAreaId(), 
+                 _signinService.GetCurrentStationId());
+                 
             builder.ApplyConfigurationsFromAssembly(typeof(FuelMasterDbContext).Assembly);
         }
 
@@ -83,6 +95,7 @@ namespace FuelMaster.HeadOffice.Infrastructure.Contexts
             }
         }
 
+        public DbSet<Area> Areas { get; set; }
         public DbSet<Station> Stations { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Delivery> Deliveries { get; set; }

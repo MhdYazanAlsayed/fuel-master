@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useEvents } from 'hooks/useEvents';
 import ModalCenter from 'components/shared/ModalCenter';
 import { toast } from 'react-toastify';
-
-const _languageService = DependenciesInjector.services.languageService;
-const _tankService = DependenciesInjector.services.tankService;
-const _stationService = DependenciesInjector.services.stationService;
-const _fuelTypeService = DependenciesInjector.services.fuelTypeService;
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
+  const _languageService = useService(Services.LanguageService);
+  const _tankService = useService(Services.TankService);
+  const _stationService = useService(Services.StationService);
+  const _fuelTypeService = useService(Services.FuelTypeService);
   // States
   const [formData, setFormData] = useState({
     stationId: -1,
-    fuelType: -1,
+    fuelTypeId: -1,
     number: 0,
     capacity: 0,
     maxLimit: 0,
@@ -33,7 +33,7 @@ const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
 
     setFormData({
       stationId: -1,
-      fuelType: -1,
+      fuelTypeId: -1,
       number: 0,
       capacity: 0,
       maxLimit: 0,
@@ -77,39 +77,6 @@ const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
   const handleOnSubmitAsync = async e => {
     e.preventDefault();
 
-    if (
-      formData.capacity <= 0 ||
-      formData.maxLimit <= 0 ||
-      formData.minLimit <= 0
-    ) {
-      toast.error(_languageService.resources.valuesNotValid);
-      return;
-    }
-
-    if (formData.maxLimit >= formData.capacity) {
-      toast.error(_languageService.resources.maxLimitMustBeLessThanCapacity);
-      return;
-    }
-
-    if (formData.minLimit >= formData.maxLimit) {
-      toast.error(_languageService.resources.minLimitMustBeLessThanMaxLimit);
-      return;
-    }
-
-    if (formData.currentVolume > formData.maxLimit) {
-      toast.error(
-        _languageService.resources.currentVolumeMustBeLessThanMaxLimit
-      );
-      return;
-    }
-
-    if (formData.currentVolume < formData.minLimit) {
-      toast.error(
-        _languageService.resources.currentVolumeMustBeGreaterThanMinLimit
-      );
-      return;
-    }
-
     const response = await _tankService.createAsync(formData);
     if (!response.succeeded) return;
 
@@ -118,18 +85,17 @@ const CreateModal = ({ open, setOpen, handleRefreshPage }) => {
   };
 
   const isDisabled =
-    formData.stationId === -1 ||
-    formData.fuelTypeId === -1 ||
+    formData.stationId == -1 ||
+    formData.fuelTypeId == -1 ||
     formData.number <= 0 ||
     formData.capacity <= 0 ||
     formData.maxLimit <= 0 ||
     formData.minLimit <= 0 ||
     formData.currentLevel < 0 ||
     formData.currentVolume < 0 ||
-    formData.maxLimit >= formData.capacity ||
-    formData.minLimit >= formData.maxLimit ||
-    formData.currentVolume > formData.maxLimit ||
-    formData.currentVolume < formData.minLimit;
+    formData.maxLimit > formData.capacity ||
+    formData.minLimit > formData.maxLimit ||
+    formData.currentVolume > formData.maxLimit;
 
   return (
     <ModalCenter

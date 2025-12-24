@@ -1,11 +1,15 @@
 import { toast } from 'react-toastify';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
+import WebService from 'app/core/abstracts/webService';
 
-export default class FuelTypeService {
+export default class FuelTypeService extends WebService {
   _api = 'api/fuel-types';
 
-  constructor(httpService, languageService) {
-    this._httpService = httpService;
-    this._languageService = languageService;
+  constructor() {
+    super();
+    this._httpService = this.getService(Services.HttpService);
+    this._languageService = this.getService(Services.LanguageService);
   }
 
   async getAllAsync() {

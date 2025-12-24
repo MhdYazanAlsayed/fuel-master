@@ -34,7 +34,9 @@ public class ZoneRepository : IZoneRepository
         }
         if (includeFuelType)
         {
-            query = query.Include(z => z.Prices.Select(p => p.FuelType));
+            query = query
+            .Include(z => z.Prices)
+            .ThenInclude(p => p.FuelType);
         }
         if (includeStations)
         {
@@ -42,11 +44,15 @@ public class ZoneRepository : IZoneRepository
         }
         if (includeTanks)
         {
-            query = query.Include(z => z.Stations.Select(s => s.Tanks));
+            query = query
+            .Include(z => z.Stations)
+            .ThenInclude(s => s.Tanks);
         }
         if (includeNozzles)
         {
-            query = query.Include(z => z.Stations.Select(s => s.Tanks.Select(t => t.Nozzles)));
+            query = query.Include(z => z.Stations)
+            .ThenInclude(s => s.Tanks)
+            .ThenInclude(t => t.Nozzles);
         }
         return await query.SingleOrDefaultAsync(z => z.Id == id);
     }
@@ -60,7 +66,9 @@ public class ZoneRepository : IZoneRepository
         }
         if (includeFuelType)
         {
-            query = query.Include(z => z.Prices.Select(p => p.FuelType));
+            query = query
+            .Include(x => x.Prices)
+            .ThenInclude(x => x.FuelType);
         }
         if (includeStations)
         {
@@ -92,7 +100,8 @@ public class ZoneRepository : IZoneRepository
         }
         if (includeFuelType)
         {
-            query = query.Include(z => z.Prices.Select(p => p.FuelType));
+            query = query.Include(x => x.Prices)
+            .ThenInclude(x => x.FuelType);
         }
         if (includeStations)
         {
@@ -100,11 +109,14 @@ public class ZoneRepository : IZoneRepository
         }
         if (includeTanks)
         {
-            query = query.Include(z => z.Stations.Select(s => s.Tanks));
+            query = query.Include(x => x.Stations)
+            .ThenInclude(x => x.Tanks);
         }
         if (includeNozzles)
         {
-            query = query.Include(z => z.Stations.Select(s => s.Tanks.Select(t => t.Nozzles)));
+            query = query.Include(x => x.Stations)
+            .ThenInclude(x => x.Tanks)
+            .ThenInclude(x => x.Nozzles);
         }
         var data = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         var count = await query.CountAsync();
