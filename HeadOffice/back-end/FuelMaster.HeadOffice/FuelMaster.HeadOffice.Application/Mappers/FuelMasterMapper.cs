@@ -1,24 +1,24 @@
 using AutoMapper;
-using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.AreaService.Results;
+using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.FuelMasterAreaOfAccessService.Results;
-using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.FuelMasterRoleService.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.FuelMasterRoleService.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.NozzleService.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.PumpService.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.StationService.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.TankService.Results;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Cities.Results;
-using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.Results;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.Results;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Areas.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Employees.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Pricing.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.Results;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Cities.Results;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Deliveries.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Infrastructure.Authentication.UserService.Results;
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Entities.Configs.Area;
 using FuelMaster.HeadOffice.Core.Entities.Configs.FuelTypes;
 using FuelMaster.HeadOffice.Core.Entities.Roles_Permissions;
-using FuelMaster.HeadOffice.Core.Helpers;
+using FuelMaster.HeadOffice.Core.Interfaces.Services.Transactions.Results;
 
 namespace FuelMaster.HeadOffice.Application.Mappers
 {
@@ -55,6 +55,8 @@ namespace FuelMaster.HeadOffice.Application.Mappers
             .ForMember(x => x.ArabicName, s => s.MapFrom(x => x.AreaOfAccess!.ArabicName))
             .ForMember(x => x.EnglishDescription, s => s.MapFrom(x => x.AreaOfAccess!.EnglishDescription))
             .ForMember(x => x.ArabicDescription, s => s.MapFrom(x => x.AreaOfAccess!.ArabicDescription));
+            CreateMap<Delivery, DeliveryResult>();
+            CreateMap<Transaction, TransactionResult>();
             //CreateMap<TenantConfig, TenantConfigResponse>();
         }
     }

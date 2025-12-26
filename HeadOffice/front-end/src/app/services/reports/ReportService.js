@@ -83,6 +83,8 @@ export default class ReportService extends WebService {
       return null;
     }
 
-    return await response.json();
+    const result = await response.json();
+
+    return result;
   }
 }

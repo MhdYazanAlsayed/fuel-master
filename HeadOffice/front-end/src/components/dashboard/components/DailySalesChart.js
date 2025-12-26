@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BasicECharts from 'components/theme/common/BasicEChart';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { LineChart } from 'echarts/charts';
 import {
   GridComponent,
@@ -14,6 +13,8 @@ import {
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { getColor } from 'helpers/utils';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 echarts.use([
   TitleComponent,
@@ -180,7 +181,7 @@ const getOptions = (data, isMobile = false) => {
 };
 
 const DailySalesChart = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
   const chartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 

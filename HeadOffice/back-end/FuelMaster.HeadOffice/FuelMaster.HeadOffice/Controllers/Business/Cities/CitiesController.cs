@@ -1,12 +1,11 @@
-﻿ 
-using FuelMaster.HeadOffice.Core.Resources;
+﻿
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Cities.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
 using FuelMaster.HeadOffice.Controllers.Cities.Validators;
+using FuelMaster.HeadOffice.Core.Resources;
+using FuelMaster.HeadOffice.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FuelMaster.HeadOffice.Helpers;
-using FuelMaster.HeadOffice.Application.Services.Interfaces.Core;
-using FuelMaster.HeadOffice.Application.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Cities.DTOs;
 
 
 namespace FuelMaster.HeadOffice.Controllers

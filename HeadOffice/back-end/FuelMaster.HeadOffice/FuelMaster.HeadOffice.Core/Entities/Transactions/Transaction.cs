@@ -30,7 +30,7 @@ namespace FuelMaster.HeadOffice.Core.Entities
             if (price <= 0) throw new ArgumentException("Price must be greater than 0");
             if (amount <= 0) throw new ArgumentException("Amount must be greater than 0");
             if (volume <= 0) throw new ArgumentException("Volume must be greater than 0");
-            if (totalizer <= 0) throw new ArgumentException("Totalizer must be greater than 0");
+            if (totalizer < 0) throw new ArgumentException("Totalizer must be greater than 0");
             if (totalizerAfter <= 0) throw new ArgumentException("TotalizerAfter must be greater than 0");
             if (stationId <= 0) throw new ArgumentException("StationId must be greater than 0");
             if (dateTime <= DateTime.MinValue) throw new ArgumentException("DateTime must be greater than 0");

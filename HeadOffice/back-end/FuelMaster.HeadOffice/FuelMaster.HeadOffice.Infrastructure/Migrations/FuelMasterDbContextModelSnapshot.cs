@@ -63,6 +63,9 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("ArabicName");
 
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -79,6 +82,8 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.ToTable("Areas");
                 });
@@ -932,6 +937,17 @@ namespace FuelMaster.HeadOffice.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Configs.Area.Area", b =>
+                {
+                    b.HasOne("FuelMaster.HeadOffice.Core.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("FuelMaster.HeadOffice.Core.Entities.Delivery", b =>

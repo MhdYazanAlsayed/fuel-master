@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BasicECharts from 'components/theme/common/BasicEChart';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { LineChart } from 'echarts/charts';
 import {
   GridComponent,
@@ -14,6 +13,8 @@ import {
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { getColor } from 'helpers/utils';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 echarts.use([
   TitleComponent,
@@ -185,7 +186,7 @@ const getOptions = (data, isMobile = false) => {
 };
 
 const MonthlySalesTrend = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
   const chartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -262,7 +263,7 @@ const MonthlySalesTrend = ({ data }) => {
       <Card.Header className="bg-light">
         <div className="d-flex justify-content-between align-items-center">
           <h6 className="mb-0">
-            <FontAwesomeIcon icon="chart-area" className="me-2 text-primary" />
+            <FontAwesomeIcon icon="chart-line" className="me-2 text-primary" />
             {_languageService?.resources.monthlySalesTrend}
           </h6>
           <div className={`d-flex ${isMobile ? 'flex-column gap-2' : 'gap-3'}`}>

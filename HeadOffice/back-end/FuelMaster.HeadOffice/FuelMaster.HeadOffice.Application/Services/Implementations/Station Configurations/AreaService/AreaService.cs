@@ -46,7 +46,7 @@ public class AreaService : IAreaService
     {
         try
         {
-            var area = new Area(dto.ArabicName, dto.EnglishName);
+            var area = new Area(dto.ArabicName, dto.EnglishName, dto.CityId);
             _areaRepository.Create(area);
             await _unitOfWork.SaveChangesAsync();
 
@@ -161,7 +161,7 @@ public class AreaService : IAreaService
 
         _logger.LogInformation("Areas not in cache, fetching from database");
 
-        var areas = await _areaRepository.GetAllAsync(includeStations: true);
+        var areas = await _areaRepository.GetAllAsync(includeStations: true, includeCity: true);
         await _areaCache.SetAllAsync(areas);
         return Filter(areas.ToList());
     }
@@ -197,8 +197,11 @@ public class AreaService : IAreaService
         var areaId = _signInService.GetCurrentAreaId();
         var stationId = _signInService.GetCurrentStationId();
 
-        if (scope == Scope.ALL || scope == Scope.City)
+        if (scope == Scope.ALL)
             return areas;
+
+        if (scope == Scope.City)
+            return areas.Where(x => x.CityId == cityId).ToList();
 
         if (scope == Scope.Area)
             return areas.Where(x => x.Id == areaId).ToList();

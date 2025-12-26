@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Card, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BasicECharts from 'components/theme/common/BasicEChart';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
 import { PieChart } from 'echarts/charts';
 import {
   GridComponent,
@@ -13,6 +12,8 @@ import {
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { getColor } from 'helpers/utils';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 echarts.use([
   TitleComponent,
@@ -75,7 +76,7 @@ const getOptions = (data, isMobile = false) => {
 };
 
 const getPaymentMethodName = paymentMethod => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
   return (
     _languageService?.resources.paymentMethodTypes[paymentMethod] || 'Other'
   );
@@ -101,14 +102,14 @@ const getPaymentMethodIcon = paymentMethod => {
     case 2:
       return 'credit-card';
     case 3:
-      return 'mobile-alt';
+      return 'mobile';
     default:
       return 'question-circle';
   }
 };
 
 const PaymentMethodChart = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
   const chartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 

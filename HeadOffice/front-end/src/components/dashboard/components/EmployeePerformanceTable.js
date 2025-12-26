@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Card, Table, Badge } from 'react-bootstrap';
 import Avatar from 'components/theme/common/Avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const EmployeePerformanceTable = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
 
   // Ensure data is valid and filter out invalid entries
   const validData =

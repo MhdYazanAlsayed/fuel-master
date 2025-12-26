@@ -8,13 +8,13 @@ import Loader from 'components/shared/Loader';
 import { Permissions } from 'app/core/enums/Permissions';
 import { Navigate } from 'react-router-dom';
 
-const _languageService = DependenciesInjector.services.languageService;
-const _deliveryService = DependenciesInjector.services.deliveryService;
-const _stationsSerivce = DependenciesInjector.services.stationService;
-const _tankService = DependenciesInjector.services.tankService;
-const _roleManager = DependenciesInjector.services.roleManager;
-
 const Create = () => {
+  const _languageService = DependenciesInjector.services.languageService;
+  const _deliveryService = DependenciesInjector.services.deliveryService;
+  const _stationsSerivce = DependenciesInjector.services.stationService;
+  const _tankService = DependenciesInjector.services.tankService;
+  const _roleManager = DependenciesInjector.services.roleManager;
+
   if (!_roleManager.check(Permissions.DeliveriesCreate))
     return <Navigate to="/errors/404" />;
 

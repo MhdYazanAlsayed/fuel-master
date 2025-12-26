@@ -229,7 +229,10 @@ import {
   faCommentDollar,
   faHandHoldingWater,
   faCameraRetro,
-  faUtensils
+  faUtensils,
+  faBuilding,
+  faCreditCard,
+  faMoneyBillWave
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -465,5 +468,8 @@ library.add(
   faCommentDollar,
   faHandHoldingWater,
   faCameraRetro,
-  faUtensils
+  faUtensils,
+  faBuilding,
+  faCreditCard,
+  faMoneyBillWave
 );

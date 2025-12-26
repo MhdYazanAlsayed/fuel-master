@@ -10,9 +10,11 @@ import { Scope } from 'app/core/abstracts/Scope';
 
 const Create = () => {
   const _languageService = useService(Services.LanguageService);
-  // const _roleService = useService(Services.RoleService);
+  const _roleService = useService(Services.RoleService);
   const _employeeService = useService(Services.EmployeeService);
   const _stationService = useService(Services.StationService);
+  const _cityService = useService(Services.CityService);
+  const _areaService = useService(Services.AreaService);
 
   // States
   const [formData, setFormData] = useState({
@@ -21,7 +23,7 @@ const Create = () => {
     userName: '',
     password: '',
     confirmPassword: '',
-    groupId: -1,
+    roleId: -1,
     phoneNumber: '',
     emailAddress: '',
     age: '',
@@ -34,20 +36,35 @@ const Create = () => {
   });
   const [roles, setRoles] = useState([]);
   const [stations, setStations] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { handleOnChange } = useEvents(setFormData);
   const navigate = useNavigate();
+
+  const handleScopeChange = value => {
+    const scopeValue = parseInt(value);
+    handleOnChange('scope', scopeValue);
+    // Reset dependent fields when scope changes
+    handleOnChange('cityId', -1);
+    handleOnChange('areaId', -1);
+    handleOnChange('stationId', -1);
+  };
 
   useEffect(() => {
     loadDropdownData();
   }, []);
 
   const loadDropdownData = async () => {
-    const groupResponse = await _groupService.getAllAsync();
+    const roleResponse = await _roleService.getAllAsync();
     const stationResponse = await _stationService.getAllAsync();
-    setGroups(groupResponse);
+    const cityResponse = await _cityService.getAllAsync();
+    const areaResponse = await _areaService.getAllAsync();
+    setRoles(roleResponse);
     setStations(stationResponse);
+    setCities(cityResponse);
+    setAreas(areaResponse);
     setLoading(false);
   };
 
@@ -60,7 +77,7 @@ const Create = () => {
       userName: formData.userName.trim(),
       password: formData.password.trim(),
       confirmPassword: formData.confirmPassword.trim(),
-      groupId: formData.groupId,
+      roleId: formData.roleId,
       phoneNumber:
         formData.phoneNumber.trim() === '' ? null : formData.phoneNumber,
       emailAddress:
@@ -72,6 +89,9 @@ const Create = () => {
           ? null
           : formData.identificationNumber,
       address: formData.address.trim() === '' ? null : formData.address,
+      scope: formData.scope,
+      cityId: formData.cityId === -1 ? null : formData.cityId,
+      areaId: formData.areaId === -1 ? null : formData.areaId,
       stationId: formData.stationId === -1 ? null : formData.stationId
     });
     if (!response.succeeded) return;
@@ -152,22 +172,20 @@ const Create = () => {
 
           <Form.Group className="mb-2">
             <Form.Label>
-              <span>{_languageService.resources.group}</span>
+              <span>{_languageService.resources.role}</span>
               <span className="text-danger fw-bold">*</span>
             </Form.Label>
             <Form.Select
               onChange={x =>
-                handleOnChange('groupId', parseInt(x.currentTarget.value))
+                handleOnChange('roleId', parseInt(x.currentTarget.value))
               }
             >
               <option value={-1}>
                 {_languageService.resources.selectOption}
               </option>
-              {groups.map((group, index) => (
-                <option key={index} value={group.id}>
-                  {_languageService.isRTL
-                    ? group.arabicName
-                    : group.englishName}
+              {roles.map((role, index) => (
+                <option key={index} value={role.id}>
+                  {_languageService.isRTL ? role.arabicName : role.englishName}
                 </option>
               ))}
             </Form.Select>
@@ -236,25 +254,108 @@ const Create = () => {
 
           <Form.Group className="mb-2">
             <Form.Label>
-              <span>{_languageService.resources.station}</span>
+              <span>{_languageService.resources.scope}</span>
+              <span className="text-danger fw-bold">*</span>
             </Form.Label>
             <Form.Select
-              onChange={x =>
-                handleOnChange('stationId', parseInt(x.currentTarget.value))
-              }
+              value={formData.scope}
+              onChange={x => handleScopeChange(x.currentTarget.value)}
             >
-              <option value={-1}>
-                {_languageService.resources.selectOption}
+              <option value={Scope.ALL}>
+                {_languageService.resources.scopes[Scope.ALL]}
               </option>
-              {stations.map((station, index) => (
-                <option key={index} value={station.id}>
-                  {_languageService.isRTL
-                    ? station.arabicName
-                    : station.englishName}
-                </option>
-              ))}
+              <option value={Scope.City}>
+                {_languageService.resources.scopes[Scope.City]}
+              </option>
+              <option value={Scope.Area}>
+                {_languageService.resources.scopes[Scope.Area]}
+              </option>
+              <option value={Scope.Station}>
+                {_languageService.resources.scopes[Scope.Station]}
+              </option>
+              <option value={Scope.Self}>
+                {_languageService.resources.scopes[Scope.Self]}
+              </option>
             </Form.Select>
           </Form.Group>
+
+          {formData.scope === Scope.City && (
+            <Form.Group className="mb-2">
+              <Form.Label>
+                <span>{_languageService.resources.city}</span>
+                <span className="text-danger fw-bold">*</span>
+              </Form.Label>
+              <Form.Select
+                value={formData.cityId}
+                onChange={x =>
+                  handleOnChange('cityId', parseInt(x.currentTarget.value))
+                }
+              >
+                <option value={-1}>
+                  {_languageService.resources.selectOption}
+                </option>
+                {cities.map((city, index) => (
+                  <option key={index} value={city.id}>
+                    {_languageService.isRTL
+                      ? city.arabicName
+                      : city.englishName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+
+          {formData.scope === Scope.Area && (
+            <Form.Group className="mb-2">
+              <Form.Label>
+                <span>{_languageService.resources.area}</span>
+                <span className="text-danger fw-bold">*</span>
+              </Form.Label>
+              <Form.Select
+                value={formData.areaId}
+                onChange={x =>
+                  handleOnChange('areaId', parseInt(x.currentTarget.value))
+                }
+              >
+                <option value={-1}>
+                  {_languageService.resources.selectOption}
+                </option>
+                {areas.map((area, index) => (
+                  <option key={index} value={area.id}>
+                    {_languageService.isRTL
+                      ? area.arabicName
+                      : area.englishName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+
+          {formData.scope === Scope.Station && (
+            <Form.Group className="mb-2">
+              <Form.Label>
+                <span>{_languageService.resources.station}</span>
+                <span className="text-danger fw-bold">*</span>
+              </Form.Label>
+              <Form.Select
+                value={formData.stationId}
+                onChange={x =>
+                  handleOnChange('stationId', parseInt(x.currentTarget.value))
+                }
+              >
+                <option value={-1}>
+                  {_languageService.resources.selectOption}
+                </option>
+                {stations.map((station, index) => (
+                  <option key={index} value={station.id}>
+                    {_languageService.isRTL
+                      ? station.arabicName
+                      : station.englishName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
 
           <Button
             variant="primary"
@@ -265,7 +366,10 @@ const Create = () => {
               formData.userName.trim() === '' ||
               formData.password.trim() === '' ||
               formData.confirmPassword.trim() === '' ||
-              formData.groupId === -1
+              formData.roleId === -1 ||
+              (formData.scope === Scope.City && formData.cityId === -1) ||
+              (formData.scope === Scope.Area && formData.areaId === -1) ||
+              (formData.scope === Scope.Station && formData.stationId === -1)
             }
           >
             {_languageService.resources.create}

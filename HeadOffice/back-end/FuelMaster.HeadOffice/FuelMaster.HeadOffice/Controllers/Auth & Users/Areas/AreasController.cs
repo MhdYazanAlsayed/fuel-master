@@ -1,6 +1,5 @@
-using FuelMaster.HeadOffice.Application.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.AreaService.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Area;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Areas.DTOs;
 using FuelMaster.HeadOffice.Controllers.Areas.Validators;
 using FuelMaster.HeadOffice.Core.Resources;
 using FuelMaster.HeadOffice.Helpers;

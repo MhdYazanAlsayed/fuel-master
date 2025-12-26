@@ -1,5 +1,4 @@
-﻿using FuelMaster.HeadOffice.Application.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.DTOs;
+﻿using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core.Zones;
 using FuelMaster.HeadOffice.Controllers.Zones.Validators;
 using FuelMaster.HeadOffice.Core.Entities;

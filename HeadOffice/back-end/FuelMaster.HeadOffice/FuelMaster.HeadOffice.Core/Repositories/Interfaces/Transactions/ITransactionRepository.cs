@@ -7,6 +7,24 @@ namespace FuelMaster.HeadOffice.Core.Repositories.Interfaces;
 
 public interface ITransactionRepository : IRepository<Transaction>, IScopedDependency
 {
+    // TODO : Create dto for arguments to avoid exploitation
+    Task<List<Transaction>> GetAllAsync (
+        DateTime from,
+        DateTime to,
+        // Filters,
+        int? areaId = null,
+        int? cityId = null,
+        int? stationId = null,
+        int? nozzleId = null,
+        int? pumpId = null,
+        int? employeeId = null,
+        
+        // Includes
+        bool includeNozzle = false, 
+        bool includeEmployee = false, 
+        bool includeStation = false, 
+        bool includePump = false);
+
     Task<(List<Transaction> Data, int TotalCount)> GetPaginationAsync(
         int page, 
         int pageSize, 

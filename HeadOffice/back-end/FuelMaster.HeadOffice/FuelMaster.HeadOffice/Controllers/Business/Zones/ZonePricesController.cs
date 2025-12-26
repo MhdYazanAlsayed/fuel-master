@@ -1,4 +1,4 @@
-﻿using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.DTOs;
+﻿using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.DTOs;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Core.Zones;
 using FuelMaster.HeadOffice.Helpers;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,4 @@
 using FuelMaster.HeadOffice.Core.Entities;
-using FuelMaster.HeadOffice.Core.Interfaces.ResultQuery;
 using FuelMaster.HeadOffice.Core.Repositories.Interfaces.Employees;
 using Microsoft.EntityFrameworkCore;
 

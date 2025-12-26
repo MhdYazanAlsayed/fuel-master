@@ -49,6 +49,16 @@ const Index = () => {
       Cell: data => <>{data?.englishName}</>
     },
     {
+      header: _languageService.resources.city,
+      Cell: data => (
+        <>
+          {_languageService.isRTL
+            ? data?.city?.arabicName ?? '-'
+            : data?.city?.englishName ?? '-'}
+        </>
+      )
+    },
+    {
       header: '',
       headerProps: { className: 'text-start' },
       Cell: data =>
@@ -172,4 +182,3 @@ const Index = () => {
 };
 
 export default Index;
-

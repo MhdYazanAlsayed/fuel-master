@@ -43,7 +43,90 @@ public class TransactionReadQuery : ITransactionReadQuery
         return this;
     }
 
-    public async Task<(List<Core.Entities.Transaction> Data, int TotalCount)> GetPaginationAsync(int page, int pageSize, bool includeNozzle = false, bool includeEmployee = false, bool includeStation = false, bool includePump = false)
+    public async Task<List<Transaction>> GetAllAsync(DateTime from, DateTime to, int? areaId = null, int? cityId = null, int? stationId = null, int? nozzleId = null, int? pumpId = null, int? employeeId = null, bool includeNozzle = false, bool includeEmployee = false, bool includeStation = false, bool includePump = false)
+    {
+        var query = _query;
+        query = query.Where(t => t.DateTime >= from && t.DateTime <= to);
+
+        if (areaId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.AreaId == areaId);
+        }
+        if (cityId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.CityId == cityId);
+        }
+        if (stationId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.Id == stationId);
+        }
+        if (nozzleId is not null)
+        {
+            query = query
+            .Include(x => x.Nozzle)
+            .Where(t => t.Nozzle!.Id == nozzleId);
+        }
+        if (pumpId is not null)
+        {
+            query = query
+            .Include(x => x.Nozzle)
+            .Where(t => t.Nozzle!.PumpId == pumpId);
+        }
+        if (employeeId is not null)
+        {
+            query = query
+            .Include(x => x.Employee)
+            .Where(t => t.Employee!.Id == employeeId);
+        }
+
+        if (includePump)
+        {
+            query = query
+                .Include(t => t.Nozzle)
+                .ThenInclude(n => n!.Pump);
+        }
+        else if (includeNozzle)
+        {
+            query = query.Include(t => t.Nozzle);
+        }
+
+        if (includeEmployee)
+        {
+            query = query.Include(t => t.Employee);
+        }
+
+        if (includeStation)
+        {
+            query = query.Include(t => t.Station);
+        }
+
+        return await query.ToListAsync();
+
+    }
+
+    public async Task<(List<Core.Entities.Transaction> Data, int TotalCount)> GetPaginationAsync(int page,
+        int pageSize,
+        // Filters,
+        int? areaId = null,
+        int? cityId = null,
+        int? stationId = null,
+        int? nozzleId = null,
+        int? pumpId = null,
+        int? employeeId = null,
+        DateTime? from = null,
+        DateTime? to = null,
+
+        // Includes
+        bool includeNozzle = false,
+        bool includeEmployee = false,
+        bool includeStation = false,
+        bool includePump = false)
     {
         if (includePump)
         {
@@ -69,4 +152,6 @@ public class TransactionReadQuery : ITransactionReadQuery
         var data = await _query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         return (data, count);
     }
+
+
 }

@@ -1,8 +1,8 @@
 using AutoMapper;
 using FuelMaster.HeadOffice.Application.DTOs;
 using FuelMaster.HeadOffice.Application.Helpers;
-using FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Zones.Results;
 using FuelMaster.HeadOffice.Core.Repositories.Interfaces.Zones;
 
 namespace FuelMaster.HeadOffice.Application.Services.Implementations.ZoneService;

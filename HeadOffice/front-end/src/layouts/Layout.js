@@ -274,8 +274,8 @@ const Layout = () => {
 
         <Route element={<MainLayout />}>
           <Route element={<AuthorizedLayout />}>
-            {/* <Route path="/" element={<MainDashboard />} /> */}
-            <Route path="/" element={<>Welcome !</>} />
+            <Route path="/" element={<MainDashboard />} />
+            {/* <Route path="/" element={<>Welcome !</>} /> */}
             <Route path="/cities" element={<Cities />} />
             <Route path="/fuel-types" element={<FuelTypes />} />
             <Route path="/zones" element={<Zones />} />

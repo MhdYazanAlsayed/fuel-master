@@ -166,5 +166,83 @@ public class TransactionRepository : ITransactionRepository
         _context.Transactions.Update(entity);
         return entity;
     }
+
+    public async Task<List<Transaction>> GetAllAsync(
+        DateTime from, 
+        DateTime to, 
+        int? areaId = null, 
+        int? cityId = null, 
+        int? stationId = null, 
+        int? nozzleId = null, 
+        int? pumpId = null, 
+        int? employeeId = null, 
+        bool includeNozzle = false, 
+        bool includeEmployee = false, 
+        bool includeStation = false, 
+        bool includePump = false)
+    {
+        var query = _context.Transactions.AsQueryable();
+        query = query.Where(t => t.DateTime >= from && t.DateTime <= to);
+
+        if (areaId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.AreaId == areaId);
+        }
+        if (cityId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.CityId == cityId);
+        }
+        if (stationId is not null)
+        {
+            query = query
+            .Include(x => x.Station)
+            .Where(t => t.Station!.Id == stationId);
+        }
+        if (nozzleId is not null)
+        {
+            query = query
+            .Include(x => x.Nozzle)
+            .Where(t => t.Nozzle!.Id == nozzleId);
+        }
+        if (pumpId is not null)
+        {
+            query = query
+            .Include(x => x.Nozzle)
+            .Where(t => t.Nozzle!.PumpId == pumpId);
+        }
+        if (employeeId is not null)
+        {
+            query = query
+            .Include(x => x.Employee)
+            .Where(t => t.Employee!.Id == employeeId);
+        }
+        
+        if (includePump)
+        {
+            query = query
+                .Include(t => t.Nozzle)
+                .ThenInclude(n => n!.Pump);
+        }
+        else if (includeNozzle)
+        {
+            query = query.Include(t => t.Nozzle);
+        }
+
+        if (includeEmployee)
+        {
+            query = query.Include(t => t.Employee);
+        }
+
+        if (includeStation)
+        {
+            query = query.Include(t => t.Station);
+        }
+    
+        return await query.ToListAsync();
+    }
 }
 

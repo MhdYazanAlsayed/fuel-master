@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Card, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const FuelStatItem = ({ stat }) => {
   return (
@@ -63,7 +64,7 @@ FuelStatItem.propTypes = {
 };
 
 const FuelStats = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
+  const _languageService = useService(Services.LanguageService);
 
   // Calculate totals from data
   const totalVolume =

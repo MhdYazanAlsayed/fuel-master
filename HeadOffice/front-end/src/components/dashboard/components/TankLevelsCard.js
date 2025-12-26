@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { Card, ProgressBar, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
-import DependenciesInjector from 'app/core/utilities/DependenciesInjector';
+import { useService } from 'hooks/useService';
+import Services from 'app/core/utilities/Services';
 
 const TankLevelsCard = ({ data }) => {
-  const _languageService = DependenciesInjector.services.languageService;
-  console.log(data);
+  const _languageService = useService(Services.LanguageService);
 
   // Ensure data is valid and filter out invalid entries
   const validData =
@@ -48,7 +48,7 @@ const TankLevelsCard = ({ data }) => {
         <div className="d-flex justify-content-between align-items-center">
           <h6 className="mb-0">
             <FontAwesomeIcon
-              icon="tachometer-alt"
+              icon="chart-pie"
               className="me-2 text-primary"
             />
             {_languageService?.resources.tankLevels}
@@ -66,9 +66,12 @@ const TankLevelsCard = ({ data }) => {
                 <div>
                   <h6 className="mb-1">
                     {`${_languageService.resources.station} ${
-                      _languageService.isRTL
-                        ? tank.station.arabicName
-                        : tank.station.englishName
+                      tank.stationName ||
+                      (tank.station
+                        ? _languageService.isRTL
+                          ? tank.station.arabicName
+                          : tank.station.englishName
+                        : '')
                     } — ${_languageService?.resources.tank} #${
                       tank.number
                     } — ${getFuelTypeName(tank.fuelType)}`}
@@ -141,7 +144,7 @@ const TankLevelsCard = ({ data }) => {
         {validData.length === 0 && (
           <div className="text-center py-4">
             <FontAwesomeIcon
-              icon="tachometer-alt"
+              icon="chart-pie"
               className="fs-1 text-muted mb-3"
             />
             <p className="text-muted mb-0">

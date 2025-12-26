@@ -11,10 +11,11 @@ public class Area : Entity<int>
     public int CityId { get; private set; }
     public IReadOnlyList<Station> Stations => _stations.AsReadOnly();
 
-    public Area(string arabicName, string englishName)
+    public Area(string arabicName, string englishName, int cityId)
     {
         ArabicName = arabicName;
         EnglishName = englishName;
+        CityId = cityId;
     }
 
     public void Update(string arabicName, string englishName)

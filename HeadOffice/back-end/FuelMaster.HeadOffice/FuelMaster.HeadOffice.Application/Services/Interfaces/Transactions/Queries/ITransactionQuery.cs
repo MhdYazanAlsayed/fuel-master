@@ -7,6 +7,7 @@ namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Transac
 
 public interface ITransactionQuery : IScopedDependency
 {
+    Task<List<TransactionResult>> GetAllAsync(TransactionsDto dto);
     Task<PaginationDto<TransactionResult>> GetPaginationAsync(int page, TransactionPaginationDto dto);
     Task<TransactionResult?> DetailsAsync(long id);
 }

@@ -13,28 +13,19 @@ namespace FuelMaster.HeadOffice.Infrastructure.Contexts
     public class FuelMasterDbContext : IdentityDbContext<FuelMasterUser>
     {
         private readonly IDomainEventPublisher? _domainEventPublisher;
-        private readonly ISigninService _signinService;
 
-        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, ISigninService signinService): base(options)
+        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options): base(options)
         {
-            _signinService = signinService;
         }
 
-        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, ISigninService signinService, IDomainEventPublisher? domainEventPublisher = null) : base(options)
+        public FuelMasterDbContext(DbContextOptions<FuelMasterDbContext> options, IDomainEventPublisher? domainEventPublisher = null) : base(options)
         {
             _domainEventPublisher = domainEventPublisher;
-            _signinService = signinService;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // builder.Entity<Employee>().ApplyFilterAsync(
-            //      _signinService.GetCurrentScope() ?? throw new InvalidOperationException("Current scope is not set"),
-            //      _signinService.GetCurrentCityId(), 
-            //      _signinService.GetCurrentAreaId(), 
-            //      _signinService.GetCurrentStationId());
                  
             builder.ApplyConfigurationsFromAssembly(typeof(FuelMasterDbContext).Assembly);
         }

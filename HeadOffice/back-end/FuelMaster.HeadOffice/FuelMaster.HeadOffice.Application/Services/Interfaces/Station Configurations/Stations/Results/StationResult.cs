@@ -1,4 +1,4 @@
-using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.AreaService.Results;
+using FuelMaster.HeadOffice.Application.Services.Interfaces.Business.Areas.Results;
 
 namespace FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.StationService.Results;
 

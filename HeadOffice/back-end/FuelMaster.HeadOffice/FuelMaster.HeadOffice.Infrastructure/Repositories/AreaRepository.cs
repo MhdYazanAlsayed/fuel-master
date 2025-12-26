@@ -39,7 +39,7 @@ public class AreaRepository : IAreaRepository
         return await query.SingleOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<List<Area>> GetAllAsync(bool includeStations = false)
+    public async Task<List<Area>> GetAllAsync(bool includeStations = false, bool includeCity = false)
     {
         var query = _context.Areas.AsQueryable();
 
@@ -48,16 +48,26 @@ public class AreaRepository : IAreaRepository
             query = query.Include(a => a.Stations);
         }
 
+        if (includeCity)
+        {
+            query = query.Include(a => a.City);
+        }
+
         return await query.ToListAsync();
     }
 
-    public async Task<(List<Area>, int)> GetPaginationAsync(int page, int pageSize, bool includeStations = false)
+    public async Task<(List<Area>, int)> GetPaginationAsync(int page, int pageSize, bool includeStations = false, bool includeCity = false)
     {
         var query = _context.Areas.AsQueryable();
 
         if (includeStations)
         {
             query = query.Include(a => a.Stations);
+        }
+
+        if (includeCity)
+        {
+            query = query.Include(a => a.City);
         }
 
         var count = await query.CountAsync();
