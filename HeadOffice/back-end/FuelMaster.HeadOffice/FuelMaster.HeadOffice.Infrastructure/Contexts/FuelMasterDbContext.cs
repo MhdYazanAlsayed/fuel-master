@@ -30,11 +30,11 @@ namespace FuelMaster.HeadOffice.Infrastructure.Contexts
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Employee>().ApplyFilterAsync(
-                 _signinService.GetCurrentScope() ?? throw new InvalidOperationException("Current scope is not set"),
-                 _signinService.GetCurrentCityId(), 
-                 _signinService.GetCurrentAreaId(), 
-                 _signinService.GetCurrentStationId());
+            // builder.Entity<Employee>().ApplyFilterAsync(
+            //      _signinService.GetCurrentScope() ?? throw new InvalidOperationException("Current scope is not set"),
+            //      _signinService.GetCurrentCityId(), 
+            //      _signinService.GetCurrentAreaId(), 
+            //      _signinService.GetCurrentStationId());
                  
             builder.ApplyConfigurationsFromAssembly(typeof(FuelMasterDbContext).Assembly);
         }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using FuelMaster.HeadOffice.Helpers;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Business.TankService.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.TankService.DTOs;
 using FuelMaster.HeadOffice.Controllers.Tanks.Validators;
 
 namespace FuelMaster.HeadOffice.Controllers

@@ -1,5 +1,5 @@
-﻿using FuelMaster.HeadOffice.Application.Services.Implementations.Business.PumpService.DTOs;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Business.PumpService.Results;
+﻿using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.PumpService.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.PumpService.Results;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
 using FuelMaster.HeadOffice.Controllers.Pumps.Validators;
 using FuelMaster.HeadOffice.Core.Resources;

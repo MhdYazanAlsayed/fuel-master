@@ -1,5 +1,5 @@
 using FluentValidation;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Business.TankService.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.TankService.DTOs;
 
 namespace FuelMaster.HeadOffice.Controllers.Tanks.Validators
 {

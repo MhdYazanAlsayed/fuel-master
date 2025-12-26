@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using FuelMaster.HeadOffice.Helpers;
 using FuelMaster.HeadOffice.Application.Services.Interfaces.Business;
-using FuelMaster.HeadOffice.Application.Services.Implementations.Business.StationService.DTOs;
+using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.StationService.DTOs;
 
 namespace FuelMaster.HeadOffice.Controllers
 {

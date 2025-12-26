@@ -1,4 +1,4 @@
-using FuelMaster.HeadOffice.Application.Services.Implementations.Business.PumpService.Results;
+using FuelMaster.HeadOffice.Application.Services.Implementations.StationConfigurations.PumpService.Results;
 using FuelMaster.HeadOffice.Application.Services.Implementations.FuelTypes.Results;
 using FuelMaster.HeadOffice.Core.Enums;
 namespace FuelMaster.HeadOffice.Application.Services.Interfaces.Reports.Realtime.Results;

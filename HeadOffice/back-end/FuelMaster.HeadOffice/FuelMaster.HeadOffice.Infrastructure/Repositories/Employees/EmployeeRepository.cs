@@ -1,6 +1,8 @@
 using FuelMaster.HeadOffice.Core.Entities;
 using FuelMaster.HeadOffice.Core.Repositories.Interfaces;
+using FuelMaster.HeadOffice.Core.Repositories.Interfaces.Employees;
 using FuelMaster.HeadOffice.Infrastructure.Contexts;
+using FuelMaster.HeadOffice.Infrastructure.Repositories.Employees;
 using FuelMaster.HeadOffice.Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,14 +29,9 @@ public class EmployeeRepository : IEmployeeRepository
         return entity;
     }
 
-    public async Task<Employee?> DetailsAsync(int id, bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false, bool ignoreQueryFilter = false)
+    public async Task<Employee?> DetailsAsync(int id, bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false)
     {
         var query = _context.Employees.AsQueryable();
-
-        if (ignoreQueryFilter)
-        {
-            query = query.IgnoreQueryFilters();
-        }
 
         if (includeRole)
         {
@@ -64,13 +61,9 @@ public class EmployeeRepository : IEmployeeRepository
         return await query.SingleOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<(List<Employee>, int)> GetPaginationAsync(int page, int pageSize, bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false, bool ignoreQueryFilter = false)
+    public async Task<(List<Employee>, int)> GetPaginationAsync(int page, int pageSize, bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false)
     {
         var query = _context.Employees.AsQueryable();
-        if (ignoreQueryFilter)
-        {
-            query = query.IgnoreQueryFilters();
-        }
 
         if (includeRole)
         {
@@ -112,14 +105,9 @@ public class EmployeeRepository : IEmployeeRepository
         return entity;
     }
 
-    public async Task<List<Employee>> GetAllAsync(bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false, bool ignoreFilter = false)
+    public async Task<List<Employee>> GetAllAsync(bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false)
     {
         var query = _context.Employees.AsQueryable();
-
-        if (ignoreFilter)
-        {
-            query = query.IgnoreQueryFilters();
-        }
 
         if (includeRole)
         {
@@ -149,23 +137,36 @@ public class EmployeeRepository : IEmployeeRepository
         return await query.ToListAsync();
     }
 
-    public async Task<List<Employee>> GetAllByCityId (int cityId)
+    public IEmployeeReadQuery AsReadQuery()
     {
-        return await _context.Employees
-        .Include(x => x.Station)
-        .Include(x => x.Area)
-        .Where(x => x.Station != null && x.Station.CityId == cityId)
-        .Where(x => x.Area != null && x.Area.CityId == cityId)
-        .ToListAsync();
+        return new EmployeeReadQuery(_context.Employees.AsQueryable());
     }
 
-    public async Task<List<Employee>> GetAllByAreaId (int areaId)
+    public async Task<Employee?> GetByCardNumberAsync(string cardNumber, bool includeRole = false, bool includeStation = false, bool includeArea = false, bool includeCity = false, bool includeUser = false)
     {
-        return await _context.Employees
-        .Include(x => x.Station)
-        .Include(x => x.Area)
-        .Where(x => x.Station != null && x.Station.AreaId == areaId)
-        .ToListAsync();
+        var query = _context.Employees.AsQueryable();
+
+        if (includeRole)
+        {
+            query = query.Include(e => e.Role);
+        }
+
+        if (includeStation)
+        {
+            query = query.Include(e => e.Station);
+        }
+
+        if (includeArea)
+        {
+            query = query.Include(e => e.Area);
+        }
+        
+        if (includeUser)
+        {
+            query = query.Include(e => e.User);
+        }
+
+        return await query.SingleOrDefaultAsync(e => e.CardNumber == cardNumber);
     }
 }
 
